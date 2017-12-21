@@ -18,6 +18,7 @@ class CodeRoyalePlayer : AbstractPlayer() {
   var resources = 0
 }
 
+@Suppress("unused")  // injected by magic
 class CodeRoyaleReferee : Referee {
   @Inject private lateinit var gameManager: GameManager<CodeRoyalePlayer>
   @Inject private lateinit var entityManager: EntityManager
@@ -57,19 +58,16 @@ class CodeRoyaleReferee : Referee {
     // See README.md if you want some code to bootstrap your project.
 
     for (activePlayer in gameManager.activePlayers) {
-      System.err.println("Sending units to ${activePlayer.nickname}")
       activePlayer.sendInputLine("${activePlayer.kingUnit.x} ${activePlayer.kingUnit.y}")
       activePlayer.sendInputLine("${activePlayer.engineerUnit.x} ${activePlayer.engineerUnit.y}")
       activePlayer.sendInputLine("${activePlayer.generalUnit.x} ${activePlayer.generalUnit.y}")
 
       for (otherPlayer in (gameManager.players - activePlayer)) {
-        System.err.println("Sending ${otherPlayer.nickname} units to ${activePlayer.nickname}")
         activePlayer.sendInputLine("${otherPlayer.kingUnit.x} ${otherPlayer.kingUnit.y}")
         activePlayer.sendInputLine("${otherPlayer.engineerUnit.x} ${otherPlayer.engineerUnit.y}")
         activePlayer.sendInputLine("${otherPlayer.generalUnit.x} ${otherPlayer.generalUnit.y}")
       }
 
-      System.err.println("Executing ${activePlayer.nickname}")
       activePlayer.execute()
     }
 
