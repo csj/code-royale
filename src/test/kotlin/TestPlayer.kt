@@ -19,7 +19,7 @@ class TestPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream) {
       val (ex2, ey2) = readTwoNumberOffLine()
       val (gx2, gy2) = readTwoNumberOffLine()
 
-      stdout.println("1000 1000") // king goes somewhere specific
+      stdout.println("1400 200") // king goes somewhere specific
       stdout.println("$kx $ky") // engineer chases our king
       stdout.println("$kx2 $ky2") // general chases their king
     }

@@ -1,4 +1,6 @@
 import java.lang.IllegalArgumentException
+import java.lang.Math.cos
+import java.lang.Math.sin
 
 data class Vector2(val x: Double, val y: Double) {
   private val lengthSquared by lazy { x*x + y*y }
@@ -7,7 +9,10 @@ data class Vector2(val x: Double, val y: Double) {
   val normalized: Vector2 by lazy {
     val len = length
     when(len) {
-      0.0 -> Vector2(1.0, 0.0)
+      0.0 -> {
+        val ang = Math.random() * 2 * Math.PI
+        Vector2(cos(ang), sin(ang))
+      }
       else -> Vector2(x / len, y / len)
     }
   }
@@ -29,9 +34,14 @@ data class Vector2(val x: Double, val y: Double) {
     else -> other * (this.dot(other) / other.dot(other))
   }
   fun rejectInDirectionOf(other: Vector2) = this - projectInDirectionOf(other)
+  fun towards(other: Vector2, maxDistance: Double) =
+    if (distanceTo(other) < maxDistance) other
+    else this + (other - this).resizedTo(maxDistance)
+
   override fun toString(): String = "(${Math.round(x)}, ${Math.round(y)})"
 
   companion object {
     val Zero = Vector2(0, 0)
+    fun random(maxX: Int, maxY: Int) = Vector2(Math.random() * maxX, Math.random() * maxY)
   }
 }
