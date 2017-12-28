@@ -44,13 +44,13 @@ abstract class MyEntity {
 abstract class MyOwnedEntity(val owner: CodeRoyalePlayer) : MyEntity()
 
 class Zergling(entityManager: EntityManager, owner: CodeRoyalePlayer, location: Vector2? = null):
-  Creep(entityManager, owner, 80, 0, 10, 400, 40, location)
+  Creep(entityManager, owner, 80, 0, 10, 400, 30, location)
 
 class Archer(entityManager: EntityManager, owner: CodeRoyalePlayer, location: Vector2? = null):
-  Creep(entityManager, owner, 60, 200, 15, 900, 60, location)
+  Creep(entityManager, owner, 60, 200, 15, 900, 45, location)
 
 class Tower(entityManager: EntityManager, val attackRange: Int, val location: Vector2, val owner: CodeRoyalePlayer) {
-  val radius = attackRange / 10
+  val radius = attackRange / 15
 
   val entity = entityManager.createRectangle()
     .setHeight(radius*2).setWidth(radius*2)
@@ -68,6 +68,14 @@ class Tower(entityManager: EntityManager, val attackRange: Int, val location: Ve
   init {
     entity.x = location.x.toInt() - radius
     entity.y = location.y.toInt() - radius
+
+    val rangeCircle = entityManager.createCircle()
+      .setRadius(attackRange)
+      .setFillAlpha(0.15)
+      .setFillColor(owner.color)
+      .setLineColor(0)
+      .setX(entity.x)
+      .setY(entity.y)
   }
 }
 
@@ -116,7 +124,7 @@ abstract class Creep(
 
   override fun updateEntity() {
     super.updateEntity()
-    entity.fillAlpha = health.toDouble() / maxHealth
+    entity.fillAlpha = health.toDouble() / maxHealth * 0.8 + 0.2
   }
 
   fun damage(hp: Int) {
@@ -176,16 +184,17 @@ class CodeRoyaleReferee : Referee {
 
     obstacles = (0..29).map { Obstacle(entityManager) }
     fixCollisions(60.0)
+    obstacles.forEach { it.updateEntity() }
 
     // set a few towers
     val t1 = obstacles.minBy { it.location.distanceTo(Vector2(500,200)) }!!
     val t2 = obstacles.minBy { it.location.distanceTo(Vector2(1400,900)) }!!
     val t3 = obstacles.minBy { it.location.distanceTo(Vector2(200,700)) }!!
     val t4 = obstacles.minBy { it.location.distanceTo(Vector2(1700,400)) }!!
-    towers += Tower(entityManager, 600, t1.location, gameManager.players[0])
-    towers += Tower(entityManager, 600, t2.location, gameManager.players[1])
-    towers += Tower(entityManager, 400, t3.location, gameManager.players[0])
-    towers += Tower(entityManager, 400, t4.location, gameManager.players[1])
+    towers += Tower(entityManager, 600, t1.location, gameManager.players[1])
+    towers += Tower(entityManager, 600, t2.location, gameManager.players[0])
+    towers += Tower(entityManager, 400, t3.location, gameManager.players[1])
+    towers += Tower(entityManager, 400, t4.location, gameManager.players[0])
 
     allUnits().forEach { it.updateEntity() }
 

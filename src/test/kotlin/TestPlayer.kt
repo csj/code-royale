@@ -23,12 +23,12 @@ class TestPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream) {
       val (gx2, gy2) = readTwoNumberOffLine()
 
       when {
-        turn > 350 -> stdout.println("MOVE 100 100") // king goes somewhere specific
+        turn > 350 -> stdout.println("MOVE 1100 100") // king goes somewhere specific
         turn > 300 -> stdout.println("MOVE 1600 800") // king goes somewhere specific
-        turn > 250 -> stdout.println("MOVE 700 300") // king goes somewhere specific
-        turn > 200 -> stdout.println("MOVE 1400 200") // king goes somewhere specific
-        turn > 150 -> stdout.println("MOVE 300 700") // king goes somewhere specific
-        turn > 100 -> stdout.println("MOVE 800 400") // king goes somewhere specific
+        turn > 250 -> stdout.println("MOVE 1700 300") // king goes somewhere specific
+        turn > 200 -> stdout.println("MOVE 1100 200") // king goes somewhere specific
+        turn > 150 -> stdout.println("MOVE 1300 700") // king goes somewhere specific
+        turn > 100 -> stdout.println("MOVE 1800 400") // king goes somewhere specific
         turn > 50 -> stdout.println("MOVE 100 800") // king goes somewhere specific
         else -> stdout.println("MOVE 1800 300") // king goes somewhere specific
       }
