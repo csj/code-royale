@@ -132,7 +132,7 @@ class CodeRoyaleReferee : Referee {
     }
 
     obstacles = (0..29).map { Obstacle(entityManager) }
-    fixCollisions(50.0)
+    fixCollisions(60.0)
 
     allUnits().forEach { it.updateEntity() }
 
