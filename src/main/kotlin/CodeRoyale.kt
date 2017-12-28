@@ -26,7 +26,14 @@ class CodeRoyalePlayer : AbstractPlayer() {
 
   fun allUnits() = units + activeCreeps
 
-  var health = 50
+  var health = 200
+  val maxHealth = 200
+
+  fun checkKingHealth(): Boolean {
+    kingUnit.entity.fillAlpha = 0.8 * health / maxHealth + 0.2
+    return health > 0
+  }
+
   var resources = 0
 }
 
@@ -249,18 +256,32 @@ class CodeRoyaleReferee : Referee {
     // Code your game logic.
     // See README.md if you want some code to bootstrap your project.
 
-    towers.forEach { it.act() }
     gameManager.activePlayers.flatMap { it.activeCreeps }.toList().forEach { it.damage(1) }
+    towers.forEach { it.act() }
     gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.act() }
-
     fixCollisions(0.0)
+    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach {
+      val enemyKing = it.owner.enemyPlayer.kingUnit
+      if (it.location.distanceTo(enemyKing.location) < it.entity.radius + enemyKing.entity.radius + it.attackRange + 10) {
+        it.owner.enemyPlayer.health -= 1
+      }
+    }
+
+    gameManager.activePlayers.forEach {
+      if (!it.checkKingHealth()) {
+        it.deactivate("Dead king")
+      }
+    }
+
+    if (gameManager.activePlayers.size < 2) {
+      gameManager.endGame()
+    }
 
     allUnits().forEach { it.updateEntity() }
 
     for (activePlayer in gameManager.activePlayers) {
       activePlayer.units.forEach { activePlayer.printLocation(it.location) }
       activePlayer.enemyPlayer.units.forEach { activePlayer.printLocation(it.location) }
-
       activePlayer.execute()
     }
 
