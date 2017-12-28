@@ -35,7 +35,7 @@ abstract class MyEntity {
   abstract val mass: Int   // 0 := immovable
   abstract val entity: Circle
 
-  fun updateEntity() {
+  open fun updateEntity() {
     entity.x = location.x.toInt()
     entity.y = location.y.toInt()
   }
@@ -43,16 +43,38 @@ abstract class MyEntity {
 
 abstract class MyOwnedEntity(val owner: CodeRoyalePlayer) : MyEntity()
 
-class Zergling(entityManager: EntityManager, owner: CodeRoyalePlayer):
-  Creep(entityManager, owner, 80, 0, 10, 400)
+class Zergling(entityManager: EntityManager, owner: CodeRoyalePlayer, location: Vector2? = null):
+  Creep(entityManager, owner, 80, 0, 10, 400, 40, location)
 
-class Archer(entityManager: EntityManager, owner: CodeRoyalePlayer):
-  Creep(entityManager, owner, 60, 200, 15, 900)
+class Archer(entityManager: EntityManager, owner: CodeRoyalePlayer, location: Vector2? = null):
+  Creep(entityManager, owner, 60, 200, 15, 900, 60, location)
+
+class Tower(entityManager: EntityManager, val attackRange: Int, val location: Vector2, val owner: CodeRoyalePlayer) {
+  val radius = attackRange / 10
+
+  val entity = entityManager.createRectangle()
+    .setHeight(radius*2).setWidth(radius*2)
+    .setLineColor(0xbbbbbb)
+    .setLineWidth(4)
+    .setFillColor(owner.color)
+
+  fun act() {
+    val closestEnemy = owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
+    if (closestEnemy != null && closestEnemy.location.distanceTo(location) < attackRange) {
+      closestEnemy.damage(6 + (Math.random() * 3).toInt())
+    }
+  }
+
+  init {
+    entity.x = location.x.toInt() - radius
+    entity.y = location.y.toInt() - radius
+  }
+}
 
 class Obstacle(entityManager: EntityManager): MyEntity() {
   override val mass = 0
 
-  private val radius = (Math.random() * 70.0 + 50.0).toInt()
+  private val radius = (Math.random() * 50.0 + 60.0).toInt()
 
   override val entity = entityManager.createCircle()
     .setRadius(radius)
@@ -69,8 +91,12 @@ abstract class Creep(
   val speed: Int,
   val attackRange: Int,
   radius: Int,
-  override val mass: Int
+  override val mass: Int,
+  var health: Int,
+  location: Vector2?
 ) : MyOwnedEntity(owner) {
+
+  val maxHealth = health
 
   override val entity = entityManager.createCircle()
     .setRadius(radius)
@@ -84,7 +110,23 @@ abstract class Creep(
   }
 
   init {
-    location = Vector2.random(1920, 1080)
+    this.location = location ?: Vector2.random(1920, 1080)
+    updateEntity()
+  }
+
+  override fun updateEntity() {
+    super.updateEntity()
+    entity.fillAlpha = health.toDouble() / maxHealth
+  }
+
+  fun damage(hp: Int) {
+    health -= hp
+    if (health <= 0) destroy()
+  }
+
+  fun destroy() {
+    entity.isVisible = false
+    owner.activeCreeps.remove(this)
   }
 }
 
@@ -96,6 +138,7 @@ class CodeRoyaleReferee : Referee {
   private var playerCount: Int = 2
 
   private var obstacles: List<Obstacle> = listOf()
+  private val towers: MutableList<Tower> = mutableListOf()
 
   fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
@@ -133,6 +176,16 @@ class CodeRoyaleReferee : Referee {
 
     obstacles = (0..29).map { Obstacle(entityManager) }
     fixCollisions(60.0)
+
+    // set a few towers
+    val t1 = obstacles.minBy { it.location.distanceTo(Vector2(500,200)) }!!
+    val t2 = obstacles.minBy { it.location.distanceTo(Vector2(1400,900)) }!!
+    val t3 = obstacles.minBy { it.location.distanceTo(Vector2(200,700)) }!!
+    val t4 = obstacles.minBy { it.location.distanceTo(Vector2(1700,400)) }!!
+    towers += Tower(entityManager, 600, t1.location, gameManager.players[0])
+    towers += Tower(entityManager, 600, t2.location, gameManager.players[1])
+    towers += Tower(entityManager, 400, t3.location, gameManager.players[0])
+    towers += Tower(entityManager, 400, t4.location, gameManager.players[1])
 
     allUnits().forEach { it.updateEntity() }
 
@@ -183,9 +236,9 @@ class CodeRoyaleReferee : Referee {
     // Code your game logic.
     // See README.md if you want some code to bootstrap your project.
 
-    gameManager.activePlayers
-      .flatMap { it.activeCreeps }
-      .forEach { it.act() }
+    towers.forEach { it.act() }
+    gameManager.activePlayers.flatMap { it.activeCreeps }.toList().forEach { it.damage(1) }
+    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.act() }
 
     fixCollisions(0.0)
 
@@ -202,8 +255,19 @@ class CodeRoyaleReferee : Referee {
       try {
         val outputs = player.outputs
         for ((unit, line) in player.units.zip(outputs)) {
-          val (x,y) = line.split(" ").map { Integer.valueOf(it) }
-          unit.location = unit.location.towards(player.fixLocation(Vector2(x,y)), 40.0)
+          val toks = line.split(" ")
+          when (toks[0]) {
+            "MOVE" -> {
+              val (x, y) = toks.drop(1).map { Integer.valueOf(it) }
+              unit.location = unit.location.towards(player.fixLocation(Vector2(x, y)), 40.0)
+            }
+            "SPAWN" -> {  // TODO: Check if it's the general
+              when (toks[1]) {
+                "ZERGLINGS" -> repeat(4, { player.activeCreeps += Zergling(entityManager, player, unit.location) })
+                "ARCHERS" -> repeat(2, { player.activeCreeps += Archer(entityManager, player, unit.location) })
+              }
+            }
+          }
         }
       } catch (e: AbstractPlayer.TimeoutException) {
         e.printStackTrace()
