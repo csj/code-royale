@@ -37,7 +37,11 @@ data class Vector2(val x: Double, val y: Double) {
   fun towards(other: Vector2, maxDistance: Double) =
     if (distanceTo(other) < maxDistance) other
     else this + (other - this).resizedTo(maxDistance)
-
+  fun clampWithin(minX: Double, maxX: Double, minY: Double, maxY: Double): Vector2 {
+    val nx = when { x < minX -> minX; x > maxX -> maxX; else -> x }
+    val ny = when { y < minY -> minY; y > maxY -> maxY; else -> y }
+    return Vector2(nx, ny)
+  }
   override fun toString(): String = "(${Math.round(x)}, ${Math.round(y)})"
 
   companion object {
