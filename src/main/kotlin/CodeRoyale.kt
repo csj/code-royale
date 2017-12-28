@@ -191,10 +191,14 @@ class CodeRoyaleReferee : Referee {
     val t2 = obstacles.minBy { it.location.distanceTo(Vector2(1400,900)) }!!
     val t3 = obstacles.minBy { it.location.distanceTo(Vector2(200,700)) }!!
     val t4 = obstacles.minBy { it.location.distanceTo(Vector2(1700,400)) }!!
-    towers += Tower(entityManager, 600, t1.location, gameManager.players[1])
-    towers += Tower(entityManager, 600, t2.location, gameManager.players[0])
+    val t5 = obstacles.minBy { it.location.distanceTo(Vector2(1500,100)) }!!
+    val t6 = obstacles.minBy { it.location.distanceTo(Vector2(500,1000)) }!!
+    towers += Tower(entityManager, 200, t1.location, gameManager.players[1])
+    towers += Tower(entityManager, 200, t2.location, gameManager.players[0])
     towers += Tower(entityManager, 400, t3.location, gameManager.players[1])
     towers += Tower(entityManager, 400, t4.location, gameManager.players[0])
+    towers += Tower(entityManager, 300, t5.location, gameManager.players[1])
+    towers += Tower(entityManager, 300, t6.location, gameManager.players[0])
 
     allUnits().forEach { it.updateEntity() }
 
