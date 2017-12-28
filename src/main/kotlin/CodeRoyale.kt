@@ -52,7 +52,7 @@ class Archer(entityManager: EntityManager, owner: CodeRoyalePlayer):
 class Obstacle(entityManager: EntityManager): MyEntity() {
   override val mass = 0
 
-  private val radius = (Math.random() * 100.0 + 10.0).toInt()
+  private val radius = (Math.random() * 70.0 + 50.0).toInt()
 
   override val entity = entityManager.createCircle()
     .setRadius(radius)
@@ -147,7 +147,8 @@ class CodeRoyaleReferee : Referee {
 
       for (u1 in allUnits()) {
         val rad = u1.entity.radius.toDouble()
-        u1.location = u1.location.clampWithin(rad, 1920-rad, rad, 1080-rad)
+        val clampDist = if (u1.mass == 0) 60 + rad else rad
+        u1.location = u1.location.clampWithin(clampDist, 1920-clampDist, clampDist, 1080-clampDist)
 
         for (u2 in allUnits()) {
           if (u1 != u2) {
