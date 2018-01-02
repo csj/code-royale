@@ -1,0 +1,8 @@
+- king tags obstacles: these become sources of income
+- engineer can touch an obstacle and construct a tower (this costs money). Towers will lose range over time and eventually just melt
+- engineer can also touch an existing friendly tower and extend its radius and life (this costs money)
+- engineer can also touch an enemy tower and tear it down a bit (this costs money).
+- general can spend money to spawn creeps.
+- Creeps chase kings and take down their HP (0 HP = gg). Creeps also slowly melt.
+- Towers shoot down creeps
+- Towers repel generals

@@ -15,11 +15,27 @@ class CodeRoyalePlayer : AbstractPlayer() {
   var inverted: Boolean = false
 
   fun fixLocation(location: Vector2) = if (inverted) Vector2(1920, 1080) - location else location
+  private fun fixOwner(player: CodeRoyalePlayer?) = when (player) { null -> -1; this -> 0; else -> 1 }
 
   fun printLocation(location: Vector2) {
     val (x,y) = fixLocation(location)
     sendInputLine("${x.toInt()} ${y.toInt()}")
   }
+
+  fun printObstacle(obstacle: Obstacle) {
+    val (x,y) = fixLocation(obstacle.location)
+    val toks = listOf(
+      x.toInt(),y.toInt(),
+      obstacle.radius,
+      fixOwner(obstacle.incomeOwner),
+      obstacle.incomeTimer ?: -1,
+      fixOwner(obstacle.towerOwner),
+      obstacle.towerHealth,
+      obstacle.towerAttackRadius
+    )
+    sendInputLine(toks.joinToString(" "))
+  }
+
 
   val units by lazy { listOf(kingUnit, engineerUnit, generalUnit) }
   val activeCreeps = mutableListOf<Creep>()
@@ -31,6 +47,7 @@ class CodeRoyalePlayer : AbstractPlayer() {
 
   fun checkKingHealth(): Boolean {
     kingUnit.entity.fillAlpha = 0.8 * health / maxHealth + 0.2
+    if (health <= 0) kingUnit.entity.fillAlpha = 0.0
     return health > 0
   }
 
@@ -45,6 +62,7 @@ abstract class MyEntity {
   open fun updateEntity() {
     entity.x = location.x.toInt()
     entity.y = location.y.toInt()
+    entity.zIndex = 50
   }
 }
 
@@ -56,47 +74,94 @@ class Zergling(entityManager: EntityManager, owner: CodeRoyalePlayer, location: 
 class Archer(entityManager: EntityManager, owner: CodeRoyalePlayer, location: Vector2? = null):
   Creep(entityManager, owner, 60, 200, 15, 900, 45, location)
 
-class Tower(entityManager: EntityManager, val attackRange: Int, val location: Vector2, val owner: CodeRoyalePlayer) {
-  val radius = attackRange / 15
-
-  val entity = entityManager.createRectangle()
-    .setHeight(radius*2).setWidth(radius*2)
-    .setLineColor(0xbbbbbb)
-    .setLineWidth(4)
-    .setFillColor(owner.color)
-
-  fun act() {
-    val closestEnemy = owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
-    if (closestEnemy != null && closestEnemy.location.distanceTo(location) < attackRange) {
-      closestEnemy.damage(6 + (Math.random() * 3).toInt())
-    }
-  }
-
-  init {
-    entity.x = location.x.toInt() - radius
-    entity.y = location.y.toInt() - radius
-
-    val rangeCircle = entityManager.createCircle()
-      .setRadius(attackRange)
-      .setFillAlpha(0.15)
-      .setFillColor(owner.color)
-      .setLineColor(0)
-      .setX(entity.x)
-      .setY(entity.y)
-  }
-}
-
 class Obstacle(entityManager: EntityManager): MyEntity() {
   override val mass = 0
 
-  private val radius = (Math.random() * 50.0 + 60.0).toInt()
+  val radius = (Math.random() * 50.0 + 60.0).toInt()
+  private val area = Math.PI * radius * radius
 
-  override val entity = entityManager.createCircle()
+  var incomeOwner: CodeRoyalePlayer? = null
+  var incomeTimer: Int? = null
+
+  var towerOwner: CodeRoyalePlayer? = null
+  var towerAttackRadius: Int = 0
+  var towerHealth: Int = 0
+
+  override val entity: Circle = entityManager.createCircle()
     .setRadius(radius)
-    .setFillColor(0)!!
+    .setFillColor(0)
+    .setFillAlpha(0.5)
+    .setZIndex(100)
+
+  private val towerRangeCircle = entityManager.createCircle()
+    .setFillAlpha(0.15)
+    .setFillColor(0)
+    .setLineColor(0)
+    .setZIndex(10)
+
+  private val towerSquare = entityManager.createRectangle()
+    .setHeight(30).setWidth(30)
+    .setLineColor(0xbbbbbb)
+    .setLineWidth(4)
+    .setFillColor(0)
+    .setZIndex(150)
+
+  fun updateEntities() {
+    if (towerOwner != null) {
+      towerRangeCircle.isVisible = true
+      towerRangeCircle.fillColor = towerOwner!!.color
+      towerRangeCircle.radius = towerAttackRadius
+      towerSquare.isVisible = true
+      towerSquare.fillColor = towerOwner!!.color
+    } else {
+      entity.fillColor = 0
+      towerRangeCircle.isVisible = false
+      towerSquare.isVisible = false
+    }
+    if (incomeOwner == null) entity.fillColor = 0
+    else entity.fillColor = incomeOwner!!.color
+
+
+
+    towerSquare.x = location.x.toInt() - 15
+    towerSquare.y = location.y.toInt() - 15
+    towerRangeCircle.x = location.x.toInt()
+    towerRangeCircle.y = location.y.toInt()
+  }
+
+  fun act() {
+    if (towerOwner != null) {
+      val closestEnemy = towerOwner!!.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
+      if (closestEnemy != null && closestEnemy.location.distanceTo(location) < towerAttackRadius) {
+        closestEnemy.damage(6 + (Math.random() * 3).toInt())
+      }
+
+      val enemyGeneral = towerOwner!!.enemyPlayer.generalUnit
+      if (enemyGeneral.location.distanceTo(location) < towerAttackRadius) {
+        enemyGeneral.location += (enemyGeneral.location - location).resizedTo(20.0)
+      }
+
+      towerHealth -= 10
+      towerAttackRadius = Math.sqrt((towerHealth * 1000 + area) / Math.PI).toInt()
+
+      if (towerHealth < 0) {
+        towerHealth = -1
+        towerOwner = null
+      }
+    }
+    if (incomeOwner != null) {
+      incomeOwner!!.resources += 1
+    }
+    updateEntities()
+  }
 
   init {
     this.location = Vector2.random(1920, 1080)
+  }
+
+  fun setTower(owner: CodeRoyalePlayer, health: Int) {
+    towerOwner = owner
+    this.towerHealth = health
   }
 }
 
@@ -153,7 +218,6 @@ class CodeRoyaleReferee : Referee {
   private var playerCount: Int = 2
 
   private var obstacles: List<Obstacle> = listOf()
-  private val towers: MutableList<Tower> = mutableListOf()
 
   fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
@@ -165,7 +229,7 @@ class CodeRoyaleReferee : Referee {
     gameManager.players[1].inverted = true
 
     for (activePlayer in gameManager.activePlayers) {
-      val makeUnit: (Int, Int) -> MyOwnedEntity = { radius, mass ->
+      val makeUnit: (Int, Int, Vector2) -> MyOwnedEntity = { radius, mass, location ->
         object : MyOwnedEntity(activePlayer) {
           override val entity = entityManager.createCircle()
             .setRadius(radius)
@@ -174,42 +238,21 @@ class CodeRoyaleReferee : Referee {
           override val mass = mass
 
           init {
-            location = Vector2.random(1920, 1080)
+            this.location = location
           }
         }
       }
 
-      activePlayer.kingUnit = makeUnit(30, 10000)
-      activePlayer.engineerUnit = makeUnit(20, 6400)
-      activePlayer.generalUnit = makeUnit(25, 3600)
-
-      repeat(5, { activePlayer.activeCreeps += Zergling(entityManager, activePlayer) })
-      repeat(5, { activePlayer.activeCreeps += Archer(entityManager, activePlayer) })
+      activePlayer.kingUnit = makeUnit(30, 10000, activePlayer.fixLocation(Vector2.Zero))
+      activePlayer.engineerUnit = makeUnit(20, 6400, activePlayer.fixLocation(Vector2.Zero))
+      activePlayer.generalUnit = makeUnit(25, 3600, activePlayer.fixLocation(Vector2.Zero))
 
       activePlayer.allUnits().forEach { it.updateEntity() }
     }
 
     obstacles = (0..29).map { Obstacle(entityManager) }
     fixCollisions(60.0)
-    obstacles.forEach { it.updateEntity() }
-
-    // set a few towers
-    val t1 = obstacles.minBy { it.location.distanceTo(Vector2(500,200)) }!!
-    val t2 = obstacles.minBy { it.location.distanceTo(Vector2(1400,900)) }!!
-    val t3 = obstacles.minBy { it.location.distanceTo(Vector2(200,700)) }!!
-    val t4 = obstacles.minBy { it.location.distanceTo(Vector2(1700,400)) }!!
-    val t5 = obstacles.minBy { it.location.distanceTo(Vector2(1500,100)) }!!
-    val t6 = obstacles.minBy { it.location.distanceTo(Vector2(500,1000)) }!!
-    val t7 = obstacles.minBy { it.location.distanceTo(Vector2(1000,100)) }!!
-    val t8 = obstacles.minBy { it.location.distanceTo(Vector2(1000,1000)) }!!
-    towers += Tower(entityManager, 200, t1.location, gameManager.players[1])
-    towers += Tower(entityManager, 200, t2.location, gameManager.players[0])
-    towers += Tower(entityManager, 400, t3.location, gameManager.players[1])
-    towers += Tower(entityManager, 400, t4.location, gameManager.players[0])
-    towers += Tower(entityManager, 300, t5.location, gameManager.players[1])
-    towers += Tower(entityManager, 300, t6.location, gameManager.players[0])
-    towers += Tower(entityManager, 500, t7.location, gameManager.players[1])
-    towers += Tower(entityManager, 500, t8.location, gameManager.players[0])
+    obstacles.forEach { it.updateEntities() }
 
     allUnits().forEach { it.updateEntity() }
 
@@ -260,8 +303,29 @@ class CodeRoyaleReferee : Referee {
     // Code your game logic.
     // See README.md if you want some code to bootstrap your project.
 
+    gameManager.players.forEach {
+      val king = it.kingUnit
+      val obsK = obstacles.minBy { it.location.distanceTo(king.location) }!!
+
+      // TODO: What if both kings are touching the same one!
+      if (obsK.location.distanceTo(king.location) - obsK.radius - 30 < 10) {
+        obsK.incomeOwner = it
+        obsK.incomeTimer = 40
+      }
+
+      // TODO: What if both engineers are touching the same one!
+      val eng = it.engineerUnit
+      val obsE = obstacles.minBy { it.location.distanceTo(eng.location) }!!
+      if (obsE.location.distanceTo(eng.location) - obsE.radius - eng.entity.radius < 10) {
+        if (obsE.towerOwner == it) {
+          obsE.towerHealth += 100
+        } else if (obsE.towerOwner == null) {
+          obsE.setTower(it, 200)
+        }
+      }
+    }
     gameManager.activePlayers.flatMap { it.activeCreeps }.toList().forEach { it.damage(1) }
-    towers.forEach { it.act() }
+    obstacles.forEach { it.act() }
     gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.act() }
     fixCollisions(0.0)
     gameManager.activePlayers.flatMap { it.activeCreeps }.forEach {
@@ -285,7 +349,11 @@ class CodeRoyaleReferee : Referee {
 
     for (activePlayer in gameManager.activePlayers) {
       activePlayer.units.forEach { activePlayer.printLocation(it.location) }
+      activePlayer.sendInputLine("${activePlayer.health} ${activePlayer.resources}")
       activePlayer.enemyPlayer.units.forEach { activePlayer.printLocation(it.location) }
+      activePlayer.sendInputLine("${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
+      activePlayer.sendInputLine(obstacles.size.toString())
+      obstacles.forEach { activePlayer.printObstacle(it) }
       activePlayer.execute()
     }
 
@@ -299,10 +367,18 @@ class CodeRoyaleReferee : Referee {
               val (x, y) = toks.drop(1).map { Integer.valueOf(it) }
               unit.location = unit.location.towards(player.fixLocation(Vector2(x, y)), 40.0)
             }
-            "SPAWN" -> {  // TODO: Check if it's the general
+            "SPAWN" -> {
+              // TODO: Check if it's the general
+              // TODO: Check if enough resources
               when (toks[1]) {
-                "ZERGLINGS" -> repeat(4, { player.activeCreeps += Zergling(entityManager, player, unit.location) })
-                "ARCHERS" -> repeat(2, { player.activeCreeps += Archer(entityManager, player, unit.location) })
+                "ZERGLINGS" -> {
+                  repeat(4, { player.activeCreeps += Zergling(entityManager, player, unit.location) })
+                  player.resources -= 40
+                }
+                "ARCHERS" -> {
+                  repeat(2, { player.activeCreeps += Archer(entityManager, player, unit.location) })
+                  player.resources -= 70
+                }
               }
             }
           }
