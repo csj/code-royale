@@ -58,7 +58,6 @@ class TestPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream) {
 
       stdout.println("MOVE ${kingTarget.x.toInt()} ${kingTarget.y.toInt()}")
 
-      // TODO: engineer grows towers to 200 health near our king
       val closestObstacleToEng = obstacles
         .filter { it.towerOwner != 1 }
         .minBy { it.location.distanceTo(engLoc) }!!
