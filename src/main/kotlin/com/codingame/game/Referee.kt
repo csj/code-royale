@@ -1,7 +1,5 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.ARCHER_COST
-import com.codingame.game.Constants.ARCHER_COUNT
 import com.codingame.game.Constants.ENGINEER_MASS
 import com.codingame.game.Constants.ENGINEER_RADIUS
 import com.codingame.game.Constants.GENERAL_MASS
@@ -13,8 +11,6 @@ import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.UNIT_SPEED
-import com.codingame.game.Constants.ZERGLING_COST
-import com.codingame.game.Constants.ZERGLING_COUNT
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
@@ -181,16 +177,10 @@ class Referee : AbstractReferee() {
             "SPAWN" -> {
               // TODO: Check if it's the general
               // TODO: Check if enough resources
-              when (CreepType.valueOf(toks[1])) {
-                CreepType.ZERGLING -> {
-                  repeat(ZERGLING_COUNT, { player.activeCreeps += Zergling(entityManager, player, unit.location) })
-                  player.resources -= ZERGLING_COST
-                }
-                CreepType.ARCHER -> {
-                  repeat(ARCHER_COUNT, { player.activeCreeps += Archer(entityManager, player, unit.location) })
-                  player.resources -= ARCHER_COST
-                }
-              }
+              // TODO: Ensure it's a proper creep type
+              val creepType = CreepType.valueOf(toks[1])
+              repeat(creepType.count, { player.activeCreeps += Creep(entityManager, player, unit.location, creepType)})
+              player.resources -= creepType.cost
             }
           }
         }
@@ -202,23 +192,13 @@ class Referee : AbstractReferee() {
   }
 }
 
+enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
+                     val mass: Int, val hp: Int) {
+  ZERGLING(4, 40, 80, 0, 10, 400, 30),
+  ARCHER(2, 70, 60, 200, 15, 900, 45)
+}
+
 object Constants {
-  val ZERGLING_COUNT = 4
-  val ZERGLING_COST = 40
-  val ZERGLING_SPEED = 80
-  val ZERGLING_RANGE = 0
-  val ZERGLING_RADIUS = 10
-  val ZERGLING_MASS = 400
-  val ZERGLING_HP = 30
-
-  val ARCHER_COUNT = 2
-  val ARCHER_COST = 70
-  val ARCHER_SPEED = 60
-  val ARCHER_RANGE = 200
-  val ARCHER_RADIUS = 15
-  val ARCHER_MASS = 900
-  val ARCHER_HP = 45
-
   val UNIT_SPEED = 40
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100

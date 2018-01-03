@@ -1,19 +1,9 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.ARCHER_HP
-import com.codingame.game.Constants.ARCHER_MASS
-import com.codingame.game.Constants.ARCHER_RADIUS
-import com.codingame.game.Constants.ARCHER_RANGE
-import com.codingame.game.Constants.ARCHER_SPEED
 import com.codingame.game.Constants.OBSTACLE_MAX_RADIUS
 import com.codingame.game.Constants.OBSTACLE_MIN_RADIUS
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
 import com.codingame.game.Constants.TOWER_MELT_RATE
-import com.codingame.game.Constants.ZERGLING_HP
-import com.codingame.game.Constants.ZERGLING_MASS
-import com.codingame.game.Constants.ZERGLING_RADIUS
-import com.codingame.game.Constants.ZERGLING_RANGE
-import com.codingame.game.Constants.ZERGLING_SPEED
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.GraphicEntityModule
 
@@ -30,26 +20,6 @@ abstract class MyEntity {
 }
 
 abstract class MyOwnedEntity(val owner: Player) : MyEntity()
-
-class Zergling(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
-  Creep(entityManager, owner, location,
-    creepType = CreepType.ZERGLING,
-    speed = ZERGLING_SPEED,
-    attackRange = ZERGLING_RANGE,
-    radius = ZERGLING_RADIUS,
-    mass = ZERGLING_MASS,
-    health = ZERGLING_HP
-  )
-
-class Archer(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
-  Creep(entityManager, owner, location,
-    creepType = CreepType.ARCHER,
-    speed = ARCHER_SPEED,
-    attackRange = ARCHER_RANGE,
-    radius = ARCHER_RADIUS,
-    mass = ARCHER_MASS,
-    health = ARCHER_HP
-  )
 
 class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   override val mass = 0
@@ -140,22 +110,18 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   }
 }
 
-enum class CreepType {
-  ZERGLING,
-  ARCHER
-}
-
-abstract class Creep(
+class Creep(
   entityManager: GraphicEntityModule,
   owner: Player,
   location: Vector2?,
-  val creepType: CreepType,
-  private val speed: Int,
-  val attackRange: Int,
-  radius: Int,
-  override val mass: Int,
-  var health: Int) : MyOwnedEntity(owner) {
+  val creepType: CreepType
+) : MyOwnedEntity(owner) {
 
+  private val speed: Int = creepType.speed
+  val attackRange: Int = creepType.range
+  private val radius: Int = creepType.radius
+  override val mass: Int = creepType.mass
+  var health: Int = creepType.hp
   private val maxHealth = health
 
   override val entity = entityManager.createCircle()

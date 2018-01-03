@@ -1,7 +1,5 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.ARCHER_COST
-import com.codingame.game.Constants.ZERGLING_COST
 import java.io.InputStream
 import java.io.PrintStream
 import java.util.*
@@ -113,8 +111,8 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
 
       // general chases enemy king
       when {
-        nextZerglings && resources >= ZERGLING_COST -> { stdout.println("SPAWN ${CreepType.ZERGLING}"); nextZerglings = false }
-        !nextZerglings && resources >= ARCHER_COST -> { stdout.println("SPAWN ${CreepType.ARCHER}"); nextZerglings = true }
+        nextZerglings && resources >= CreepType.ZERGLING.cost -> { stdout.println("SPAWN ${CreepType.ZERGLING}"); nextZerglings = false }
+        !nextZerglings && resources >= CreepType.ARCHER.cost -> { stdout.println("SPAWN ${CreepType.ARCHER}"); nextZerglings = true }
         else -> stdout.println("MOVE ${enemyKingLoc.x.toInt()} ${enemyKingLoc.y.toInt()}")
       }
     }
