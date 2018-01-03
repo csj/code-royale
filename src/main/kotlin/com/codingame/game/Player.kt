@@ -1,5 +1,6 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.KING_HP
 import com.codingame.gameengine.core.AbstractPlayer
 
 class Player : AbstractPlayer() {
@@ -38,11 +39,10 @@ class Player : AbstractPlayer() {
 
   fun allUnits() = units + activeCreeps
 
-  var health = 200
-  private val maxHealth = 200
+  var health = KING_HP
 
   fun checkKingHealth(): Boolean {
-    kingUnit.entity.fillAlpha = 0.8 * health / maxHealth + 0.2
+    kingUnit.entity.fillAlpha = 0.8 * health / KING_HP + 0.2
     if (health <= 0) kingUnit.entity.fillAlpha = 0.0
     return health > 0
   }

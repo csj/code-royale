@@ -1,5 +1,20 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.ARCHER_COST
+import com.codingame.game.Constants.ARCHER_COUNT
+import com.codingame.game.Constants.ENGINEER_MASS
+import com.codingame.game.Constants.ENGINEER_RADIUS
+import com.codingame.game.Constants.GENERAL_MASS
+import com.codingame.game.Constants.GENERAL_RADIUS
+import com.codingame.game.Constants.INCOME_TIMER
+import com.codingame.game.Constants.KING_MASS
+import com.codingame.game.Constants.KING_RADIUS
+import com.codingame.game.Constants.OBSTACLE_GAP
+import com.codingame.game.Constants.TOWER_HP_INCREMENT
+import com.codingame.game.Constants.TOWER_HP_INITIAL
+import com.codingame.game.Constants.UNIT_SPEED
+import com.codingame.game.Constants.ZERGLING_COST
+import com.codingame.game.Constants.ZERGLING_COUNT
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
@@ -11,8 +26,6 @@ import java.util.*
 class Referee : AbstractReferee() {
   @Inject private lateinit var gameManager: GameManager<Player>
   @Inject private lateinit var entityManager: GraphicEntityModule
-
-  private var playerCount: Int = 2
 
   private var obstacles: List<Obstacle> = listOf()
 
@@ -39,17 +52,14 @@ class Referee : AbstractReferee() {
         }
       }
 
-      activePlayer.kingUnit = makeUnit(30, 10000, activePlayer.fixLocation(Vector2.Zero))
-      activePlayer.engineerUnit = makeUnit(20, 6400, activePlayer.fixLocation(Vector2.Zero))
-      activePlayer.generalUnit = makeUnit(25, 3600, activePlayer.fixLocation(Vector2.Zero))
-
-      activePlayer.allUnits().forEach { it.updateEntity() }
+      activePlayer.kingUnit = makeUnit(KING_RADIUS, KING_MASS, activePlayer.fixLocation(Vector2.Zero))
+      activePlayer.engineerUnit = makeUnit(ENGINEER_RADIUS, ENGINEER_MASS, activePlayer.fixLocation(Vector2.Zero))
+      activePlayer.generalUnit = makeUnit(GENERAL_RADIUS, GENERAL_MASS, activePlayer.fixLocation(Vector2.Zero))
     }
 
     obstacles = (0..29).map { Obstacle(entityManager) }
-    fixCollisions(60.0)
+    fixCollisions(OBSTACLE_GAP.toDouble())
     obstacles.forEach { it.updateEntities() }
-
     allUnits().forEach { it.updateEntity() }
 
     // Params contains all the game parameters that has been to generate this game
@@ -63,7 +73,7 @@ class Referee : AbstractReferee() {
 
       for (u1 in allUnits()) {
         val rad = u1.entity.radius.toDouble()
-        val clampDist = if (u1.mass == 0) 60 + rad else rad
+        val clampDist = if (u1.mass == 0) OBSTACLE_GAP + rad else rad
         u1.location = u1.location.clampWithin(clampDist, 1920-clampDist, clampDist, 1080-clampDist)
 
         for (u2 in allUnits()) {
@@ -101,9 +111,9 @@ class Referee : AbstractReferee() {
       val obsK = obstacles.minBy { it.location.distanceTo(king.location) }!!
 
       // TODO: What if both kings are touching the same one!
-      if (obsK.location.distanceTo(king.location) - obsK.radius - 30 < 10) {
+      if (obsK.location.distanceTo(king.location) - obsK.radius - king.entity.radius < 10) {
         obsK.incomeOwner = it
-        obsK.incomeTimer = 40
+        obsK.incomeTimer = INCOME_TIMER
       }
 
       // TODO: What if both engineers are touching the same one!
@@ -111,9 +121,9 @@ class Referee : AbstractReferee() {
       val obsE = obstacles.minBy { it.location.distanceTo(eng.location) }!!
       if (obsE.location.distanceTo(eng.location) - obsE.radius - eng.entity.radius < 10) {
         if (obsE.towerOwner == it) {
-          obsE.towerHealth += 100
+          obsE.towerHealth += TOWER_HP_INCREMENT
         } else if (obsE.towerOwner == null) {
-          obsE.setTower(it, 200)
+          obsE.setTower(it, TOWER_HP_INITIAL)
         }
       }
     }
@@ -166,19 +176,19 @@ class Referee : AbstractReferee() {
           when (toks[0]) {
             "MOVE" -> {
               val (x, y) = toks.drop(1).map { Integer.valueOf(it) }
-              unit.location = unit.location.towards(player.fixLocation(Vector2(x, y)), 40.0)
+              unit.location = unit.location.towards(player.fixLocation(Vector2(x, y)), UNIT_SPEED.toDouble())
             }
             "SPAWN" -> {
               // TODO: Check if it's the general
               // TODO: Check if enough resources
               when (CreepType.valueOf(toks[1])) {
                 CreepType.ZERGLING -> {
-                  repeat(4, { player.activeCreeps += Zergling(entityManager, player, unit.location) })
-                  player.resources -= 40
+                  repeat(ZERGLING_COUNT, { player.activeCreeps += Zergling(entityManager, player, unit.location) })
+                  player.resources -= ZERGLING_COST
                 }
                 CreepType.ARCHER -> {
-                  repeat(2, { player.activeCreeps += Archer(entityManager, player, unit.location) })
-                  player.resources -= 70
+                  repeat(ARCHER_COUNT, { player.activeCreeps += Archer(entityManager, player, unit.location) })
+                  player.resources -= ARCHER_COST
                 }
               }
             }
@@ -190,4 +200,45 @@ class Referee : AbstractReferee() {
       }
     }
   }
+}
+
+object Constants {
+  val ZERGLING_COUNT = 4
+  val ZERGLING_COST = 40
+  val ZERGLING_SPEED = 80
+  val ZERGLING_RANGE = 0
+  val ZERGLING_RADIUS = 10
+  val ZERGLING_MASS = 400
+  val ZERGLING_HP = 30
+
+  val ARCHER_COUNT = 2
+  val ARCHER_COST = 70
+  val ARCHER_SPEED = 60
+  val ARCHER_RANGE = 200
+  val ARCHER_RADIUS = 15
+  val ARCHER_MASS = 900
+  val ARCHER_HP = 45
+
+  val UNIT_SPEED = 40
+  val TOWER_HP_INITIAL = 200
+  val TOWER_HP_INCREMENT = 100
+  val INCOME_TIMER = 40
+
+  val OBSTACLE_GAP = 60
+  val OBSTACLE_MIN_RADIUS = 60
+  val OBSTACLE_MAX_RADIUS = 110
+
+  val KING_RADIUS = 30
+  val ENGINEER_RADIUS = 20
+  val GENERAL_RADIUS = 25
+
+  val KING_MASS = 10000
+  val ENGINEER_MASS = 6400
+  val GENERAL_MASS = 3600
+
+  val KING_HP = 200
+
+  val TOWER_MELT_RATE = 10
+  val TOWER_COVERAGE_PER_HP = 1000
+
 }

@@ -1,5 +1,19 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.ARCHER_HP
+import com.codingame.game.Constants.ARCHER_MASS
+import com.codingame.game.Constants.ARCHER_RADIUS
+import com.codingame.game.Constants.ARCHER_RANGE
+import com.codingame.game.Constants.ARCHER_SPEED
+import com.codingame.game.Constants.OBSTACLE_MAX_RADIUS
+import com.codingame.game.Constants.OBSTACLE_MIN_RADIUS
+import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
+import com.codingame.game.Constants.TOWER_MELT_RATE
+import com.codingame.game.Constants.ZERGLING_HP
+import com.codingame.game.Constants.ZERGLING_MASS
+import com.codingame.game.Constants.ZERGLING_RADIUS
+import com.codingame.game.Constants.ZERGLING_RANGE
+import com.codingame.game.Constants.ZERGLING_SPEED
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.GraphicEntityModule
 
@@ -18,15 +32,29 @@ abstract class MyEntity {
 abstract class MyOwnedEntity(val owner: Player) : MyEntity()
 
 class Zergling(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
-  Creep(entityManager, owner, 80, 0, 10, 400, 30, location, CreepType.ZERGLING)
+  Creep(entityManager, owner, location,
+    creepType = CreepType.ZERGLING,
+    speed = ZERGLING_SPEED,
+    attackRange = ZERGLING_RANGE,
+    radius = ZERGLING_RADIUS,
+    mass = ZERGLING_MASS,
+    health = ZERGLING_HP
+  )
 
 class Archer(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
-  Creep(entityManager, owner, 60, 200, 15, 900, 45, location, CreepType.ARCHER)
+  Creep(entityManager, owner, location,
+    creepType = CreepType.ARCHER,
+    speed = ARCHER_SPEED,
+    attackRange = ARCHER_RANGE,
+    radius = ARCHER_RADIUS,
+    mass = ARCHER_MASS,
+    health = ARCHER_HP
+  )
 
 class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   override val mass = 0
 
-  val radius = (Math.random() * 50.0 + 60.0).toInt()
+  val radius = (Math.random() * (OBSTACLE_MAX_RADIUS - OBSTACLE_MIN_RADIUS) + OBSTACLE_MIN_RADIUS).toInt()
   private val area = Math.PI * radius * radius
 
   var incomeOwner: Player? = null
@@ -88,8 +116,8 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
         enemyGeneral.location += (enemyGeneral.location - location).resizedTo(20.0)
       }
 
-      towerHealth -= 10
-      towerAttackRadius = Math.sqrt((towerHealth * 1000 + area) / Math.PI).toInt()
+      towerHealth -= TOWER_MELT_RATE
+      towerAttackRadius = Math.sqrt((towerHealth * TOWER_COVERAGE_PER_HP + area) / Math.PI).toInt()
 
       if (towerHealth < 0) {
         towerHealth = -1
@@ -120,14 +148,13 @@ enum class CreepType {
 abstract class Creep(
   entityManager: GraphicEntityModule,
   owner: Player,
+  location: Vector2?,
+  val creepType: CreepType,
   private val speed: Int,
   val attackRange: Int,
   radius: Int,
   override val mass: Int,
-  var health: Int,
-  location: Vector2?,
-  val creepType: CreepType
-) : MyOwnedEntity(owner) {
+  var health: Int) : MyOwnedEntity(owner) {
 
   private val maxHealth = health
 
