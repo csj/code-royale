@@ -39,7 +39,7 @@ class Player : AbstractPlayer() {
   fun allUnits() = units + activeCreeps
 
   var health = 200
-  val maxHealth = 200
+  private val maxHealth = 200
 
   fun checkKingHealth(): Boolean {
     kingUnit.entity.fillAlpha = 0.8 * health / maxHealth + 0.2

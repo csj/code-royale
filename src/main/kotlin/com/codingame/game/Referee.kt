@@ -16,7 +16,7 @@ class Referee : AbstractReferee() {
 
   private var obstacles: List<Obstacle> = listOf()
 
-  fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
+  private fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
   override fun init(params: Properties): Properties {
 
@@ -58,7 +58,7 @@ class Referee : AbstractReferee() {
   }
 
   private fun fixCollisions(acceptableGap: Double) {
-    loop@ for (iter in 0..999) {
+    for (iter in 0..999) {
       var foundAny = false
 
       for (u1 in allUnits()) {
@@ -77,16 +77,13 @@ class Referee : AbstractReferee() {
                 else -> Pair(u2.mass.toDouble() / (u1.mass + u2.mass), u1.mass.toDouble() / (u1.mass + u2.mass))
               }
 
-//              System.err.println("${u1.location} ${u2.location} before; overlap is $overlap, d1 = $d1, d2 = $d2")
               val u1tou2 = u2.location - u1.location
               val gap = if (u1.mass == 0 && u2.mass == 0) 20 else 1
 
               u1.location -= u1tou2.resizedTo(d1 * overlap + if (u1.mass == 0 && u2.mass > 0) 0 else gap)
               u2.location += u1tou2.resizedTo(d2 * overlap + if (u2.mass == 0 && u1.mass > 0) 0 else gap)
-//              System.err.println("${u1.location} ${u2.location} after")
 
               foundAny = true
-//              continue@loop
             }
           }
         }

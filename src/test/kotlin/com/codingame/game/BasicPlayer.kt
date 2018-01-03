@@ -1,6 +1,5 @@
 package com.codingame.game
 
-import com.google.inject.Inject
 import java.io.InputStream
 import java.io.PrintStream
 import java.util.*

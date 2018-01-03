@@ -4,6 +4,7 @@ import java.lang.IllegalArgumentException
 import java.lang.Math.cos
 import java.lang.Math.sin
 
+@Suppress("MemberVisibilityCanPrivate", "unused")  // It's a utility, ok
 data class Vector2(val x: Double, val y: Double) {
   private val lengthSquared by lazy { x*x + y*y }
   val length by lazy { Math.sqrt(lengthSquared) }

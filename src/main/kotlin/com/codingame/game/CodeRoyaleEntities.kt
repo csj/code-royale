@@ -115,15 +115,15 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
 abstract class Creep(
   entityManager: GraphicEntityModule,
   owner: Player,
-  val speed: Int,
+  private val speed: Int,
   val attackRange: Int,
   radius: Int,
   override val mass: Int,
-  var health: Int,
+  private var health: Int,
   location: Vector2?
 ) : MyOwnedEntity(owner) {
 
-  val maxHealth = health
+  private val maxHealth = health
 
   override val entity = entityManager.createCircle()
     .setRadius(radius)
@@ -138,7 +138,7 @@ abstract class Creep(
 
   init {
     this.location = location ?: Vector2.random(1920, 1080)
-    updateEntity()
+    @Suppress("LeakingThis") updateEntity()
   }
 
   override fun updateEntity() {
@@ -148,12 +148,10 @@ abstract class Creep(
 
   fun damage(hp: Int) {
     health -= hp
-    if (health <= 0) destroy()
-  }
-
-  fun destroy() {
-    entity.isVisible = false
-    owner.activeCreeps.remove(this)
+    if (health <= 0) {
+      entity.isVisible = false
+      owner.activeCreeps.remove(this)
+    }
   }
 }
 
