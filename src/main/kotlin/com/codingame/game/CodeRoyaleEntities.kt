@@ -28,7 +28,7 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   private val area = Math.PI * radius * radius
 
   var incomeOwner: Player? = null
-  var incomeTimer: Int? = null
+  var incomeTimer: Int = 0
 
   var towerOwner: Player? = null
   var towerAttackRadius: Int = 0
@@ -94,9 +94,13 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
         towerOwner = null
       }
     }
+
     if (incomeOwner != null) {
-      incomeOwner!!.resources += 1
+      incomeTimer -= 1
+      if (incomeTimer <= 0) incomeOwner = null
     }
+    if (incomeOwner != null) incomeOwner!!.resources += 1
+
     updateEntities()
   }
 

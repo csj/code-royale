@@ -202,7 +202,7 @@ object Constants {
   val UNIT_SPEED = 40
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
-  val INCOME_TIMER = 40
+  val INCOME_TIMER = 50
 
   val OBSTACLE_GAP = 60
   val OBSTACLE_MIN_RADIUS = 60
