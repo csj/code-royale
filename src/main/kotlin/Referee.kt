@@ -1,14 +1,16 @@
+package com.codingame.game
+
 import com.codingame.gameengine.core.AbstractPlayer
+import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
-import com.codingame.gameengine.core.Referee
-import com.codingame.gameengine.module.entities.EntityManager
+import com.codingame.gameengine.module.entities.GraphicEntityModule
 import com.google.inject.Inject
 import java.util.*
 
 @Suppress("unused")  // injected by magic
-class CodeRoyaleReferee : Referee {
-  @Inject private lateinit var gameManager: GameManager<CodeRoyalePlayer>
-  @Inject private lateinit var entityManager: EntityManager
+class Referee : AbstractReferee() {
+  @Inject private lateinit var gameManager: GameManager<Player>
+  @Inject private lateinit var entityManager: GraphicEntityModule
 
   private var playerCount: Int = 2
 
@@ -16,8 +18,7 @@ class CodeRoyaleReferee : Referee {
 
   fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
-  override fun init(playerCount: Int, params: Properties): Properties {
-    this.playerCount = playerCount
+  override fun init(params: Properties): Properties {
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
@@ -28,7 +29,7 @@ class CodeRoyaleReferee : Referee {
         object : MyOwnedEntity(activePlayer) {
           override val entity = entityManager.createCircle()
             .setRadius(radius)
-            .setFillColor(activePlayer.color)
+            .setFillColor(activePlayer.colorToken)
 
           override val mass = mass
 
@@ -180,7 +181,7 @@ class CodeRoyaleReferee : Referee {
         }
       } catch (e: AbstractPlayer.TimeoutException) {
         e.printStackTrace()
-        player.deactivate("${player.nickname}: timeout!")
+        player.deactivate("${player.nicknameToken}: timeout!")
       }
     }
   }

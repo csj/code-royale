@@ -1,5 +1,7 @@
+package com.codingame.game
+
 import com.codingame.gameengine.module.entities.Circle
-import com.codingame.gameengine.module.entities.EntityManager
+import com.codingame.gameengine.module.entities.GraphicEntityModule
 
 abstract class MyEntity {
   var location = Vector2.Zero
@@ -13,24 +15,24 @@ abstract class MyEntity {
   }
 }
 
-abstract class MyOwnedEntity(val owner: CodeRoyalePlayer) : MyEntity()
+abstract class MyOwnedEntity(val owner: Player) : MyEntity()
 
-class Zergling(entityManager: EntityManager, owner: CodeRoyalePlayer, location: Vector2? = null):
+class Zergling(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
   Creep(entityManager, owner, 80, 0, 10, 400, 30, location)
 
-class Archer(entityManager: EntityManager, owner: CodeRoyalePlayer, location: Vector2? = null):
+class Archer(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
   Creep(entityManager, owner, 60, 200, 15, 900, 45, location)
 
-class Obstacle(entityManager: EntityManager): MyEntity() {
+class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   override val mass = 0
 
   val radius = (Math.random() * 50.0 + 60.0).toInt()
   private val area = Math.PI * radius * radius
 
-  var incomeOwner: CodeRoyalePlayer? = null
+  var incomeOwner: Player? = null
   var incomeTimer: Int? = null
 
-  var towerOwner: CodeRoyalePlayer? = null
+  var towerOwner: Player? = null
   var towerAttackRadius: Int = 0
   var towerHealth: Int = 0
 
@@ -56,17 +58,17 @@ class Obstacle(entityManager: EntityManager): MyEntity() {
   fun updateEntities() {
     if (towerOwner != null) {
       towerRangeCircle.isVisible = true
-      towerRangeCircle.fillColor = towerOwner!!.color
+      towerRangeCircle.fillColor = towerOwner!!.colorToken
       towerRangeCircle.radius = towerAttackRadius
       towerSquare.isVisible = true
-      towerSquare.fillColor = towerOwner!!.color
+      towerSquare.fillColor = towerOwner!!.colorToken
     } else {
       entity.fillColor = 0
       towerRangeCircle.isVisible = false
       towerSquare.isVisible = false
     }
     if (incomeOwner == null) entity.fillColor = 0
-    else entity.fillColor = incomeOwner!!.color
+    else entity.fillColor = incomeOwner!!.colorToken
 
     towerSquare.x = location.x.toInt() - 15
     towerSquare.y = location.y.toInt() - 15
@@ -104,15 +106,15 @@ class Obstacle(entityManager: EntityManager): MyEntity() {
     this.location = Vector2.random(1920, 1080)
   }
 
-  fun setTower(owner: CodeRoyalePlayer, health: Int) {
+  fun setTower(owner: Player, health: Int) {
     towerOwner = owner
     this.towerHealth = health
   }
 }
 
 abstract class Creep(
-  entityManager: EntityManager,
-  owner: CodeRoyalePlayer,
+  entityManager: GraphicEntityModule,
+  owner: Player,
   val speed: Int,
   val attackRange: Int,
   radius: Int,
@@ -125,7 +127,7 @@ abstract class Creep(
 
   override val entity = entityManager.createCircle()
     .setRadius(radius)
-    .setFillColor(owner.color)!!
+    .setFillColor(owner.colorToken)!!
 
   fun act() {
     val enemyKing = owner.enemyPlayer.kingUnit

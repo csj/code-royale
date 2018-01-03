@@ -1,15 +1,17 @@
+package com.codingame.game
+
 import com.codingame.gameengine.core.AbstractPlayer
 
-class CodeRoyalePlayer : AbstractPlayer() {
+class Player : AbstractPlayer() {
   override fun getExpectedOutputLines(): Int = 3
   lateinit var kingUnit: MyOwnedEntity
   lateinit var engineerUnit: MyOwnedEntity
   lateinit var generalUnit: MyOwnedEntity
-  lateinit var enemyPlayer: CodeRoyalePlayer
+  lateinit var enemyPlayer: Player
   var inverted: Boolean = false
 
   fun fixLocation(location: Vector2) = if (inverted) Vector2(1920, 1080) - location else location
-  private fun fixOwner(player: CodeRoyalePlayer?) = when (player) { null -> -1; this -> 0; else -> 1 }
+  private fun fixOwner(player: Player?) = when (player) { null -> -1; this -> 0; else -> 1 }
 
   fun printLocation(location: Vector2) {
     val (x,y) = fixLocation(location)

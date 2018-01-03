@@ -1,3 +1,5 @@
+package com.codingame.game
+
 import java.lang.IllegalArgumentException
 import java.lang.Math.cos
 import java.lang.Math.sin

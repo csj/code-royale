@@ -1,3 +1,4 @@
+import com.codingame.game.BasicPlayer;
 import com.codingame.gameengine.runner.GameRunner;
 
 public class Main {
@@ -6,8 +7,8 @@ public class Main {
         GameRunner gameRunner = new GameRunner();
 
         // Adds as many player as you need to test your game
-        gameRunner.addJavaPlayer(BasicPlayer.class);
-        gameRunner.addJavaPlayer(BasicPlayer.class);
+        gameRunner.addAgent(BasicPlayer.class);
+        gameRunner.addAgent(BasicPlayer.class);
 
         // gameRunner.addCommandLinePlayer("python3 /home/user/player.py");
 
