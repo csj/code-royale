@@ -4,6 +4,12 @@ import java.io.InputStream
 import java.io.PrintStream
 import java.util.*
 
+data class CreepInput(
+  val location: Vector2,
+  val health: Int,
+  val creepType: CreepType
+)
+
 data class ObstacleInput(
   val location: Vector2,
   val radius: Int,
@@ -25,14 +31,20 @@ data class AllInputs(
   val enemyGeneralLoc: Vector2,
   val enemyHealth: Int,
   val enemyResources: Int,
-  val obstacles: List<ObstacleInput>
+  val obstacles: List<ObstacleInput>,
+  val friendlyCreeps: List<CreepInput>,
+  val enemyCreeps: List<CreepInput>
 )
 
-abstract class BasePlayer(stdin: InputStream) {
+abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stderr: PrintStream) {
   private val scanner = Scanner(stdin)
   private fun readObstacle() = ObstacleInput(
     Vector2(scanner.nextInt(), scanner.nextInt()), scanner.nextInt(), scanner.nextInt(),
     scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()
+  )
+
+  private fun readCreep() = CreepInput(
+    Vector2(scanner.nextInt(), scanner.nextInt()), scanner.nextInt(), CreepType.values()[scanner.nextInt()]
   )
 
   protected fun readInputs() = AllInputs(
@@ -46,12 +58,14 @@ abstract class BasePlayer(stdin: InputStream) {
     enemyGeneralLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
     enemyHealth = scanner.nextInt(),
     enemyResources = scanner.nextInt(),
-    obstacles = (0 until scanner.nextInt()).map { readObstacle() }
+    obstacles = (0 until scanner.nextInt()).map { readObstacle() },
+    friendlyCreeps = (0 until scanner.nextInt()).map { readCreep() },
+    enemyCreeps = (0 until scanner.nextInt()).map { readCreep() }
   )
 }
 
 @Suppress("UNUSED_PARAMETER")
-class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin) {
+class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
   var turn = 0
   var nextZerglings = true
 
@@ -61,7 +75,7 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
 
       val (kingLoc, engineerLoc, generalLoc, health, resources,
         enemyKingLoc, enemyEngineerLoc, enemyGeneralLoc, enemyHealth, enemyResources,
-        obstacles) = readInputs()
+        obstacles, friendlyCreeps, enemyCreeps) = readInputs()
 
       val kingToEnemyGeneral = kingLoc.distanceTo(enemyGeneralLoc)
       val kingTarget = if (kingToEnemyGeneral < 400) {
@@ -97,8 +111,8 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
 
       // general chases enemy king
       when {
-        nextZerglings && resources >= 40 -> { stdout.println("SPAWN ZERGLINGS"); nextZerglings = false }
-        !nextZerglings && resources >= 70 -> { stdout.println("SPAWN ARCHERS"); nextZerglings = true }
+        nextZerglings && resources >= 40 -> { stdout.println("SPAWN ${CreepType.ZERGLING}"); nextZerglings = false }
+        !nextZerglings && resources >= 70 -> { stdout.println("SPAWN ${CreepType.ARCHER}"); nextZerglings = true }
         else -> stdout.println("MOVE ${enemyKingLoc.x.toInt()} ${enemyKingLoc.y.toInt()}")
       }
     }

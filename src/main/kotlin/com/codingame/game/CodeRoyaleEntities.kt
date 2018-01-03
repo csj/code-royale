@@ -18,10 +18,10 @@ abstract class MyEntity {
 abstract class MyOwnedEntity(val owner: Player) : MyEntity()
 
 class Zergling(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
-  Creep(entityManager, owner, 80, 0, 10, 400, 30, location)
+  Creep(entityManager, owner, 80, 0, 10, 400, 30, location, CreepType.ZERGLING)
 
 class Archer(entityManager: GraphicEntityModule, owner: Player, location: Vector2? = null):
-  Creep(entityManager, owner, 60, 200, 15, 900, 45, location)
+  Creep(entityManager, owner, 60, 200, 15, 900, 45, location, CreepType.ARCHER)
 
 class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   override val mass = 0
@@ -112,6 +112,11 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   }
 }
 
+enum class CreepType {
+  ZERGLING,
+  ARCHER
+}
+
 abstract class Creep(
   entityManager: GraphicEntityModule,
   owner: Player,
@@ -119,8 +124,9 @@ abstract class Creep(
   val attackRange: Int,
   radius: Int,
   override val mass: Int,
-  private var health: Int,
-  location: Vector2?
+  var health: Int,
+  location: Vector2?,
+  val creepType: CreepType
 ) : MyOwnedEntity(owner) {
 
   private val maxHealth = health

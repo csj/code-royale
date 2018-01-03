@@ -147,6 +147,14 @@ class Referee : AbstractReferee() {
       activePlayer.sendInputLine("${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
       activePlayer.sendInputLine(obstacles.size.toString())
       obstacles.forEach { activePlayer.printObstacle(it) }
+
+      for (player in listOf(activePlayer, activePlayer.enemyPlayer)) {
+        activePlayer.sendInputLine(player.activeCreeps.size.toString())
+        player.activeCreeps.forEach {
+          val fixedLocation = activePlayer.fixLocation(it.location)
+          activePlayer.sendInputLine("${fixedLocation.x.toInt()} ${fixedLocation.y.toInt()} ${it.health} ${it.creepType.ordinal}")
+        }
+      }
       activePlayer.execute()
     }
 
@@ -163,12 +171,12 @@ class Referee : AbstractReferee() {
             "SPAWN" -> {
               // TODO: Check if it's the general
               // TODO: Check if enough resources
-              when (toks[1]) {
-                "ZERGLINGS" -> {
+              when (CreepType.valueOf(toks[1])) {
+                CreepType.ZERGLING -> {
                   repeat(4, { player.activeCreeps += Zergling(entityManager, player, unit.location) })
                   player.resources -= 40
                 }
-                "ARCHERS" -> {
+                CreepType.ARCHER -> {
                   repeat(2, { player.activeCreeps += Archer(entityManager, player, unit.location) })
                   player.resources -= 70
                 }
