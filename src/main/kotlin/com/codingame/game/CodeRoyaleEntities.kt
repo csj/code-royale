@@ -76,9 +76,12 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
 
   fun act() {
     if (towerOwner != null) {
+      val damage = 6 + (Math.random() * 3).toInt()
       val closestEnemy = towerOwner!!.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
       if (closestEnemy != null && closestEnemy.location.distanceTo(location) < towerAttackRadius) {
-        closestEnemy.damage(6 + (Math.random() * 3).toInt())
+        closestEnemy.damage(damage)
+      } else if (towerOwner!!.enemyPlayer.kingUnit.location.distanceTo(location) < towerAttackRadius) {
+        towerOwner!!.enemyPlayer.health -= 1
       }
 
       val enemyGeneral = towerOwner!!.enemyPlayer.generalUnit
