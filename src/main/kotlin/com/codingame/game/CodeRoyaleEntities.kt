@@ -133,7 +133,11 @@ class Creep(
 
   override val entity = entityManager.createCircle()
     .setRadius(radius)
-    .setFillColor(owner.colorToken)!!
+    .setFillColor(owner.colorToken)
+    .setVisible(false)!!
+
+  val sprite = entityManager.createSprite()
+    .setImage("beetle.png")
 
   fun act() {
     val enemyKing = owner.enemyPlayer.kingUnit
@@ -149,13 +153,17 @@ class Creep(
 
   override fun updateEntity() {
     super.updateEntity()
-    entity.fillAlpha = health.toDouble() / maxHealth * 0.8 + 0.2
+    sprite.tint = owner.colorToken
+    sprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
+    sprite.x = location.x.toInt()
+    sprite.y = location.y.toInt()
   }
 
   fun damage(hp: Int) {
     health -= hp
     if (health <= 0) {
       entity.isVisible = false
+      sprite.alpha = 0.0
       owner.activeCreeps.remove(this)
     }
   }
