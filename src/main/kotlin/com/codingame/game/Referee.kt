@@ -189,6 +189,9 @@ class Referee : AbstractReferee() {
         player.deactivate("${player.nicknameToken}: timeout!")
       }
     }
+
+    gameManager.setGameSummary(gameManager.players.map { "${it.nicknameToken} Health: ${it.health} Resources: ${it.resources}"})
+
   }
 }
 
