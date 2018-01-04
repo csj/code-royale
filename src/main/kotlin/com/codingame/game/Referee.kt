@@ -193,9 +193,9 @@ class Referee : AbstractReferee() {
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
-                     val mass: Int, val hp: Int) {
-  ZERGLING(4, 40, 80, 0, 10, 400, 30),
-  ARCHER(2, 70, 60, 200, 15, 900, 45)
+                     val mass: Int, val hp: Int, val assetName: String, val fillAssetName: String) {
+  ZERGLING(4, 40, 80, 0, 10, 400, 30, "bug.png", "bugfill.png"),
+  ARCHER(2, 70, 60, 200, 15, 900, 45, "bug2.png", "bug2fill.png")
 }
 
 object Constants {

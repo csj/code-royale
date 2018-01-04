@@ -46,30 +46,35 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
     .setLineColor(0)
     .setZIndex(10)
 
-  private val towerSquare = entityManager.createRectangle()
-    .setHeight(30).setWidth(30)
-    .setLineColor(0xbbbbbb)
-    .setLineWidth(4)
-    .setFillColor(0)
-    .setZIndex(150)
+  val sprite = entityManager.createSprite()
+    .setImage("tower.png")
+    .setZIndex(40)
+
+  val fillSprite = entityManager.createSprite()
+    .setImage("towerfill.png")
+    .setZIndex(30)
 
   fun updateEntities() {
     if (towerOwner != null) {
       towerRangeCircle.isVisible = true
       towerRangeCircle.fillColor = towerOwner!!.colorToken
       towerRangeCircle.radius = towerAttackRadius
-      towerSquare.isVisible = true
-      towerSquare.fillColor = towerOwner!!.colorToken
+      sprite.isVisible = true
+      fillSprite.isVisible = true
+      fillSprite.tint = towerOwner!!.colorToken
     } else {
       entity.fillColor = 0
       towerRangeCircle.isVisible = false
-      towerSquare.isVisible = false
+      sprite.isVisible = false
+      fillSprite.isVisible = false
     }
     if (incomeOwner == null) entity.fillColor = 0
     else entity.fillColor = incomeOwner!!.colorToken
 
-    towerSquare.x = location.x.toInt() - 15
-    towerSquare.y = location.y.toInt() - 15
+    sprite.x = location.x.toInt()
+    sprite.y = location.y.toInt()
+    fillSprite.x = location.x.toInt()
+    fillSprite.y = location.y.toInt()
     towerRangeCircle.x = location.x.toInt()
     towerRangeCircle.y = location.y.toInt()
   }
@@ -137,7 +142,13 @@ class Creep(
     .setVisible(false)!!
 
   val sprite = entityManager.createSprite()
-    .setImage("beetle.png")
+    .setImage(creepType.assetName)
+    .setZIndex(40)
+
+  val fillSprite = entityManager.createSprite()
+    .setImage(creepType.fillAssetName)
+    .setTint(owner.colorToken)
+    .setZIndex(30)
 
   fun act() {
     val enemyKing = owner.enemyPlayer.kingUnit
@@ -153,10 +164,12 @@ class Creep(
 
   override fun updateEntity() {
     super.updateEntity()
-    sprite.tint = owner.colorToken
-    sprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
+    fillSprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
+    fillSprite.x = location.x.toInt()
+    fillSprite.y = location.y.toInt()
     sprite.x = location.x.toInt()
     sprite.y = location.y.toInt()
+
   }
 
   fun damage(hp: Int) {
@@ -164,6 +177,7 @@ class Creep(
     if (health <= 0) {
       entity.isVisible = false
       sprite.alpha = 0.0
+      fillSprite.alpha = 0.0
       owner.activeCreeps.remove(this)
     }
   }
