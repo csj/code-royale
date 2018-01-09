@@ -1,5 +1,7 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.GIANT_BUST_RATE
+import com.codingame.game.Constants.INCOME_TIMER
 import com.codingame.game.Constants.OBSTACLE_MAX_RADIUS
 import com.codingame.game.Constants.OBSTACLE_MIN_RADIUS
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
@@ -68,8 +70,12 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
       sprite.isVisible = false
       fillSprite.isVisible = false
     }
-    if (incomeOwner == null) entity.fillColor = 0
-    else entity.fillColor = incomeOwner!!.colorToken
+    if (incomeOwner == null) {
+      entity.fillColor = 0
+    } else {
+      entity.fillColor = incomeOwner!!.colorToken
+      entity.fillAlpha = 0.2 + 0.8 * (incomeTimer / INCOME_TIMER)
+    }
 
     sprite.x = location.x.toInt()
     sprite.y = location.y.toInt()
@@ -122,14 +128,68 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   }
 }
 
-class Creep(
+class TowerBustingCreep(
   entityManager: GraphicEntityModule,
   owner: Player,
-  location: Vector2?,
+  location: Vector2,
+  creepType: CreepType,
+  private val obstacles: List<Obstacle>
+  ) : Creep(entityManager, owner, location, creepType
+) {
+  override fun move() {
+    obstacles
+      .filter { it.towerOwner == owner.enemyPlayer }
+      .minBy { it.location.distanceTo(location) }
+      ?.let {
+        location = location.towards(it.location, speed.toDouble())
+      }
+  }
+
+  override fun dealDamage() {
+    obstacles
+      .firstOrNull {
+        it.towerOwner == owner.enemyPlayer &&
+        it.location.distanceTo(location) - entity.radius - it.radius < 10
+      }?.let {
+        it.towerHealth -= GIANT_BUST_RATE
+      }
+
+    val enemyKing = owner.enemyPlayer.kingUnit
+    if (location.distanceTo(enemyKing.location) < entity.radius + enemyKing.entity.radius + attackRange + 10) {
+      owner.enemyPlayer.health -= 1
+    }
+  }
+}
+
+class KingChasingCreep(
+  entityManager: GraphicEntityModule,
+  owner: Player,
+  location: Vector2,
+  creepType: CreepType) : Creep(entityManager, owner, location, creepType
+) {
+  override fun move() {
+    val enemyKing = owner.enemyPlayer.kingUnit
+    // move toward enemy king, if not yet in range
+    if (location.distanceTo(enemyKing.location) - entity.radius - enemyKing.entity.radius > attackRange)
+      location = location.towards((enemyKing.location + (location - enemyKing.location).resizedTo(3.0)), speed.toDouble())
+  }
+
+  override fun dealDamage() {
+    val enemyKing = owner.enemyPlayer.kingUnit
+    if (location.distanceTo(enemyKing.location) < entity.radius + enemyKing.entity.radius + attackRange + 10) {
+      owner.enemyPlayer.health -= 1
+    }
+  }
+}
+
+abstract class Creep(
+  entityManager: GraphicEntityModule,
+  owner: Player,
+  location: Vector2,
   val creepType: CreepType
 ) : MyOwnedEntity(owner) {
 
-  private val speed: Int = creepType.speed
+  protected val speed: Int = creepType.speed
   val attackRange: Int = creepType.range
   private val radius: Int = creepType.radius
   override val mass: Int = creepType.mass
@@ -150,15 +210,8 @@ class Creep(
     .setTint(owner.colorToken)
     .setZIndex(30)
 
-  fun act() {
-    val enemyKing = owner.enemyPlayer.kingUnit
-    // move toward enemy king, if not yet in range
-    if (location.distanceTo(enemyKing.location) - entity.radius - enemyKing.entity.radius > attackRange)
-      location = location.towards((enemyKing.location + (location - enemyKing.location).resizedTo(3.0)), speed.toDouble())
-  }
-
   init {
-    this.location = location ?: Vector2.random(1920, 1080)
+    this.location = location
     @Suppress("LeakingThis") updateEntity()
   }
 
@@ -169,7 +222,6 @@ class Creep(
     fillSprite.y = location.y.toInt()
     sprite.x = location.x.toInt()
     sprite.y = location.y.toInt()
-
   }
 
   fun damage(hp: Int) {
@@ -181,5 +233,8 @@ class Creep(
       owner.activeCreeps.remove(this)
     }
   }
+
+  abstract fun dealDamage()
+  abstract fun move()
 }
 

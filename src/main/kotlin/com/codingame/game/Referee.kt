@@ -125,14 +125,9 @@ class Referee : AbstractReferee() {
     }
     gameManager.activePlayers.flatMap { it.activeCreeps }.toList().forEach { it.damage(1) }
     obstacles.forEach { it.act() }
-    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.act() }
+    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.move() }
     fixCollisions(0.0)
-    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach {
-      val enemyKing = it.owner.enemyPlayer.kingUnit
-      if (it.location.distanceTo(enemyKing.location) < it.entity.radius + enemyKing.entity.radius + it.attackRange + 10) {
-        it.owner.enemyPlayer.health -= 1
-      }
-    }
+    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.dealDamage() }
 
     gameManager.activePlayers.forEach {
       if (!it.checkKingHealth()) {
@@ -179,7 +174,12 @@ class Referee : AbstractReferee() {
               // TODO: Check if enough resources
               // TODO: Ensure it's a proper creep type
               val creepType = CreepType.valueOf(toks[1])
-              repeat(creepType.count, { player.activeCreeps += Creep(entityManager, player, unit.location, creepType)})
+              repeat(creepType.count, { player.activeCreeps += when (creepType) {
+                CreepType.ARCHER, CreepType.ZERGLING ->
+                  KingChasingCreep(entityManager, player, unit.location, creepType)
+                CreepType.GIANT ->
+                  TowerBustingCreep(entityManager, player, unit.location, creepType, obstacles)
+              }})
               player.resources -= creepType.cost
             }
           }
@@ -198,13 +198,15 @@ class Referee : AbstractReferee() {
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val assetName: String, val fillAssetName: String) {
   ZERGLING(4, 40, 80, 0, 10, 400, 30, "bug.png", "bugfill.png"),
-  ARCHER(2, 70, 60, 200, 15, 900, 45, "bug2.png", "bug2fill.png")
+  ARCHER(2, 70, 60, 200, 15, 900, 45, "bug2.png", "bug2fill.png"),
+  GIANT(1, 80, 40, 0, 25, 2000, 200, "bug.png", "bugfill.png")
 }
 
 object Constants {
   val UNIT_SPEED = 40
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
+  val GIANT_BUST_RATE = 80
   val INCOME_TIMER = 50
 
   val OBSTACLE_GAP = 60
@@ -223,5 +225,4 @@ object Constants {
 
   val TOWER_MELT_RATE = 10
   val TOWER_COVERAGE_PER_HP = 1000
-
 }
