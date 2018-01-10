@@ -8,7 +8,7 @@ import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.GraphicEntityModule
-
+//new branch
 abstract class MyEntity {
   var location = Vector2.Zero
   abstract val mass: Int   // 0 := immovable
