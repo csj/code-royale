@@ -99,8 +99,8 @@ class Referee : AbstractReferee() {
   }
 
   override fun gameTurn(turn: Int) {
-    // Code your game logic.
-    // See README.md if you want some code to bootstrap your project.
+    // TODO: Rearrange turn order so that visual state matches what bot sees
+    // TODO: Remove location inversion
 
     gameManager.players.forEach {
       val king = it.kingUnit
@@ -197,21 +197,23 @@ class Referee : AbstractReferee() {
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val assetName: String, val fillAssetName: String) {
-  ZERGLING(4, 40, 80, 0, 10, 400, 30, "bug.png", "bugfill.png"),
-  ARCHER(2, 70, 60, 200, 15, 900, 45, "bug2.png", "bug2fill.png"),
-  GIANT(1, 80, 40, 0, 25, 2000, 200, "bug.png", "bugfill.png")
+  ZERGLING(4, 40, 80, 0,   10, 400,  30,  "bug.png",  "bugfill.png"),
+  ARCHER(  2, 70, 60, 200, 15, 900,  45,  "bug2.png", "bug2fill.png"),
+  GIANT(   1, 80, 40, 0,   25, 2000, 200, "bug.png",  "bugfill.png")
 }
 
 object Constants {
   val UNIT_SPEED = 40
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
+  val TOWER_GENERAL_REPEL_FORCE = 20.0
+  val TOWER_CREEP_DAMAGE_RANGE = 6..8
+
   val GIANT_BUST_RATE = 80
   val INCOME_TIMER = 50
 
   val OBSTACLE_GAP = 60
-  val OBSTACLE_MIN_RADIUS = 60
-  val OBSTACLE_MAX_RADIUS = 110
+  val OBSTACLE_RADIUS_RANGE = 60..110
 
   val KING_RADIUS = 30
   val ENGINEER_RADIUS = 20

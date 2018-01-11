@@ -2,9 +2,10 @@ package com.codingame.game
 
 import com.codingame.game.Constants.GIANT_BUST_RATE
 import com.codingame.game.Constants.INCOME_TIMER
-import com.codingame.game.Constants.OBSTACLE_MAX_RADIUS
-import com.codingame.game.Constants.OBSTACLE_MIN_RADIUS
+import com.codingame.game.Constants.OBSTACLE_RADIUS_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
+import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_RANGE
+import com.codingame.game.Constants.TOWER_GENERAL_REPEL_FORCE
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.GraphicEntityModule
@@ -23,10 +24,14 @@ abstract class MyEntity {
 
 abstract class MyOwnedEntity(val owner: Player) : MyEntity()
 
+fun IntRange.sample(): Int {
+  return (Math.random() * (last-first+1) + first).toInt()
+}
+
 class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   override val mass = 0
 
-  val radius = (Math.random() * (OBSTACLE_MAX_RADIUS - OBSTACLE_MIN_RADIUS) + OBSTACLE_MIN_RADIUS).toInt()
+  val radius = OBSTACLE_RADIUS_RANGE.sample()
   private val area = Math.PI * radius * radius
 
   var incomeOwner: Player? = null
@@ -87,7 +92,7 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
 
   fun act() {
     if (towerOwner != null) {
-      val damage = 6 + (Math.random() * 3).toInt()
+      val damage = TOWER_CREEP_DAMAGE_RANGE.sample()
       val closestEnemy = towerOwner!!.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
       if (closestEnemy != null && closestEnemy.location.distanceTo(location) < towerAttackRadius) {
         closestEnemy.damage(damage)
@@ -97,7 +102,7 @@ class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
 
       val enemyGeneral = towerOwner!!.enemyPlayer.generalUnit
       if (enemyGeneral.location.distanceTo(location) < towerAttackRadius) {
-        enemyGeneral.location += (enemyGeneral.location - location).resizedTo(20.0)
+        enemyGeneral.location += (enemyGeneral.location - location).resizedTo(TOWER_GENERAL_REPEL_FORCE)
       }
 
       towerHealth -= TOWER_MELT_RATE
