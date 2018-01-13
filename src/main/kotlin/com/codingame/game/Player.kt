@@ -1,6 +1,5 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.KING_HP
 import com.codingame.gameengine.core.AbstractPlayer
 
 class Player : AbstractPlayer() {

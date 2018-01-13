@@ -1,0 +1,44 @@
+package com.codingame.game
+
+val UNIT_SPEED = 40
+val TOWER_HP_INITIAL = 200
+val TOWER_HP_INCREMENT = 100
+val INCOME_TIMER = 50
+
+val OBSTACLE_GAP = 60
+val OBSTACLE_MIN_RADIUS = 60
+val OBSTACLE_MAX_RADIUS = 110
+
+val KING_RADIUS = 30
+val ENGINEER_RADIUS = 20
+val GENERAL_RADIUS = 25
+
+val KING_MASS = 10000
+val ENGINEER_MASS = 6400
+val GENERAL_MASS = 3600
+
+val KING_HP = 200
+
+val TOWER_MELT_RATE = 10
+val TOWER_COVERAGE_PER_HP = 1000
+
+val MIN_X = 0
+val MIN_Y = 0
+
+val MAX_X = 1920
+val MAX_Y = 1080
+
+val gridNumX = 32
+val gridNumY = 18
+
+val gridSizeX = (MAX_X - MIN_X) / gridNumX
+val gridSizeY = (MAX_Y - MIN_Y) / gridNumY
+
+val KING_UNIT = 0
+val ENGINEER_UNIT = 1
+val GENERAL_UNIT = 2
+
+val RESOURCES_PER_SIDE = 30
+
+val MAX_RESOURCE_AMOUNT = 3
+val MIN_RESOURCE_AMOUNT = 1
