@@ -9,7 +9,7 @@ class Player : AbstractPlayer() {
     lateinit var generalUnit: OwnedUnit
     fun allUnits() = mainUnits + subUnits
     val mainUnits by lazy { listOf(kingUnit, engineerUnit, generalUnit) }
-    val subUnits = mutableListOf<MyUnit>()
+    val subUnits = mutableListOf<KillableUnit>()
     var health : Int = MAX_HEALTH
     var resources: Int = 0
     lateinit var enemyPlayer: Player
