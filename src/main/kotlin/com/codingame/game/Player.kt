@@ -11,21 +11,20 @@ class Player : AbstractPlayer() {
   lateinit var enemyPlayer: Player
   var inverted: Boolean = false
 
-  fun fixLocation(location: Vector2) = if (inverted) Vector2(1920, 1080) - location else location
   private fun fixOwner(player: Player?) = when (player) { null -> -1; this -> 0; else -> 1 }
 
   fun printLocation(location: Vector2) {
-    val (x,y) = fixLocation(location)
+    val (x,y) = location
     sendInputLine("${x.toInt()} ${y.toInt()}")
   }
 
   fun printObstacle(obstacle: Obstacle) {
-    val (x,y) = fixLocation(obstacle.location)
+    val (x,y) = obstacle.location
     val toks = listOf(
       x.toInt(),y.toInt(),
       obstacle.radius,
       fixOwner(obstacle.incomeOwner),
-      obstacle.incomeTimer ?: -1,
+      obstacle.incomeTimer,
       fixOwner(obstacle.towerOwner),
       obstacle.towerHealth,
       obstacle.towerAttackRadius

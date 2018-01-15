@@ -33,7 +33,11 @@ class Referee : AbstractReferee() {
     gameManager.players[1].enemyPlayer = gameManager.players[0]
     gameManager.players[1].inverted = true
 
-    for (activePlayer in gameManager.activePlayers) {
+    obstacles = (0..29).map { Obstacle(entityManager) }
+    fixCollisions(OBSTACLE_GAP.toDouble(), obstacles)
+    obstacles.forEach { it.updateEntities() }
+
+    for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
       val makeUnit: (Int, Int, Vector2) -> MyOwnedEntity = { radius, mass, location ->
         object : MyOwnedEntity(activePlayer) {
           override val entity = entityManager.createCircle()
@@ -48,31 +52,33 @@ class Referee : AbstractReferee() {
         }
       }
 
-      activePlayer.kingUnit = makeUnit(KING_RADIUS, KING_MASS, activePlayer.fixLocation(Vector2.Zero))
-      activePlayer.engineerUnit = makeUnit(ENGINEER_RADIUS, ENGINEER_MASS, activePlayer.fixLocation(Vector2.Zero))
-      activePlayer.generalUnit = makeUnit(GENERAL_RADIUS, GENERAL_MASS, activePlayer.fixLocation(Vector2.Zero))
+      val corner = if (invert) Vector2(1920, 1080) else Vector2.Zero
+
+      activePlayer.kingUnit = makeUnit(KING_RADIUS, KING_MASS, corner)
+      activePlayer.engineerUnit = makeUnit(ENGINEER_RADIUS, ENGINEER_MASS, corner)
+      activePlayer.generalUnit = makeUnit(GENERAL_RADIUS, GENERAL_MASS, corner)
     }
 
-    obstacles = (0..29).map { Obstacle(entityManager) }
-    fixCollisions(OBSTACLE_GAP.toDouble())
-    obstacles.forEach { it.updateEntities() }
     allUnits().forEach { it.updateEntity() }
+//    fixCollisions(0.0)
 
     // Params contains all the game parameters that has been to generate this game
     // For instance, it can be a seed number, the size of a grid/map, ...
     return params
   }
 
-  private fun fixCollisions(acceptableGap: Double) {
+  private fun fixCollisions(acceptableGap: Double, entities: List<MyEntity>? = null) {
+    val allUnits = entities ?: allUnits()
+
     for (iter in 0..999) {
       var foundAny = false
 
-      for (u1 in allUnits()) {
+      for (u1 in allUnits) {
         val rad = u1.entity.radius.toDouble()
         val clampDist = if (u1.mass == 0) OBSTACLE_GAP + rad else rad
         u1.location = u1.location.clampWithin(clampDist, 1920-clampDist, clampDist, 1080-clampDist)
 
-        for (u2 in allUnits()) {
+        for (u2 in allUnits) {
           if (u1 != u2) {
             val overlap = u1.entity.radius + u2.entity.radius + acceptableGap - u1.location.distanceTo(u2.location)
             if (overlap > 0) {
@@ -84,10 +90,10 @@ class Referee : AbstractReferee() {
               }
 
               val u1tou2 = u2.location - u1.location
-              val gap = if (u1.mass == 0 && u2.mass == 0) 20 else 1
+              val gap = if (u1.mass == 0 && u2.mass == 0) acceptableGap else 1.0
 
-              u1.location -= u1tou2.resizedTo(d1 * overlap + if (u1.mass == 0 && u2.mass > 0) 0 else gap)
-              u2.location += u1tou2.resizedTo(d2 * overlap + if (u2.mass == 0 && u1.mass > 0) 0 else gap)
+              u1.location -= u1tou2.resizedTo(d1 * overlap + if (u1.mass == 0 && u2.mass > 0) 0.0 else gap)
+              u2.location += u1tou2.resizedTo(d2 * overlap + if (u2.mass == 0 && u1.mass > 0) 0.0 else gap)
 
               foundAny = true
             }
@@ -152,8 +158,7 @@ class Referee : AbstractReferee() {
       for (player in listOf(activePlayer, activePlayer.enemyPlayer)) {
         activePlayer.sendInputLine(player.activeCreeps.size.toString())
         player.activeCreeps.forEach {
-          val fixedLocation = activePlayer.fixLocation(it.location)
-          activePlayer.sendInputLine("${fixedLocation.x.toInt()} ${fixedLocation.y.toInt()} ${it.health} ${it.creepType.ordinal}")
+          activePlayer.sendInputLine("${it.location.x.toInt()} ${it.location.y.toInt()} ${it.health} ${it.creepType.ordinal}")
         }
       }
       activePlayer.execute()
@@ -167,7 +172,7 @@ class Referee : AbstractReferee() {
           when (toks[0]) {
             "MOVE" -> {
               val (x, y) = toks.drop(1).map { Integer.valueOf(it) }
-              unit.location = unit.location.towards(player.fixLocation(Vector2(x, y)), UNIT_SPEED.toDouble())
+              unit.location = unit.location.towards(Vector2(x, y), UNIT_SPEED.toDouble())
             }
             "SPAWN" -> {
               // TODO: Check if it's the general
