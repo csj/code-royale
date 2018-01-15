@@ -17,11 +17,14 @@ class Referee : AbstractReferee() {
   private val random = Random()
   private val availableSpots = mutableListOf<Pair<Int, Int>>()
   private val resourcesToRemove = mutableSetOf<Resource>()
+  private val addedTowers = mutableListOf<Tower>()
 
   private fun allUnits() = gameManager.players.flatMap { it.allUnits() } + resources
 
   private fun dist(sourceX : Int, sourceY: Int, targetX: Int, targetY: Int) =
           maxOf(Math.abs(sourceX - targetX ), Math.abs(sourceY - targetY))
+
+  private fun inBounds(xCoord : Int, yCoord: Int) = xCoord > -1 && xCoord < gridNumX && yCoord > -1 && yCoord < gridNumY
 
   override fun init(params: Properties): Properties {
 
@@ -150,8 +153,9 @@ class Referee : AbstractReferee() {
 //
 //    allUnits().forEach { it.updateEntity() }
 
-    val list = allUnits()
+    var list = allUnits()
     resourcesToRemove.clear()
+    addedTowers.clear()
 
     for (activePlayer in gameManager.activePlayers) {
       activePlayer.sendInputLine("${activePlayer.health}")
@@ -186,6 +190,9 @@ class Referee : AbstractReferee() {
     var secondPlayerSpawnLocation : Pair<Int, Int>? = null
 
     val secondPlayer = gameManager.activePlayers[1]
+
+    //Necessary for making sure savedX and savedY reflect original values (if unit doesn't move)
+    allUnits().forEach(MyUnit::save)
 
     outer@ for (player in gameManager.activePlayers) {
       try {
@@ -358,6 +365,87 @@ class Referee : AbstractReferee() {
     }
 
     resourcesToRemove.forEach { resources.remove(it) }
+
+    if (firstPlayerBuildTowerLocation != null && firstPlayerBuildTowerLocation != secondPlayerBuildTowerLocation
+            && !allUnits().any { it.x == firstPlayerBuildTowerLocation!!.first
+            && it.y == firstPlayerBuildTowerLocation!!.second }) {
+      val tower = Tower(firstPlayerBuildTowerLocation.first,
+              firstPlayerBuildTowerLocation.second, GLOBAL_ID++, entityManager,
+              gameManager.activePlayers[0], TOWER_TYPE)
+      addedTowers.add(tower)
+      gameManager.activePlayers[0].subUnits.add(tower)
+    }
+
+    if (secondPlayerBuildTowerLocation != null && secondPlayerBuildTowerLocation != firstPlayerBuildTowerLocation
+            && !allUnits().any { it.x == secondPlayerBuildTowerLocation!!.first
+            && it.y == secondPlayerBuildTowerLocation!!.second }) {
+      val tower = Tower(secondPlayerBuildTowerLocation.first,
+              secondPlayerBuildTowerLocation.second, GLOBAL_ID++, entityManager,
+              gameManager.activePlayers[1], TOWER_TYPE)
+      addedTowers.add(tower)
+      gameManager.activePlayers[1].subUnits.add(tower)
+    }
+
+    list = allUnits() //Main and sub units plus resource units
+    val allMainUnits = gameManager.activePlayers.flatMap { it.mainUnits } //General, King, Engineer
+    val allSubUnits = gameManager.activePlayers.flatMap { it.subUnits } //Minions and towers
+
+    allMainUnits.forEach {
+      val tempX = it.savedX //Saved values were set when processing moves
+      val tempY = it.savedY
+      it.save()
+      it.x = tempX
+      it.y = tempY
+    }
+
+    allSubUnits.forEach(MyUnit::save)
+
+    var foundCollision = true
+
+    while (foundCollision) {
+      foundCollision = false
+
+      allMainUnits.forEach { mainUnit ->
+        val collisions = list.filter { unit -> unit.x == mainUnit.x && unit.y == mainUnit.y && mainUnit != unit }
+        if (collisions.isNotEmpty()) {
+          if (collisions.size > 1 || collisions[0] !is Minion) { //If only colliding with minion leave it for now
+            foundCollision = true
+            mainUnit.reset()
+            collisions.forEach(MyUnit::reset)
+          }
+        }
+      }
+    }
+
+    //How to handle collisions and stuff????
+    //Maybe resolve collisions between main units first and then have sub units avoid them auto? But also do main uni
+    //But then how to resolve collisions between sub units?
+
+    for (player in gameManager.activePlayers) {
+
+      player.subUnits.forEach {
+        var bestX = it.x
+        var bestY = it.y
+        var shortestDist = 10000
+        if (it is Minion) {
+          for (deltaX in -it.moveDist..it.moveDist) {
+            for (deltaY in -it.moveDist..it.moveDist) {
+              val targetX = it.x + deltaX
+              val targetY = it.y + deltaY
+              val dist = dist(targetX, targetY, it.owner.enemyPlayer.kingUnit.x, it.owner.enemyPlayer.kingUnit.y)
+              if (inBounds(targetX, targetY) && dist < shortestDist) {
+                val collisions = list.filter { unit -> unit.x == it.x && unit.y == it.y && it != unit &&
+                        !(it is Minion && it}
+                  bestX = targetX
+                bestY = targetY
+                shortestDist = dist
+              }
+            }
+          }
+        }
+      }
+
+    }
 
 
 
