@@ -1,0 +1,62 @@
+Input is given as follows:
+Your health
+Your resources
+Enemy health
+Enemy resources
+Number of units (N)
+N lines of 6 integers
+id playerId unitType x y extra
+-----------
+playerId is 0 if it's yours or 1 if it's enemy or -1 if not owned
+
+unitType:
+0 - King
+1 - Engineer
+2 - General
+3 - Resource
+
+Extra is health for spawned units and towers (placeholder otherwise)
+
+
+
+Rules of Game:
+
+General can spawn units on neighboring squares (only one at a time not like the other version but no cooldown and lower cost)
+Engineer will heal all towers within 1 distance automatically (Maybe this is too over powered and needs to be a move?).
+It can also build towers on certain spots. The only
+places where towers can be built are where resources used to exist or where they already exist. If building onto a
+resource the resource is destroyed. (Perhaps building onto resource gives health boost?)
+King can move around and harvest resources.
+Units with speed x can move up to x squares away. Diagonal moves are allowed and count as one move. Units with a speed
+of greater than one do not travel from square to square, they jump to destination (no intermediate collisions)
+If after all moves are done and two units occupy the same square they are moved back to starting position
+
+
+
+
+------------
+
+Possible Outputs:
+3 lines of output - one each for the main units
+
+Output in order: King, Engineer, General
+
+MOVE X Y - this is applicable to all units, simply move - player dies if too far away (not possible location)
+HARVEST X Y - harvest the resource at this location - must be King unit - player dies if no resource at this loc or if
+not neighboring unit
+BUILD X Y - build tower at this location - must be engineer unit - player dies if not buildable spot or if not enough
+resources to build tower
+SPAWN X Y minionType - spawn minion at this location - must be general unit - player dies if spawn loc is not neighboring
+to General, if there is not enough resources to spawn minion, or if minionType is not valid
+
+--------
+Order of moves:
+
+Spawn moves are carried out (creating minions or not if two spawns occur in same location)
+Harvests are carried out giving resources to players and removing resource
+Towers are built (they will not act the first turn they are built)
+All moves are carried out (Spawned minions move, main units move) and if collisions they are reset to original position
+Engineer does heal to towers (don't clamp max health yet)
+Towers and minions do damage (remember towers that were created this turn do not do damage)
+Check and destroy dead units, check for end game
+Clamp values such as health
