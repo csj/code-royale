@@ -33,8 +33,23 @@ class Referee : AbstractReferee() {
     gameManager.players[1].enemyPlayer = gameManager.players[0]
     gameManager.players[1].inverted = true
 
-    obstacles = (0..29).map { Obstacle(entityManager) }
-    fixCollisions(OBSTACLE_GAP.toDouble(), obstacles)
+    val obstaclePairs = (1..15).map { Pair(Obstacle(entityManager), Obstacle(entityManager)) }
+    obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
+
+    do {
+      obstaclePairs.forEach { (o1, o2) ->
+        val mid = (o1.location + Vector2(1920-o2.location.x, 1080-o2.location.y)) / 2.0
+        o1.location = mid
+        o2.location = Vector2(1920-mid.x, 1080-mid.y)
+        o2.radius = o1.radius
+        o2.entity.radius = o1.entity.radius
+      }
+
+    } while (fixCollisions(OBSTACLE_GAP.toDouble(), obstacles, dontLoop = true))
+
+//    obstacles = (0..29).map { Obstacle(entityManager) }
+//    fixCollisions(OBSTACLE_GAP.toDouble(), obstacles)
+
     obstacles.forEach { it.updateEntities() }
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
@@ -67,11 +82,12 @@ class Referee : AbstractReferee() {
     return params
   }
 
-  private fun fixCollisions(acceptableGap: Double, entities: List<MyEntity>? = null) {
+  private fun fixCollisions(acceptableGap: Double, entities: List<MyEntity>? = null, dontLoop: Boolean): Boolean {
     val allUnits = entities ?: allUnits()
+    var foundAny = false
 
     for (iter in 0..999) {
-      var foundAny = false
+      var loopAgain = false
 
       for (u1 in allUnits) {
         val rad = u1.entity.radius.toDouble()
@@ -81,7 +97,7 @@ class Referee : AbstractReferee() {
         for (u2 in allUnits) {
           if (u1 != u2) {
             val overlap = u1.entity.radius + u2.entity.radius + acceptableGap - u1.location.distanceTo(u2.location)
-            if (overlap > 0) {
+            if (overlap > 1e-6) {
               val (d1, d2) = when {
                 u1.mass == 0 && u2.mass == 0 -> Pair(0.5, 0.5)
                 u1.mass == 0 -> Pair(0.0, 1.0)
@@ -90,18 +106,20 @@ class Referee : AbstractReferee() {
               }
 
               val u1tou2 = u2.location - u1.location
-              val gap = if (u1.mass == 0 && u2.mass == 0) acceptableGap else 1.0
+              val gap = if (u1.mass == 0 && u2.mass == 0) 20.0 else 1.0
 
               u1.location -= u1tou2.resizedTo(d1 * overlap + if (u1.mass == 0 && u2.mass > 0) 0.0 else gap)
               u2.location += u1tou2.resizedTo(d2 * overlap + if (u2.mass == 0 && u1.mass > 0) 0.0 else gap)
 
+              loopAgain = true
               foundAny = true
             }
           }
         }
       }
-      if (!foundAny) break
+      if (dontLoop || !loopAgain) break
     }
+    return foundAny
   }
 
   override fun gameTurn(turn: Int) {
@@ -131,8 +149,12 @@ class Referee : AbstractReferee() {
     }
     gameManager.activePlayers.flatMap { it.activeCreeps }.toList().forEach { it.damage(1) }
     obstacles.forEach { it.act() }
-    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.move() }
-    fixCollisions(0.0)
+
+    repeat(5) {
+      gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.move() }
+      fixCollisions(0.0, dontLoop = true)
+    }
+
     gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.dealDamage() }
 
     gameManager.activePlayers.forEach {
@@ -179,12 +201,14 @@ class Referee : AbstractReferee() {
               // TODO: Check if enough resources
               // TODO: Ensure it's a proper creep type
               val creepType = CreepType.valueOf(toks[1])
-              repeat(creepType.count, { player.activeCreeps += when (creepType) {
-                CreepType.ARCHER, CreepType.ZERGLING ->
-                  KingChasingCreep(entityManager, player, unit.location, creepType)
-                CreepType.GIANT ->
-                  TowerBustingCreep(entityManager, player, unit.location, creepType, obstacles)
-              }})
+              repeat(creepType.count) {
+                player.activeCreeps += when (creepType) {
+                  CreepType.ARCHER, CreepType.ZERGLING ->
+                    KingChasingCreep(entityManager, player, unit.location, creepType)
+                  CreepType.GIANT ->
+                    TowerBustingCreep(entityManager, player, unit.location, creepType, obstacles)
+                }
+              }
               player.resources -= creepType.cost
             }
           }
@@ -202,9 +226,9 @@ class Referee : AbstractReferee() {
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val assetName: String, val fillAssetName: String) {
-  ZERGLING(4, 40, 80, 0,   10, 400,  30,  "bug.png",  "bugfill.png"),
-  ARCHER(  2, 70, 60, 200, 15, 900,  45,  "bug2.png", "bug2fill.png"),
-  GIANT(   1, 80, 40, 0,   25, 2000, 200, "bug.png",  "bugfill.png")
+  ZERGLING(4, 40, 20, 0,   10, 400,  30,  "bug.png",  "bugfill.png"),
+  ARCHER(  2, 70, 13, 200, 15, 900,  45,  "bug2.png", "bug2fill.png"),
+  GIANT(   1, 80, 10, 0,   25, 2000, 200, "bug.png",  "bugfill.png")
 }
 
 object Constants {

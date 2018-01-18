@@ -31,7 +31,7 @@ fun IntRange.sample(): Int {
 class Obstacle(entityManager: GraphicEntityModule): MyEntity() {
   override val mass = 0
 
-  val radius = OBSTACLE_RADIUS_RANGE.sample()
+  var radius = OBSTACLE_RADIUS_RANGE.sample()
   private val area = Math.PI * radius * radius
 
   var incomeOwner: Player? = null
