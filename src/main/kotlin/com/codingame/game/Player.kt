@@ -20,16 +20,16 @@ class Player : AbstractPlayer() {
 
   fun printObstacle(obstacle: Obstacle) {
     val (x,y) = obstacle.location
-    val toks = listOf(
-      x.toInt(),y.toInt(),
-      obstacle.radius,
-      fixOwner(obstacle.incomeOwner),
-      obstacle.incomeTimer,
-      fixOwner(obstacle.towerOwner),
-      obstacle.towerHealth,
-      obstacle.towerAttackRadius
-    )
-    sendInputLine(toks.joinToString(" "))
+    val toks = listOf(x.toInt(),y.toInt(), obstacle.radius, obstacle.minerals)
+
+    val struc = obstacle.structure
+
+    val toks2 = when (struc) {
+      is Mine -> listOf(0, fixOwner(struc.owner), struc.incomeRate, -1)
+      is Tower -> listOf(1, fixOwner(struc.owner), struc.health, struc.attackRadius)
+      else -> listOf(-1, -1, -1, -1)
+    }
+    sendInputLine((toks + toks2).joinToString(" "))
   }
 
 

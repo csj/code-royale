@@ -13,11 +13,11 @@ data class CreepInput(
 data class ObstacleInput(
   val location: Vector2,
   val radius: Int,
-  val incomeOwner: Int,
-  val incomeTimer: Int,
-  val towerOwner: Int,
-  val towerHealth: Int,
-  val towerRange: Int
+  val minerals: Int,
+  val structureType: Int,  // 0 = Mine, 1 = Tower, -1 = None
+  val owner: Int,          // 0 = Us, 1 = Enemy
+  val incomeRateOrHealth: Int,
+  val attackRadius: Int
 )
 
 data class AllInputs(
@@ -82,32 +82,29 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
         // if King is close to enemy general, run away!
         kingLoc + (kingLoc - enemyGeneralLoc).resizedTo(100.0)
       } else {
-        // King goes to nearest untagged obstacle under friendly tower influence that doesn't have an enemy tower, or else our engineer
+        // King goes to nearest unowned obstacle that has money, or else our engineer
         obstacles
-          .filter { it.incomeOwner != 0 && it.towerOwner != 1 }
-          .filter { target ->
-            obstacles.any {
-              it.towerOwner == 0 && it.location.distanceTo(target.location) - target.radius - it.towerRange < 50
-            }
-          }
+          .filter { it.owner == -1 && it.minerals > 0 }
           .minBy { it.location.distanceTo(kingLoc) }?.location ?: engineerLoc
       }
 
       stdout.println("MOVE ${kingTarget.x.toInt()} ${kingTarget.y.toInt()}")
 
-      val closestObstacleToEng = obstacles
-        .filter { it.towerOwner != 1 }
-        .minBy { it.location.distanceTo(engineerLoc) }!!
-      val dist = closestObstacleToEng.location.distanceTo(engineerLoc) - closestObstacleToEng.radius - 20
-      val engTarget = if (dist < 5 && (closestObstacleToEng.towerOwner != 0 || closestObstacleToEng.towerHealth < 400))
-        closestObstacleToEng.location
-      else {
-        obstacles
-          .filter { it.towerOwner != 0 }
-          .minBy { it.location.distanceTo(kingLoc) }!!.location
-      }
+      // Engineer goes to untowered obstacle nearest the midpoint between our King and their General
+      val midPoint = (kingLoc + enemyGeneralLoc) / 2.0
 
-      stdout.println("MOVE ${engTarget.x.toInt()} ${engTarget.y.toInt()}")
+      val closestObstacleToEng = obstacles
+        .filter { obs ->
+          val isTower = obs.structureType == 1 && obs.owner == 0
+
+          val dist = obs.location.distanceTo(midPoint) - obs.radius - 20
+          val building = dist < 20 && isTower && obs.incomeRateOrHealth < 400
+
+          !isTower || building
+        }
+        .minBy { it.location.distanceTo(midPoint) }!!
+
+      stdout.println("MOVE ${closestObstacleToEng.location.x.toInt()} ${closestObstacleToEng.location.y.toInt()}")
 
       // general chases enemy king
       when {

@@ -10,6 +10,7 @@ import com.codingame.game.Constants.KING_RADIUS
 import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
+import com.codingame.game.Constants.TOWER_HP_MAXIMUM
 import com.codingame.game.Constants.UNIT_SPEED
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
@@ -28,12 +29,16 @@ class Referee : AbstractReferee() {
   private fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
   override fun init(params: Properties): Properties {
+    theEntityManager = entityManager
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
     gameManager.players[1].inverted = true
 
-    val obstaclePairs = (1..15).map { Pair(Obstacle(entityManager), Obstacle(entityManager)) }
+    val obstaclePairs = (1..15).map {
+      val rate = (1..5).sample()
+      Pair(Obstacle(rate), Obstacle(rate))
+    }
     obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
 
     do {
@@ -75,14 +80,14 @@ class Referee : AbstractReferee() {
     }
 
     allUnits().forEach { it.updateEntity() }
-//    fixCollisions(0.0)
+    fixCollisions()
 
     // Params contains all the game parameters that has been to generate this game
     // For instance, it can be a seed number, the size of a grid/map, ...
     return params
   }
 
-  private fun fixCollisions(acceptableGap: Double, entities: List<MyEntity>? = null, dontLoop: Boolean): Boolean {
+  private fun fixCollisions(acceptableGap: Double = 0.0, entities: List<MyEntity>? = null, dontLoop: Boolean = false): Boolean {
     val allUnits = entities ?: allUnits()
     var foundAny = false
 
@@ -132,30 +137,43 @@ class Referee : AbstractReferee() {
 
       // TODO: What if both kings are touching the same one!
       if (obsK.location.distanceTo(king.location) - obsK.radius - king.entity.radius < 10) {
-        obsK.incomeOwner = it
-        obsK.incomeTimer = INCOME_TIMER
+        if (obsK.structure !is Tower && (obsK.structure !is Mine || (obsK.structure as Mine).owner != it)) {
+          obsK.setMine(it)
+        }
       }
 
       // TODO: What if both engineers are touching the same one!
       val eng = it.engineerUnit
       val obsE = obstacles.minBy { it.location.distanceTo(eng.location) }!!
+      val struc = obsE.structure
+
       if (obsE.location.distanceTo(eng.location) - obsE.radius - eng.entity.radius < 10) {
-        if (obsE.towerOwner == it) {
-          obsE.towerHealth += TOWER_HP_INCREMENT
-        } else if (obsE.towerOwner == null) {
+        if (struc is Tower && struc.owner == it) {
+          struc.health += TOWER_HP_INCREMENT
+          if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
+        } else if (struc == null || struc is Mine) {
           obsE.setTower(it, TOWER_HP_INITIAL)
         }
       }
     }
-    gameManager.activePlayers.flatMap { it.activeCreeps }.toList().forEach { it.damage(1) }
+    val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
+
+    allCreeps.forEach { it.damage(1) }
     obstacles.forEach { it.act() }
 
     repeat(5) {
-      gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.move() }
-      fixCollisions(0.0, dontLoop = true)
+      allCreeps.forEach { it.move() }
+      fixCollisions(dontLoop = true)
     }
 
-    gameManager.activePlayers.flatMap { it.activeCreeps }.forEach { it.dealDamage() }
+    allCreeps.forEach { it.dealDamage() }
+
+    allCreeps.forEach { creep ->
+      val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
+      if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.entity.radius > 5) return@forEach
+      val struc = closestObstacle.structure
+      if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
+    }
 
     gameManager.activePlayers.forEach {
       if (!it.checkKingHealth()) {
@@ -204,9 +222,9 @@ class Referee : AbstractReferee() {
               repeat(creepType.count) {
                 player.activeCreeps += when (creepType) {
                   CreepType.ARCHER, CreepType.ZERGLING ->
-                    KingChasingCreep(entityManager, player, unit.location, creepType)
+                    KingChasingCreep(player, unit.location, creepType)
                   CreepType.GIANT ->
-                    TowerBustingCreep(entityManager, player, unit.location, creepType, obstacles)
+                    TowerBustingCreep(player, unit.location, creepType, obstacles)
                 }
               }
               player.resources -= creepType.cost
@@ -226,15 +244,16 @@ class Referee : AbstractReferee() {
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val assetName: String, val fillAssetName: String) {
-  ZERGLING(4, 40, 20, 0,   10, 400,  30,  "bug.png",  "bugfill.png"),
-  ARCHER(  2, 70, 13, 200, 15, 900,  45,  "bug2.png", "bug2fill.png"),
-  GIANT(   1, 80, 10, 0,   25, 2000, 200, "bug.png",  "bugfill.png")
+  ZERGLING(4, 120, 20, 0,   10, 400,  30,  "bug.png",  "bugfill.png"),
+  ARCHER(  2, 210, 13, 200, 15, 900,  45,  "bug2.png", "bug2fill.png"),
+  GIANT(   1, 240, 10, 0,   25, 2000, 200, "bug.png",  "bugfill.png")
 }
 
 object Constants {
   val UNIT_SPEED = 40
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
+  val TOWER_HP_MAXIMUM = 800
   val TOWER_GENERAL_REPEL_FORCE = 20.0
   val TOWER_CREEP_DAMAGE_RANGE = 6..8
 
