@@ -4,10 +4,8 @@ import com.codingame.game.Constants.KING_HP
 import com.codingame.gameengine.core.AbstractPlayer
 
 class Player : AbstractPlayer() {
-  override fun getExpectedOutputLines(): Int = 3
+  override fun getExpectedOutputLines(): Int = 1
   lateinit var kingUnit: MyOwnedEntity
-  lateinit var engineerUnit: MyOwnedEntity
-  lateinit var generalUnit: MyOwnedEntity
   lateinit var enemyPlayer: Player
   var inverted: Boolean = false
 
@@ -27,16 +25,16 @@ class Player : AbstractPlayer() {
     val toks2 = when (struc) {
       is Mine -> listOf(0, fixOwner(struc.owner), struc.incomeRate, -1)
       is Tower -> listOf(1, fixOwner(struc.owner), struc.health, struc.attackRadius)
+      is Barracks -> listOf(2, fixOwner(struc.owner), struc.progress, struc.creepType.ordinal)
       else -> listOf(-1, -1, -1, -1)
     }
     sendInputLine((toks + toks2).joinToString(" "))
   }
 
 
-  val units by lazy { listOf(kingUnit, engineerUnit, generalUnit) }
   val activeCreeps = mutableListOf<Creep>()
 
-  fun allUnits() = units + activeCreeps
+  fun allUnits() = activeCreeps + kingUnit
 
   var health = KING_HP
 

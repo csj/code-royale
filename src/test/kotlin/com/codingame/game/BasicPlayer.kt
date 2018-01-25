@@ -1,8 +1,11 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.KING_RADIUS
+import com.codingame.game.Constants.TOWER_HP_MAXIMUM
 import java.io.InputStream
 import java.io.PrintStream
 import java.util.*
+import kotlin.coroutines.experimental.buildIterator
 
 data class CreepInput(
   val location: Vector2,
@@ -14,21 +17,17 @@ data class ObstacleInput(
   val location: Vector2,
   val radius: Int,
   val minerals: Int,
-  val structureType: Int,  // 0 = Mine, 1 = Tower, -1 = None
+  val structureType: Int,  // -1 = None, 0 = Mine, 1 = Tower, 2 = Barracks
   val owner: Int,          // 0 = Us, 1 = Enemy
-  val incomeRateOrHealth: Int,
-  val attackRadius: Int
+  val incomeRateOrHealthOrProgress: Int,  // mine / tower / barracks
+  val attackRadiusOrCreepType: Int   // tower / barracks
 )
 
 data class AllInputs(
   val kingLoc: Vector2,
-  val engineerLoc: Vector2,
-  val generalLoc: Vector2,
   val health: Int,
   val resources: Int,
   val enemyKingLoc: Vector2,
-  val enemyEngineerLoc: Vector2,
-  val enemyGeneralLoc: Vector2,
   val enemyHealth: Int,
   val enemyResources: Int,
   val obstacles: List<ObstacleInput>,
@@ -41,27 +40,23 @@ abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stder
   private fun readObstacle() = ObstacleInput(
     Vector2(scanner.nextInt(), scanner.nextInt()), scanner.nextInt(), scanner.nextInt(),
     scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()
-  )
+  )//.also { stderr.println("Read obstacle: $it")}
 
   private fun readCreep() = CreepInput(
     Vector2(scanner.nextInt(), scanner.nextInt()), scanner.nextInt(), CreepType.values()[scanner.nextInt()]
-  )
+  )//.also { stderr.println("Read creep: $it")}
 
   protected fun readInputs() = AllInputs(
     kingLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
-    engineerLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
-    generalLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
     health = scanner.nextInt(),
     resources = scanner.nextInt(),
     enemyKingLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
-    enemyEngineerLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
-    enemyGeneralLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
     enemyHealth = scanner.nextInt(),
     enemyResources = scanner.nextInt(),
     obstacles = (0 until scanner.nextInt()).map { readObstacle() },
     friendlyCreeps = (0 until scanner.nextInt()).map { readCreep() },
     enemyCreeps = (0 until scanner.nextInt()).map { readCreep() }
-  )
+  )//.also { stderr.println("Read inputs: $it")}
 }
 
 @Suppress("UNUSED_PARAMETER")
@@ -70,48 +65,66 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
   var nextZerglings = true
 
   init {
+    // Rotate between behaviours
+    val behaviours = buildIterator { while (true) { yieldAll(listOf(
+      { "BUILD MINE" },
+      { "BUILD MINE" },
+      { "BUILD TOWER" },
+      { "BUILD BARRACKS ZERGLING" },
+      { "BUILD MINE" },
+      { "BUILD MINE" },
+      { "BUILD BARRACKS ARCHER" },
+      { "BUILD TOWER" },
+      { "BUILD TOWER" },
+      { "BUILD MINE" },
+      { "BUILD MINE" },
+      { "BUILD BARRACKS GIANT" }
+      ))}}
+    var nextBehaviour = behaviours.next()
+
     while (true) {
-      turn++
+      try {
 
-      val (kingLoc, engineerLoc, generalLoc, health, resources,
-        enemyKingLoc, enemyEngineerLoc, enemyGeneralLoc, enemyHealth, enemyResources,
-        obstacles, friendlyCreeps, enemyCreeps) = readInputs()
+        turn++
 
-      val kingToEnemyGeneral = kingLoc.distanceTo(enemyGeneralLoc)
-      val kingTarget = if (kingToEnemyGeneral < 400) {
-        // if King is close to enemy general, run away!
-        kingLoc + (kingLoc - enemyGeneralLoc).resizedTo(100.0)
-      } else {
-        // King goes to nearest unowned obstacle that has money, or else our engineer
-        obstacles
-          .filter { it.owner == -1 && it.minerals > 0 }
-          .minBy { it.location.distanceTo(kingLoc) }?.location ?: engineerLoc
-      }
+        val (kingLoc, health, resources,
+          enemyKingLoc, enemyHealth, enemyResources,
+          obstacles, friendlyCreeps, enemyCreeps) = readInputs()
 
-      stdout.println("MOVE ${kingTarget.x.toInt()} ${kingTarget.y.toInt()}")
+        // if touching a tower that isn't at max health, keep growing it
+        val growingTower = obstacles
+          .filter { it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrProgress < 400 }
+          .firstOrNull { it.location.distanceTo(kingLoc) - it.radius - KING_RADIUS < 5 }
 
-      // Engineer goes to untowered obstacle nearest the midpoint between our King and their General
-      val midPoint = (kingLoc + enemyGeneralLoc) / 2.0
-
-      val closestObstacleToEng = obstacles
-        .filter { obs ->
-          val isTower = obs.structureType == 1 && obs.owner == 0
-
-          val dist = obs.location.distanceTo(midPoint) - obs.radius - 20
-          val building = dist < 20 && isTower && obs.incomeRateOrHealth < 400
-
-          !isTower || building
+        if (growingTower != null) {
+          stdout.println("BUILD TOWER")
+          continue
         }
-        .minBy { it.location.distanceTo(midPoint) }!!
 
-      stdout.println("MOVE ${closestObstacleToEng.location.x.toInt()} ${closestObstacleToEng.location.y.toInt()}")
+        // King goes to nearest unowned obstacle
+        val kingTarget = obstacles
+          .filter { it.owner == -1 }
+          .minBy { it.location.distanceTo(kingLoc) - it.radius }
 
-      // general chases enemy king
-      when {
-        nextZerglings && resources >= CreepType.ZERGLING.cost -> { stdout.println("SPAWN ${CreepType.ZERGLING}"); nextZerglings = false }
-        !nextZerglings && resources >= CreepType.ARCHER.cost -> { stdout.println("SPAWN ${CreepType.ARCHER}"); nextZerglings = true }
-        else -> stdout.println("MOVE ${enemyKingLoc.x.toInt()} ${enemyKingLoc.y.toInt()}")
+        if (kingTarget != null) {
+          // if in range, do something there
+          val dist = kingTarget.location.distanceTo(kingLoc) - Constants.KING_RADIUS - kingTarget.radius
+
+          if (dist < 5) {
+            stdout.println(nextBehaviour())
+            nextBehaviour = behaviours.next()
+          } else {
+            // move to it
+            stdout.println("MOVE ${kingTarget.location.x.toInt()} ${kingTarget.location.y.toInt()}")
+          }
+          continue
+        }
+
+        stdout.println("MOVE 1000 500")  // if none, just go to middle of the map
+      } catch (ex: Exception) {
+        ex.printStackTrace(stderr)
       }
+
     }
   }
 }

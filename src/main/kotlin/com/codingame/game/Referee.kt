@@ -1,11 +1,5 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.ENGINEER_MASS
-import com.codingame.game.Constants.ENGINEER_RADIUS
-import com.codingame.game.Constants.GENERAL_MASS
-import com.codingame.game.Constants.GENERAL_RADIUS
-import com.codingame.game.Constants.INCOME_TIMER
-import com.codingame.game.Constants.KING_MASS
 import com.codingame.game.Constants.KING_RADIUS
 import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
@@ -40,6 +34,7 @@ class Referee : AbstractReferee() {
       Pair(Obstacle(rate), Obstacle(rate))
     }
     obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
+    Barracks.allObstacles = obstacles
 
     do {
       obstaclePairs.forEach { (o1, o2) ->
@@ -58,25 +53,8 @@ class Referee : AbstractReferee() {
     obstacles.forEach { it.updateEntities() }
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
-      val makeUnit: (Int, Int, Vector2) -> MyOwnedEntity = { radius, mass, location ->
-        object : MyOwnedEntity(activePlayer) {
-          override val entity = entityManager.createCircle()
-            .setRadius(radius)
-            .setFillColor(activePlayer.colorToken)
-
-          override val mass = mass
-
-          init {
-            this.location = location
-          }
-        }
-      }
-
-      val corner = if (invert) Vector2(1920, 1080) else Vector2.Zero
-
-      activePlayer.kingUnit = makeUnit(KING_RADIUS, KING_MASS, corner)
-      activePlayer.engineerUnit = makeUnit(ENGINEER_RADIUS, ENGINEER_MASS, corner)
-      activePlayer.generalUnit = makeUnit(GENERAL_RADIUS, GENERAL_MASS, corner)
+      val corner = if (invert) Vector2(1920- KING_RADIUS, 1080- KING_RADIUS) else Vector2(KING_RADIUS, KING_RADIUS)
+      activePlayer.kingUnit = King(activePlayer).also { it.location = corner }
     }
 
     allUnits().forEach { it.updateEntity() }
@@ -131,35 +109,9 @@ class Referee : AbstractReferee() {
     // TODO: Rearrange turn order so that visual state matches what bot sees
     // TODO: Remove location inversion
 
-    gameManager.players.forEach {
-      val king = it.kingUnit
-      val obsK = obstacles.minBy { it.location.distanceTo(king.location) }!!
-
-      // TODO: What if both kings are touching the same one!
-      if (obsK.location.distanceTo(king.location) - obsK.radius - king.entity.radius < 10) {
-        if (obsK.structure !is Tower && (obsK.structure !is Mine || (obsK.structure as Mine).owner != it)) {
-          obsK.setMine(it)
-        }
-      }
-
-      // TODO: What if both engineers are touching the same one!
-      val eng = it.engineerUnit
-      val obsE = obstacles.minBy { it.location.distanceTo(eng.location) }!!
-      val struc = obsE.structure
-
-      if (obsE.location.distanceTo(eng.location) - obsE.radius - eng.entity.radius < 10) {
-        if (struc is Tower && struc.owner == it) {
-          struc.health += TOWER_HP_INCREMENT
-          if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
-        } else if (struc == null || struc is Mine) {
-          obsE.setTower(it, TOWER_HP_INITIAL)
-        }
-      }
-    }
+    // 2. Creeps move and deal damage
     val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
-
     allCreeps.forEach { it.damage(1) }
-    obstacles.forEach { it.act() }
 
     repeat(5) {
       allCreeps.forEach { it.move() }
@@ -175,6 +127,21 @@ class Referee : AbstractReferee() {
       if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
     }
 
+    // 1. Existing structures work and barracks spawn new creeps
+    gameManager.players.forEach { player ->
+      val resourcesPerBarracks = {
+        val numBarracks = obstacles.count { it.structure is Barracks && (it.structure as Barracks).owner == player }
+        if (numBarracks == 0) 0 else player.resources / numBarracks
+      }()
+
+      obstacles
+        .filter { it.structure?.owner == player }
+        .forEach { it.act(resourcesPerBarracks)?.let { player.activeCreeps += it } }
+    }
+
+    allUnits().forEach { it.updateEntity() }
+
+    // 3. Check end game
     gameManager.activePlayers.forEach {
       if (!it.checkKingHealth()) {
         it.deactivate("Dead king")
@@ -185,12 +152,11 @@ class Referee : AbstractReferee() {
       gameManager.endGame()
     }
 
-    allUnits().forEach { it.updateEntity() }
-
+    // 4. Send game states
     for (activePlayer in gameManager.activePlayers) {
-      activePlayer.units.forEach { activePlayer.printLocation(it.location) }
+      activePlayer.printLocation(activePlayer.kingUnit.location)
       activePlayer.sendInputLine("${activePlayer.health} ${activePlayer.resources}")
-      activePlayer.enemyPlayer.units.forEach { activePlayer.printLocation(it.location) }
+      activePlayer.printLocation(activePlayer.enemyPlayer.kingUnit.location)
       activePlayer.sendInputLine("${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
       activePlayer.sendInputLine(obstacles.size.toString())
       obstacles.forEach { activePlayer.printObstacle(it) }
@@ -204,30 +170,53 @@ class Referee : AbstractReferee() {
       activePlayer.execute()
     }
 
-    for (player in gameManager.activePlayers) {
+    // 5. Process player actions
+
+    val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
+    val structuresToBuild = mutableListOf<()->Unit>()
+
+    playerLoop@ for (player in gameManager.activePlayers) {
       try {
-        val outputs = player.outputs
-        for ((unit, line) in player.units.zip(outputs)) {
-          val toks = line.split(" ")
-          when (toks[0]) {
-            "MOVE" -> {
-              val (x, y) = toks.drop(1).map { Integer.valueOf(it) }
-              unit.location = unit.location.towards(Vector2(x, y), UNIT_SPEED.toDouble())
+        val line = player.outputs[0]
+        val toks = line.split(" ").iterator()
+        when (toks.next()) {
+          "MOVE" -> {
+            val x = toks.next().toInt()
+            val y = toks.next().toInt()
+            player.kingUnit.location = player.kingUnit.location.towards(Vector2(x, y), UNIT_SPEED.toDouble())
+          }
+          "BUILD" -> {
+            val king = player.kingUnit
+            val obsK = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
+            val dist = obsK.location.distanceTo(king.location) - king.entity.radius - obsK.radius
+            if (dist > 10) {
+              player.deactivate("Cannot build: too far away ($dist)")
+              continue@playerLoop
             }
-            "SPAWN" -> {
-              // TODO: Check if it's the general
-              // TODO: Check if enough resources
-              // TODO: Ensure it's a proper creep type
-              val creepType = CreepType.valueOf(toks[1])
-              repeat(creepType.count) {
-                player.activeCreeps += when (creepType) {
-                  CreepType.ARCHER, CreepType.ZERGLING ->
-                    KingChasingCreep(player, unit.location, creepType)
-                  CreepType.GIANT ->
-                    TowerBustingCreep(player, unit.location, creepType, obstacles)
+            val struc = obsK.structure
+
+            if (struc?.owner == player.enemyPlayer) {
+              player.deactivate("Cannot build: owned by enemy player")
+              continue@playerLoop
+            }
+
+            obstaclesAttemptedToBuildUpon += obsK
+            structuresToBuild += {
+              when (toks.next()) {
+                "MINE" -> obsK.setMine(player)
+                "TOWER" -> {
+                  if (struc is Tower) {
+                    struc.health += TOWER_HP_INCREMENT
+                    if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
+                  } else {
+                    obsK.setTower(player, TOWER_HP_INITIAL)
+                  }
+                }
+                "BARRACKS" -> {
+                  val creepType = CreepType.valueOf(toks.next())
+                  obsK.setBarracks(player, creepType)
                 }
               }
-              player.resources -= creepType.cost
             }
           }
         }
@@ -237,20 +226,28 @@ class Referee : AbstractReferee() {
       }
     }
 
-    gameManager.setGameSummary(gameManager.players.map { "${it.nicknameToken} Health: ${it.health} Resources: ${it.resources}"})
+    // If they're both building onto the same one, then actually build neither
+    if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1])
+      structuresToBuild.clear()
 
+    // Execute builds that remain
+    structuresToBuild.forEach { it.invoke() }
+
+    gameManager.players.forEach {
+      gameManager.addToGameSummary("${it.nicknameToken} Health: ${it.health} Resources: ${it.resources}")
+    }
   }
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val assetName: String, val fillAssetName: String) {
   ZERGLING(4, 120, 20, 0,   10, 400,  30,  "bug.png",  "bugfill.png"),
-  ARCHER(  2, 210, 13, 200, 15, 900,  45,  "bug2.png", "bug2fill.png"),
-  GIANT(   1, 240, 10, 0,   25, 2000, 200, "bug.png",  "bugfill.png")
+  ARCHER(  2, 210, 13, 200, 15, 900,  45,  "archer.png", "archer-fill.png"),
+  GIANT(   1, 240, 10, 0,   25, 2000, 200, "bulldozer.png", "bulldozer-fill.png")
 }
 
 object Constants {
-  val UNIT_SPEED = 40
+  val UNIT_SPEED = 60
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
   val TOWER_HP_MAXIMUM = 800
@@ -263,7 +260,7 @@ object Constants {
   val OBSTACLE_GAP = 60
   val OBSTACLE_RADIUS_RANGE = 60..110
 
-  val KING_RADIUS = 30
+  val KING_RADIUS = 20
   val ENGINEER_RADIUS = 20
   val GENERAL_RADIUS = 25
 
