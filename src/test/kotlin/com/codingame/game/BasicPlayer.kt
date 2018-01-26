@@ -134,7 +134,7 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
       }
 
       stdout.println(getKingAction())
-      stdout.println("TRAIN${getBuildOrders().joinToString { " " + it.obstacleId }}")
+      stdout.println("TRAIN${getBuildOrders().joinToString("") { " " + it.obstacleId }}")
     }
   }
 }
