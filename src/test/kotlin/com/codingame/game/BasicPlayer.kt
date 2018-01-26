@@ -1,11 +1,12 @@
 package com.codingame.game
 
 import com.codingame.game.Constants.KING_RADIUS
-import com.codingame.game.Constants.TOWER_HP_MAXIMUM
 import java.io.InputStream
 import java.io.PrintStream
 import java.util.*
 import kotlin.coroutines.experimental.buildIterator
+
+fun<T> List<T>.sample() = this[Random().nextInt(size)]
 
 data class CreepInput(
   val location: Vector2,
@@ -14,12 +15,13 @@ data class CreepInput(
 )
 
 data class ObstacleInput(
+  val obstacleId: Int,
   val location: Vector2,
   val radius: Int,
   val minerals: Int,
   val structureType: Int,  // -1 = None, 0 = Mine, 1 = Tower, 2 = Barracks
   val owner: Int,          // 0 = Us, 1 = Enemy
-  val incomeRateOrHealthOrProgress: Int,  // mine / tower / barracks
+  val incomeRateOrHealthOrCooldown: Int,  // mine / tower / barracks
   val attackRadiusOrCreepType: Int   // tower / barracks
 )
 
@@ -38,7 +40,9 @@ data class AllInputs(
 abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stderr: PrintStream) {
   private val scanner = Scanner(stdin)
   private fun readObstacle() = ObstacleInput(
-    Vector2(scanner.nextInt(), scanner.nextInt()), scanner.nextInt(), scanner.nextInt(),
+    scanner.nextInt(),
+    Vector2(scanner.nextInt(), scanner.nextInt()),
+    scanner.nextInt(), scanner.nextInt(),
     scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()
   )//.also { stderr.println("Read obstacle: $it")}
 
@@ -62,7 +66,6 @@ abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stder
 @Suppress("UNUSED_PARAMETER")
 class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
   var turn = 0
-  var nextZerglings = true
 
   init {
     // Rotate between behaviours
@@ -79,52 +82,59 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
       { "BUILD MINE" },
       { "BUILD MINE" },
       { "BUILD BARRACKS GIANT" }
-      ))}}
+    ))}}
     var nextBehaviour = behaviours.next()
 
     while (true) {
-      try {
+      turn++
 
-        turn++
+      val (kingLoc, health, resources,
+        enemyKingLoc, enemyHealth, enemyResources,
+        obstacles, friendlyCreeps, enemyCreeps) = readInputs()
 
-        val (kingLoc, health, resources,
-          enemyKingLoc, enemyHealth, enemyResources,
-          obstacles, friendlyCreeps, enemyCreeps) = readInputs()
+      fun getKingAction(): String {
+        try {
+          // if touching a tower that isn't at max health, keep growing it
+          val growingTower = obstacles
+            .filter { it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrCooldown < 400 }
+            .firstOrNull { it.location.distanceTo(kingLoc) - it.radius - KING_RADIUS < 5 }
 
-        // if touching a tower that isn't at max health, keep growing it
-        val growingTower = obstacles
-          .filter { it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrProgress < 400 }
-          .firstOrNull { it.location.distanceTo(kingLoc) - it.radius - KING_RADIUS < 5 }
+          if (growingTower != null) return "BUILD TOWER"
 
-        if (growingTower != null) {
-          stdout.println("BUILD TOWER")
-          continue
-        }
+          // King goes to nearest unowned obstacle
+          val kingTarget = obstacles
+            .filter { it.owner == -1 }
+            .minBy { it.location.distanceTo(kingLoc) - it.radius }
 
-        // King goes to nearest unowned obstacle
-        val kingTarget = obstacles
-          .filter { it.owner == -1 }
-          .minBy { it.location.distanceTo(kingLoc) - it.radius }
+          if (kingTarget != null) {
+            // if in range, do something there
+            val dist = kingTarget.location.distanceTo(kingLoc) - Constants.KING_RADIUS - kingTarget.radius
 
-        if (kingTarget != null) {
-          // if in range, do something there
-          val dist = kingTarget.location.distanceTo(kingLoc) - Constants.KING_RADIUS - kingTarget.radius
-
-          if (dist < 5) {
-            stdout.println(nextBehaviour())
-            nextBehaviour = behaviours.next()
-          } else {
-            // move to it
-            stdout.println("MOVE ${kingTarget.location.x.toInt()} ${kingTarget.location.y.toInt()}")
+            return if (dist < 5) {
+              nextBehaviour().also { nextBehaviour = behaviours.next() }
+            } else {
+              // move to it
+              "MOVE ${kingTarget.location.x.toInt()} ${kingTarget.location.y.toInt()}"
+            }
           }
-          continue
-        }
 
-        stdout.println("MOVE 1000 500")  // if none, just go to middle of the map
-      } catch (ex: Exception) {
-        ex.printStackTrace(stderr)
+          return "MOVE 1000 500"  // if none, just go to middle of the map
+        } catch (ex: Exception) {
+          ex.printStackTrace(stderr)
+          throw ex
+        }
       }
 
+      fun getBuildOrders(): List<ObstacleInput> {
+        if (resources < 240) return listOf()
+        val barracks = obstacles.filter { it.structureType == 2 && it.owner == 0 && it.incomeRateOrHealthOrCooldown == 0 }
+        if (barracks.isEmpty()) return listOf()
+        val rando = barracks.sample()
+        return listOf(rando)
+      }
+
+      stdout.println(getKingAction())
+      stdout.println("TRAIN${getBuildOrders().joinToString { " " + it.obstacleId }}")
     }
   }
 }

@@ -34,7 +34,6 @@ class Referee : AbstractReferee() {
       Pair(Obstacle(rate), Obstacle(rate))
     }
     obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
-    Barracks.allObstacles = obstacles
 
     do {
       obstaclePairs.forEach { (o1, o2) ->
@@ -127,27 +126,17 @@ class Referee : AbstractReferee() {
       if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
     }
 
-    // 1. Existing structures work and barracks spawn new creeps
+    // 1. Existing structures work
     gameManager.players.forEach { player ->
-      val resourcesPerBarracks = {
-        val numBarracks = obstacles.count { it.structure is Barracks && (it.structure as Barracks).owner == player }
-        if (numBarracks == 0) 0 else player.resources / numBarracks
-      }()
-
       obstacles
         .filter { it.structure?.owner == player }
-        .forEach { it.act(resourcesPerBarracks)?.let { player.activeCreeps += it } }
+        .forEach { it.act() }
     }
 
     allUnits().forEach { it.updateEntity() }
 
     // 3. Check end game
-    gameManager.activePlayers.forEach {
-      if (!it.checkKingHealth()) {
-        it.deactivate("Dead king")
-      }
-    }
-
+    gameManager.activePlayers.forEach { it.checkKingHealth() }
     if (gameManager.activePlayers.size < 2) {
       gameManager.endGame()
     }
@@ -174,9 +163,37 @@ class Referee : AbstractReferee() {
 
     val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
     val structuresToBuild = mutableListOf<()->Unit>()
+    class PlayerInputException(message: String): Exception(message)
 
     playerLoop@ for (player in gameManager.activePlayers) {
       try {
+        // Process building creeps
+        val buildingBarracks = player.outputs[1].split(" ").drop(1)
+          .map { obsIdStr -> obsIdStr.toIntOrNull() ?: throw PlayerInputException("Couldn't process obstacleId: $obsIdStr") }
+          .map { obsId -> obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("No obstacle with id = $obsId") }
+          .map { obs ->
+            val struc = obs.structure as? Barracks ?: throw PlayerInputException("Cannot spawn from ${obs.obstacleId}: not a barracks")
+            if (struc.owner != player) throw PlayerInputException("Cannot spawn from ${obs.obstacleId}: not owned")
+            if (struc.cooldown > 0) throw PlayerInputException("Barracks ${obs.obstacleId} is on cooldown")
+            struc
+          }
+
+        val sum = buildingBarracks.sumBy { it.creepType.cost }
+        if (sum > player.resources) throw PlayerInputException("Building too many creeps")
+
+        player.resources -= sum
+        buildingBarracks.forEach { barracks ->
+          repeat(barracks.creepType.count) {
+            player.activeCreeps += when (barracks.creepType) {
+              CreepType.ARCHER, CreepType.ZERGLING ->
+                KingChasingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType)
+              CreepType.GIANT ->
+                TowerBustingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType, obstacles)
+            }
+          }
+          barracks.cooldown = barracks.creepType.cooldown
+        }
+
         val line = player.outputs[0]
         val toks = line.split(" ").iterator()
         when (toks.next()) {
@@ -189,16 +206,10 @@ class Referee : AbstractReferee() {
             val king = player.kingUnit
             val obsK = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
             val dist = obsK.location.distanceTo(king.location) - king.entity.radius - obsK.radius
-            if (dist > 10) {
-              player.deactivate("Cannot build: too far away ($dist)")
-              continue@playerLoop
-            }
-            val struc = obsK.structure
+            if (dist > 10) throw PlayerInputException("Cannot build: too far away ($dist)")
 
-            if (struc?.owner == player.enemyPlayer) {
-              player.deactivate("Cannot build: owned by enemy player")
-              continue@playerLoop
-            }
+            val struc = obsK.structure
+            if (struc?.owner == player.enemyPlayer) throw PlayerInputException("Cannot build: owned by enemy player")
 
             obstaclesAttemptedToBuildUpon += obsK
             structuresToBuild += {
@@ -223,6 +234,9 @@ class Referee : AbstractReferee() {
       } catch (e: AbstractPlayer.TimeoutException) {
         e.printStackTrace()
         player.deactivate("${player.nicknameToken}: timeout!")
+      } catch (e: PlayerInputException) {
+        e.printStackTrace()
+        player.deactivate(e.message)
       }
     }
 
@@ -240,10 +254,10 @@ class Referee : AbstractReferee() {
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
-                     val mass: Int, val hp: Int, val assetName: String, val fillAssetName: String) {
-  ZERGLING(4, 120, 20, 0,   10, 400,  30,  "bug.png",  "bugfill.png"),
-  ARCHER(  2, 210, 13, 200, 15, 900,  45,  "archer.png", "archer-fill.png"),
-  GIANT(   1, 240, 10, 0,   25, 2000, 200, "bulldozer.png", "bulldozer-fill.png")
+                     val mass: Int, val hp: Int, val cooldown: Int, val assetName: String, val fillAssetName: String) {
+  ZERGLING(4, 120, 20, 0,   10, 400,  30,  5, "bug.png",  "bug-fill.png"),
+  ARCHER(  2, 210, 13, 200, 15, 900,  45,  8, "archer.png", "archer-fill.png"),
+  GIANT(   1, 240, 10, 0,   25, 2000, 200, 10, "bulldozer.png", "bulldozer-fill.png")
 }
 
 object Constants {
@@ -251,25 +265,17 @@ object Constants {
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
   val TOWER_HP_MAXIMUM = 800
-  val TOWER_GENERAL_REPEL_FORCE = 20.0
   val TOWER_CREEP_DAMAGE_RANGE = 6..8
 
   val GIANT_BUST_RATE = 80
-  val INCOME_TIMER = 50
 
   val OBSTACLE_GAP = 60
-  val OBSTACLE_RADIUS_RANGE = 60..110
+  val OBSTACLE_RADIUS_RANGE = 60..100
 
   val KING_RADIUS = 20
-  val ENGINEER_RADIUS = 20
-  val GENERAL_RADIUS = 25
-
   val KING_MASS = 10000
-  val ENGINEER_MASS = 6400
-  val GENERAL_MASS = 3600
-
   val KING_HP = 200
 
-  val TOWER_MELT_RATE = 10
+  val TOWER_MELT_RATE = 2
   val TOWER_COVERAGE_PER_HP = 1000
 }
