@@ -22,7 +22,7 @@ object Constants {
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val cooldown: Int, val assetName: String, val fillAssetName: String) {
-  ZERGLING(4, 120, 20, 0,   10, 400,  30,  5, "bug.png",  "bug-fill.png"),
-  ARCHER(  2, 210, 13, 200, 15, 900,  45,  8, "archer.png", "archer-fill.png"),
-  GIANT(   1, 240, 10, 0,   25, 2000, 200, 10, "bulldozer.png", "bulldozer-fill.png")
+  ZERGLING(4, 80,  20, 0,   10, 400,  30,  5, "bug.png",  "bug-fill.png"),
+  ARCHER(  2, 120, 13, 200, 15, 900,  45,  8, "archer.png", "archer-fill.png"),
+  GIANT(   1, 140, 10, 0,   25, 2000, 200, 10, "bulldozer.png", "bulldozer-fill.png")
 }

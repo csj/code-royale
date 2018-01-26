@@ -57,26 +57,22 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
     .setY(obstacle.location.y.toInt() + 15)
     .setAnchor(0.5)!!
 
-  private val mineralBarOutline by lazy {
-    theEntityManager.createRectangle()
-      .setX(obstacle.location.x.toInt() - 40)
-      .setY(obstacle.location.y.toInt() - 30)
-      .setHeight(25)
-      .setWidth(80)
-      .setLineColor(0xFFFFFF)
-      .setLineWidth(1)
-      .setZIndex(400)!!
-  }
+  private val mineralBarOutline = theEntityManager.createRectangle()
+    .setX(obstacle.location.x.toInt() - 40)
+    .setY(obstacle.location.y.toInt() - 30)
+    .setHeight(25)
+    .setWidth(80)
+    .setLineColor(0xFFFFFF)
+    .setLineWidth(1)
+    .setZIndex(400)!!
 
-  private val mineralBarFill by lazy {
-    theEntityManager.createRectangle()
-      .setX(obstacle.location.x.toInt() - 40)
-      .setY(obstacle.location.y.toInt() - 30)
-      .setHeight(25)
-      .setWidth(80)
-      .setFillColor(0x8888FF)
-      .setLineWidth(0)!!
-  }
+  private val mineralBarFill = theEntityManager.createRectangle()
+    .setX(obstacle.location.x.toInt() - 40)
+    .setY(obstacle.location.y.toInt() - 30)
+    .setHeight(25)
+    .setWidth(80)
+    .setFillColor(0x8888FF)
+    .setLineWidth(0)!!
 
   override fun hideEntities() {
     text.isVisible = false
@@ -137,26 +133,22 @@ class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: In
 
 class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType: CreepType) : Structure {
 
-  private val progressBarOutline by lazy {
-    theEntityManager.createRectangle()
-      .setX(obstacle.location.x.toInt() - 40)
-      .setY(obstacle.location.y.toInt() + 10)
-      .setHeight(25)
-      .setWidth(80)
-      .setLineColor(0xFFFFFF)
-      .setLineWidth(1)
-      .setZIndex(400)
-  }
+  private val cooldownOutline = theEntityManager.createRectangle()
+    .setX(obstacle.location.x.toInt() - 40)
+    .setY(obstacle.location.y.toInt() + 20)
+    .setHeight(25)
+    .setWidth(80)
+    .setLineColor(0xFFFFFF)
+    .setLineWidth(1)
+    .setZIndex(400)
 
-  private val progressBarFill by lazy {
-    theEntityManager.createRectangle()
-      .setX(obstacle.location.x.toInt() - 40)
-      .setY(obstacle.location.y.toInt() + 10)
-      .setHeight(25)
-      .setWidth(80)
-      .setFillColor(0xFFA500)
-      .setZIndex(401)
-  }
+  private val cooldownFill = theEntityManager.createRectangle()
+    .setX(obstacle.location.x.toInt() - 40)
+    .setY(obstacle.location.y.toInt() + 20)
+    .setHeight(25)
+    .setWidth(80)
+    .setFillColor(0xFFA500)
+    .setZIndex(401)
 
   private var cooldownMax = creepType.cooldown
   var cooldown = 0; set(value) { field = max(0, value) }
@@ -185,16 +177,16 @@ class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType
     creepFillSprite.isVisible = true
     creepFillSprite.image = creepType.fillAssetName
 
-    progressBarOutline.isVisible = cooldown > 0
-    progressBarFill.isVisible = cooldown > 0
-    progressBarFill.width = (80 * cooldown / cooldownMax)
+    cooldownOutline.isVisible = cooldown > 0
+    cooldownFill.isVisible = cooldown > 0
+    cooldownFill.width = (80 * cooldown / cooldownMax)
   }
 
   override fun hideEntities() {
     creepFillSprite.isVisible = false
     creepSprite.isVisible = false
-    progressBarOutline.isVisible = false
-    progressBarFill.isVisible = false
+    cooldownOutline.isVisible = false
+    cooldownFill.isVisible = false
   }
 }
 
@@ -285,7 +277,7 @@ class TowerBustingCreep(
   location: Vector2,
   creepType: CreepType,
   private val obstacles: List<Obstacle>
-  ) : Creep(owner, location, creepType
+) : Creep(owner, location, creepType
 ) {
   override fun move() {
     obstacles
@@ -304,8 +296,8 @@ class TowerBustingCreep(
           && (it.structure as Tower).owner == owner.enemyPlayer
           && it.location.distanceTo(location) - entity.radius - it.radius < 10
       }?.let {
-        (it.structure as Tower).health -= GIANT_BUST_RATE
-      }
+      (it.structure as Tower).health -= GIANT_BUST_RATE
+    }
 
     val enemyKing = owner.enemyPlayer.kingUnit
     if (location.distanceTo(enemyKing.location) < entity.radius + enemyKing.entity.radius + attackRange + 10) {
@@ -314,11 +306,9 @@ class TowerBustingCreep(
   }
 }
 
-class KingChasingCreep(
-  owner: Player,
-  location: Vector2,
-  creepType: CreepType) : Creep(owner, location, creepType
-) {
+class KingChasingCreep(owner: Player, location: Vector2, creepType: CreepType)
+  : Creep(owner, location, creepType) {
+
   override fun move() {
     val enemyKing = owner.enemyPlayer.kingUnit
     // move toward enemy king, if not yet in range
@@ -346,10 +336,10 @@ abstract class Creep(
   override val mass: Int = creepType.mass
 
   var health: Int = creepType.hp
-  set(value) {
-    field = value
-    if (field < 0) field = 0
-  }
+    set(value) {
+      field = value
+      if (field < 0) field = 0
+    }
 
   private val maxHealth = health
 
