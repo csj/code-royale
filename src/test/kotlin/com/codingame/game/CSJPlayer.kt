@@ -28,7 +28,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
 
       val totalProduction = obstacles
         .filter { it.owner == 0 && it.structureType == 2 }
-        .sumBy { CreepType.values()[it.attackRadiusOrCreepType].let { it.cost / it.cooldown } }
+        .sumBy { CreepType.values()[it.attackRadiusOrCreepType].let { it.cost / it.buildTime } }
 
       val danger = enemyCreeps.any { it.location.distanceTo(kingLoc) < 300 }
 
@@ -42,6 +42,9 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
 
         val kingTarget = obstacles
           .filter { it.owner == -1 }
+          .filter { target -> !obstacles.any {
+            it.owner == 1 && it.structureType == 1 &&
+              it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < 100 }}
           .minBy { it.location.distanceTo(kingLoc) - it.radius }
 
         if (kingTarget == null) {

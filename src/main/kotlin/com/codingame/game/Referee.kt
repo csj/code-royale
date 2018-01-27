@@ -174,7 +174,7 @@ class Referee : AbstractReferee() {
           .map { obs ->
             val struc = obs.structure as? Barracks ?: throw PlayerInputException("Cannot spawn from ${obs.obstacleId}: not a barracks")
             if (struc.owner != player) throw PlayerInputException("Cannot spawn from ${obs.obstacleId}: not owned")
-            if (struc.cooldown > 0) throw PlayerInputException("Barracks ${obs.obstacleId} is on cooldown")
+            if (struc.isTraining) throw PlayerInputException("Barracks ${obs.obstacleId} is training")
             struc
           }
 
@@ -183,15 +183,18 @@ class Referee : AbstractReferee() {
 
         player.resources -= sum
         buildingBarracks.forEach { barracks ->
-          repeat(barracks.creepType.count) {
-            player.activeCreeps += when (barracks.creepType) {
-              CreepType.RANGED, CreepType.MELEE ->
-                KingChasingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType)
-              CreepType.GIANT ->
-                TowerBustingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType, obstacles)
+          barracks.progress = 0
+          barracks.isTraining = true
+          barracks.onComplete = {
+            repeat(barracks.creepType.count) {
+              player.activeCreeps += when (barracks.creepType) {
+                CreepType.RANGED, CreepType.MELEE ->
+                  KingChasingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType)
+                CreepType.GIANT ->
+                  TowerBustingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType, obstacles)
+              }
             }
           }
-          barracks.cooldown = barracks.creepType.cooldown
         }
 
         val line = player.outputs[0]
@@ -211,8 +214,8 @@ class Referee : AbstractReferee() {
 
             val struc = obsK.structure
             if (struc?.owner == player.enemyPlayer) throw PlayerInputException("Cannot build: owned by enemy player")
-            if (struc is Barracks && struc.owner == player && struc.cooldown > 0)
-              throw PlayerInputException("Cannot rebuild: barracks is on cooldown")
+            if (struc is Barracks && struc.owner == player && struc.progress > 0)
+              throw PlayerInputException("Cannot rebuild: training is in progress")
 
             obstaclesAttemptedToBuildUpon += obsK
             structuresToBuild += {

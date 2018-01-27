@@ -9,7 +9,6 @@ import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_RANGE
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.GraphicEntityModule
-import java.lang.Integer.max
 
 lateinit var theEntityManager: GraphicEntityModule
 
@@ -71,7 +70,7 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
     .setY(obstacle.location.y.toInt() - 30)
     .setHeight(25)
     .setWidth(80)
-    .setFillColor(0x8888FF)
+    .setFillColor(0xffbf00)
     .setLineWidth(0)!!
 
   override fun hideEntities() {
@@ -133,7 +132,7 @@ class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: In
 
 class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType: CreepType) : Structure {
 
-  private val cooldownOutline = theEntityManager.createRectangle()
+  private val progressOutline = theEntityManager.createRectangle()
     .setX(obstacle.location.x.toInt() - 40)
     .setY(obstacle.location.y.toInt() + 20)
     .setHeight(25)
@@ -142,16 +141,19 @@ class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType
     .setLineWidth(1)
     .setZIndex(400)
 
-  private val cooldownFill = theEntityManager.createRectangle()
+  private val progressFill = theEntityManager.createRectangle()
     .setX(obstacle.location.x.toInt() - 40)
     .setY(obstacle.location.y.toInt() + 20)
     .setHeight(25)
     .setWidth(80)
-    .setFillColor(0xFFA500)
+    .setFillColor(owner.colorToken)
     .setZIndex(401)
 
-  private var cooldownMax = creepType.cooldown
-  var cooldown = 0; set(value) { field = max(0, value) }
+  var progressMax = creepType.buildTime
+  var progress = 0
+  var isTraining = false
+
+  var onComplete: () -> Unit = { }
 
   private val creepSprite = theEntityManager.createSprite()
     .setAnchor(0.5)
@@ -172,21 +174,21 @@ class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType
   override fun updateEntities() {
     creepSprite.isVisible = true
     creepSprite.image = creepType.assetName
-    creepSprite.y = obstacle.location.y.toInt() - if(cooldown > 0) 20 else 0
-    creepFillSprite.y = obstacle.location.y.toInt() - if(cooldown > 0) 20 else 0
+    creepSprite.y = obstacle.location.y.toInt() - if(isTraining) 20 else 0
+    creepFillSprite.y = obstacle.location.y.toInt() - if(isTraining) 20 else 0
     creepFillSprite.isVisible = true
     creepFillSprite.image = creepType.fillAssetName
 
-    cooldownOutline.isVisible = cooldown > 0
-    cooldownFill.isVisible = cooldown > 0
-    cooldownFill.width = (80 * cooldown / cooldownMax)
+    progressOutline.isVisible = isTraining
+    progressFill.isVisible = isTraining
+    progressFill.width = (80 * progress / (progressMax-1))
   }
 
   override fun hideEntities() {
     creepFillSprite.isVisible = false
     creepSprite.isVisible = false
-    cooldownOutline.isVisible = false
-    cooldownFill.isVisible = false
+    progressOutline.isVisible = false
+    progressFill.isVisible = false
   }
 }
 
@@ -246,7 +248,14 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
           }
         }
         is Barracks -> {
-          it.cooldown--
+          if (it.isTraining) {
+            it.progress++
+            if (it.progress == it.progressMax) {
+              it.progress = 0
+              it.isTraining = false
+              it.onComplete()
+            }
+          }
           it.updateEntities()
         }
       }

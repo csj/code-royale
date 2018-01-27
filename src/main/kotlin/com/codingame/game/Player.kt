@@ -25,7 +25,7 @@ class Player : AbstractPlayer() {
     val toks2 = when (struc) {
       is Mine -> listOf(0, fixOwner(struc.owner), struc.incomeRate, -1)
       is Tower -> listOf(1, fixOwner(struc.owner), struc.health, struc.attackRadius)
-      is Barracks -> listOf(2, fixOwner(struc.owner), struc.cooldown, struc.creepType.ordinal)
+      is Barracks -> listOf(2, fixOwner(struc.owner), struc.progress, struc.creepType.ordinal)
       else -> listOf(-1, -1, -1, -1)
     }
     sendInputLine((toks + toks2).joinToString(" "))
