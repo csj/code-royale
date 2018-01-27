@@ -185,7 +185,7 @@ class Referee : AbstractReferee() {
         buildingBarracks.forEach { barracks ->
           repeat(barracks.creepType.count) {
             player.activeCreeps += when (barracks.creepType) {
-              CreepType.ARCHER, CreepType.ZERGLING ->
+              CreepType.RANGED, CreepType.MELEE ->
                 KingChasingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType)
               CreepType.GIANT ->
                 TowerBustingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType, obstacles)
@@ -211,6 +211,8 @@ class Referee : AbstractReferee() {
 
             val struc = obsK.structure
             if (struc?.owner == player.enemyPlayer) throw PlayerInputException("Cannot build: owned by enemy player")
+            if (struc is Barracks && struc.owner == player && struc.cooldown > 0)
+              throw PlayerInputException("Cannot rebuild: barracks is on cooldown")
 
             obstaclesAttemptedToBuildUpon += obsK
             structuresToBuild += {

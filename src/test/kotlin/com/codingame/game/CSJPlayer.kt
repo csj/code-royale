@@ -61,15 +61,15 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           if (totalIncome * 1.5 <= totalProduction && kingTarget.minerals > 0) return "BUILD MINE"
 
           // count enemy towers; make sure we have a giant if they have more than 3
-          val ourZerglings = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }
-          val ourArchers = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 1 }
+          val ourMelees = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }
+          val ourRanged = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 1 }
           val ourGiants = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 2 }
           val theirTowers = obstacles.count { it.owner == 1 && it.structureType == 1 }
 
           val barracksType = when {
-            theirTowers >= 3 && ourGiants == 0 -> "GIANT"
-            ourZerglings > ourArchers -> "ARCHER"
-            else -> "ZERGLING"
+            theirTowers >= 3 && ourGiants == 0 -> CreepType.GIANT
+            ourMelees > ourRanged -> CreepType.RANGED
+            else -> CreepType.MELEE
           }
           return "BUILD BARRACKS $barracksType"
         }
