@@ -1,4 +1,3 @@
-import com.codingame.game.BasicPlayer;
 import com.codingame.gameengine.runner.GameRunner;
 
 public class Main {

@@ -59,6 +59,11 @@ class Referee : AbstractReferee() {
     fixCollisions()
     allUnits().forEach { it.updateEntity() }
 
+    gameManager.activePlayers.forEach { player ->
+      player.sendInputLine(obstacles.size.toString())
+      obstacles.forEach { player.printObstacleInit(it) }
+    }
+
     // Params contains all the game parameters that has been to generate this game
     // For instance, it can be a seed number, the size of a grid/map, ...
     return params
@@ -111,8 +116,7 @@ class Referee : AbstractReferee() {
       activePlayer.sendInputLine("${activePlayer.health} ${activePlayer.resources}")
       activePlayer.printLocation(activePlayer.enemyPlayer.kingUnit.location)
       activePlayer.sendInputLine("${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
-      activePlayer.sendInputLine(obstacles.size.toString())
-      obstacles.forEach { activePlayer.printObstacle(it) }
+      obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
       for (player in listOf(activePlayer, activePlayer.enemyPlayer)) {
         activePlayer.sendInputLine(player.activeCreeps.size.toString())
