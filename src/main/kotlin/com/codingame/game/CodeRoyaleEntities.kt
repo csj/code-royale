@@ -30,7 +30,27 @@ class King(owner: Player) : MyOwnedEntity(owner) {
   override val mass: Int = KING_MASS
   override val entity = theEntityManager.createCircle()
     .setRadius(KING_RADIUS)
-    .setFillColor(owner.colorToken)!!
+    .setLineColor(owner.colorToken)
+    .setLineWidth(2)
+
+  private val kingSprite = theEntityManager.createSprite()
+    .setImage("king.png")
+    .setZIndex(40)
+    .setAnchor(0.5)!!
+
+  val kingFillSprite = theEntityManager.createSprite()
+    .setImage("king-fill.png")
+    .setTint(owner.colorToken)
+    .setAnchor(0.5)
+    .setZIndex(30)!!
+
+  override fun updateEntity() {
+    super.updateEntity()
+    kingSprite.x = location.x.toInt()
+    kingSprite.y = location.y.toInt()
+    kingFillSprite.x = location.x.toInt()
+    kingFillSprite.y = location.y.toInt()
+  }
 }
 
 fun IntRange.sample(): Int {
@@ -354,7 +374,6 @@ abstract class Creep(
 
   override val entity = theEntityManager.createCircle()
     .setRadius(radius)
-    .setFillColor(owner.colorToken)
     .setVisible(false)!!
 
   private val sprite = theEntityManager.createSprite()

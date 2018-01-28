@@ -5,7 +5,7 @@ import com.codingame.gameengine.core.AbstractPlayer
 
 class Player : AbstractPlayer() {
   override fun getExpectedOutputLines(): Int = 2
-  lateinit var kingUnit: MyOwnedEntity
+  lateinit var kingUnit: King
   lateinit var enemyPlayer: Player
   var inverted: Boolean = false
 
@@ -40,10 +40,10 @@ class Player : AbstractPlayer() {
 
   fun checkKingHealth() {
     if (health <= 0) {
-      kingUnit.entity.fillAlpha = 0.0
+      kingUnit.kingFillSprite.alpha = 0.0
       deactivate("Dead king")
     } else {
-      kingUnit.entity.fillAlpha = 0.8 * health / KING_HP + 0.2
+      kingUnit.kingFillSprite.alpha = 0.8 * health / KING_HP + 0.2
     }
   }
 

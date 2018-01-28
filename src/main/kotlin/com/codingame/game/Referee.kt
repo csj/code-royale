@@ -56,8 +56,8 @@ class Referee : AbstractReferee() {
       activePlayer.kingUnit = King(activePlayer).also { it.location = corner }
     }
 
-    allUnits().forEach { it.updateEntity() }
     fixCollisions()
+    allUnits().forEach { it.updateEntity() }
 
     // Params contains all the game parameters that has been to generate this game
     // For instance, it can be a seed number, the size of a grid/map, ...
@@ -105,43 +105,7 @@ class Referee : AbstractReferee() {
   }
 
   override fun gameTurn(turn: Int) {
-    // TODO: Rearrange turn order so that visual state matches what bot sees
-    // TODO: Remove location inversion
-
-    // 2. Creeps move and deal damage
-    val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
-    allCreeps.forEach { it.damage(1) }
-
-    repeat(5) {
-      allCreeps.forEach { it.move() }
-      fixCollisions(dontLoop = true)
-    }
-
-    allCreeps.forEach { it.dealDamage() }
-
-    allCreeps.forEach { creep ->
-      val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
-      if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.entity.radius > 5) return@forEach
-      val struc = closestObstacle.structure
-      if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
-    }
-
-    // 1. Existing structures work
-    gameManager.players.forEach { player ->
-      obstacles
-        .filter { it.structure?.owner == player }
-        .forEach { it.act() }
-    }
-
-    allUnits().forEach { it.updateEntity() }
-
-    // 3. Check end game
-    gameManager.activePlayers.forEach { it.checkKingHealth() }
-    if (gameManager.activePlayers.size < 2) {
-      gameManager.endGame()
-    }
-
-    // 4. Send game states
+    // 1. Send game states
     for (activePlayer in gameManager.activePlayers) {
       activePlayer.printLocation(activePlayer.kingUnit.location)
       activePlayer.sendInputLine("${activePlayer.health} ${activePlayer.resources}")
@@ -159,7 +123,7 @@ class Referee : AbstractReferee() {
       activePlayer.execute()
     }
 
-    // 5. Process player actions
+    // 2. Process player actions
 
     val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
     val structuresToBuild = mutableListOf<()->Unit>()
@@ -259,6 +223,38 @@ class Referee : AbstractReferee() {
 
     // Execute builds that remain
     structuresToBuild.forEach { it.invoke() }
+
+    // 3. Creeps move and deal damage
+    val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
+    allCreeps.forEach { it.damage(1) }
+    repeat(5) {
+      allCreeps.forEach { it.move() }
+      fixCollisions(dontLoop = true)
+    }
+    allCreeps.forEach { it.dealDamage() }
+
+    // Tear down enemy mines
+    allCreeps.forEach { creep ->
+      val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
+      if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.entity.radius > 5) return@forEach
+      val struc = closestObstacle.structure
+      if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
+    }
+
+    // 4. Structures work
+    gameManager.players.forEach { player ->
+      obstacles
+        .filter { it.structure?.owner == player }
+        .forEach { it.act() }
+    }
+
+    allUnits().forEach { it.updateEntity() }
+
+    // 5. Check end game
+    gameManager.activePlayers.forEach { it.checkKingHealth() }
+    if (gameManager.activePlayers.size < 2) {
+      gameManager.endGame()
+    }
 
     gameManager.players.forEach {
       gameManager.addToGameSummary("${it.nicknameToken} Health: ${it.health} Resources: ${it.resources}")
