@@ -44,7 +44,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           .filter { it.owner == -1 }
           .filter { target -> !obstacles.any {
             it.owner == 1 && it.structureType == 1 &&
-              it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < 100 }}
+              it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < -30 }}
           .minBy { it.location.distanceTo(kingLoc) - it.radius }
 
         if (kingTarget == null) {
@@ -53,7 +53,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
             .filter { it.owner == 0 && it.structureType == 1 }
             .minBy { it.location.distanceTo(kingLoc) - it.radius }
 
-          return closestTower?.let { "MOVE ${it.location.x.toInt()} ${it.location.y.toInt()}" } ?: "WAIT"
+          return closestTower?.let { "MOVEOBSTACLE ${it.obstacleId}" } ?: "WAIT"
         }
 
         val dist = kingTarget.location.distanceTo(kingLoc) - Constants.KING_RADIUS - kingTarget.radius
@@ -61,7 +61,8 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         if (dist < 5) {
           // Touching an obstacle; do something here
           if (danger) return "BUILD TOWER"
-          if (totalIncome * 1.5 <= totalProduction && kingTarget.minerals > 0) return "BUILD MINE"
+          if (totalIncome * 1.5 <= totalProduction)
+            return if (kingTarget.minerals > 0) "BUILD MINE" else "BUILD TOWER"
 
           // count enemy towers; make sure we have a giant if they have more than 3
           val ourMelees = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }
@@ -70,17 +71,17 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           val theirTowers = obstacles.count { it.owner == 1 && it.structureType == 1 }
 
           val barracksType = when {
-            theirTowers >= 3 && ourGiants == 0 -> CreepType.GIANT
+            theirTowers >= 2 && ourGiants == 0 -> CreepType.GIANT
             ourMelees > ourRanged -> CreepType.RANGED
             else -> CreepType.MELEE
           }
           return "BUILD BARRACKS $barracksType"
         }
 
-        return kingTarget.let { "MOVE ${it.location.x.toInt()} ${it.location.y.toInt()}"}
+        return kingTarget.let { "MOVEOBSTACLE ${it.obstacleId}"}
       }
 
-      fun getBuildOrders(): List<ObstacleInput> {
+      fun getTrainOrders(): List<ObstacleInput> {
         val myBarracks = obstacles.filter { it.owner == 0 && it.structureType == 2 }
 
         if (myBarracks.isEmpty()) return listOf()
@@ -92,7 +93,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
 
       try {
         stdout.println(getKingAction())
-        stdout.println("TRAIN${getBuildOrders().joinToString("") { " " + it.obstacleId }}")
+        stdout.println("TRAIN${getTrainOrders().joinToString("") { " " + it.obstacleId }}")
       } catch (ex: Exception) {
         ex.printStackTrace(stderr)
         throw ex

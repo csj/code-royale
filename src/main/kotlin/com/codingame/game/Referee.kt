@@ -52,7 +52,7 @@ class Referee : AbstractReferee() {
     obstacles.forEach { it.updateEntities() }
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
-      val corner = if (invert) Vector2(1920- KING_RADIUS, 1080- KING_RADIUS) else Vector2(KING_RADIUS, KING_RADIUS)
+      val corner = if (invert) Vector2(1920-200, 1080-200) else Vector2(200, 200)
       activePlayer.kingUnit = King(activePlayer).also { it.location = corner }
     }
 
@@ -199,12 +199,18 @@ class Referee : AbstractReferee() {
 
         val line = player.outputs[0]
         val toks = line.split(" ").iterator()
-        when (toks.next()) {
+        val command = toks.next()
+        when (command) {
           "WAIT" -> { }
           "MOVE" -> {
             val x = toks.next().toInt()
             val y = toks.next().toInt()
             player.kingUnit.location = player.kingUnit.location.towards(Vector2(x, y), UNIT_SPEED.toDouble())
+          }
+          "MOVEOBSTACLE" -> {
+            val obsId = toks.next().toInt()
+            val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
+            player.kingUnit.location = player.kingUnit.location.towards(obs.location, UNIT_SPEED.toDouble())
           }
           "BUILD" -> {
             val king = player.kingUnit
@@ -236,6 +242,7 @@ class Referee : AbstractReferee() {
               }
             }
           }
+          else -> throw PlayerInputException("Didn't understand command: $command")
         }
       } catch (e: AbstractPlayer.TimeoutException) {
         e.printStackTrace()
