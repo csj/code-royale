@@ -112,10 +112,8 @@ class Referee : AbstractReferee() {
   override fun gameTurn(turn: Int) {
     // 1. Send game states
     for (activePlayer in gameManager.activePlayers) {
-      activePlayer.printLocation(activePlayer.kingUnit.location)
-      activePlayer.sendInputLine("${activePlayer.health} ${activePlayer.resources}")
-      activePlayer.printLocation(activePlayer.enemyPlayer.kingUnit.location)
-      activePlayer.sendInputLine("${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
+      activePlayer.sendInputLine("${activePlayer.kingUnit.location.x.toInt()} ${activePlayer.kingUnit.location.y.toInt()} ${activePlayer.health} ${activePlayer.resources}")
+      activePlayer.sendInputLine("${activePlayer.enemyPlayer.kingUnit.location.x.toInt()} ${activePlayer.enemyPlayer.kingUnit.location.y.toInt()} ${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
       obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
       for (player in listOf(activePlayer, activePlayer.enemyPlayer)) {

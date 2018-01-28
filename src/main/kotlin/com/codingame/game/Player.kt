@@ -11,11 +11,6 @@ class Player : AbstractPlayer() {
 
   private fun fixOwner(player: Player?) = when (player) { null -> -1; this -> 0; else -> 1 }
 
-  fun printLocation(location: Vector2) {
-    val (x,y) = location
-    sendInputLine("${x.toInt()} ${y.toInt()}")
-  }
-
   fun printObstacleInit(obstacle: Obstacle) {
     val (x,y) = obstacle.location
     val toks = listOf(obstacle.obstacleId, x.toInt(), y.toInt(), obstacle.radius, obstacle.minerals)
