@@ -9,6 +9,7 @@ import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_RANGE
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.GraphicEntityModule
+import java.lang.Integer.max
 
 lateinit var theEntityManager: GraphicEntityModule
 
@@ -31,7 +32,7 @@ class King(owner: Player) : MyOwnedEntity(owner) {
   override val entity = theEntityManager.createCircle()
     .setRadius(KING_RADIUS)
     .setLineColor(owner.colorToken)
-    .setLineWidth(2)
+    .setLineWidth(2)!!
 
   private val kingSprite = theEntityManager.createSprite()
     .setImage("king.png")
@@ -54,7 +55,7 @@ class King(owner: Player) : MyOwnedEntity(owner) {
 }
 
 fun IntRange.sample(): Int {
-  return (Math.random() * (last-first+1) + first).toInt()
+  return theRandom.nextInt(last-first) + first
 }
 
 interface Structure {
@@ -216,7 +217,7 @@ var nextObstacleId = 1
 class Obstacle(private val mineralRate: Int): MyEntity() {
   val obstacleId = nextObstacleId++
   override val mass = 0
-  var minerals = 300
+  var minerals = 300; set(value) { field = max(value, 0) }
 
   var radius = OBSTACLE_RADIUS_RANGE.sample()
   private val area = Math.PI * radius * radius

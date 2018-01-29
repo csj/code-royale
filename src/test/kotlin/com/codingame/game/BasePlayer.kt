@@ -4,7 +4,7 @@ import java.io.InputStream
 import java.io.PrintStream
 import java.util.*
 
-fun<T> List<T>.sample() = this[Random().nextInt(size)]
+fun<T> List<T>.sample() = this[theRandom.nextInt(size)]
 
 data class CreepInput(
   val location: Vector2,

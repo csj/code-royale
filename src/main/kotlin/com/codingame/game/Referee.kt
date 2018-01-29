@@ -1,6 +1,5 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.KING_RADIUS
 import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
@@ -13,6 +12,8 @@ import com.codingame.gameengine.module.entities.GraphicEntityModule
 import com.google.inject.Inject
 import java.util.*
 
+lateinit var theRandom: Random
+
 @Suppress("unused")  // injected by magic
 class Referee : AbstractReferee() {
   @Inject private lateinit var gameManager: GameManager<Player>
@@ -23,6 +24,8 @@ class Referee : AbstractReferee() {
   private fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
   override fun init(params: Properties): Properties {
+    theRandom = (params["seed"] as? Long)?.let { Random(it) } ?: Random()
+
     theEntityManager = entityManager
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
@@ -45,9 +48,6 @@ class Referee : AbstractReferee() {
       }
 
     } while (fixCollisions(OBSTACLE_GAP.toDouble(), obstacles, dontLoop = true))
-
-//    obstacles = (0..29).map { Obstacle(entityManager) }
-//    fixCollisions(OBSTACLE_GAP.toDouble(), obstacles)
 
     obstacles.forEach { it.updateEntities() }
 

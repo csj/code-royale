@@ -13,7 +13,7 @@ data class Vector2(val x: Double, val y: Double) {
     val len = length
     when(len) {
       0.0 -> {
-        val ang = Math.random() * 2 * Math.PI
+        val ang = theRandom.nextDouble() * 2 * Math.PI
         Vector2(cos(ang), sin(ang))
       }
       else -> Vector2(x / len, y / len)
@@ -49,6 +49,6 @@ data class Vector2(val x: Double, val y: Double) {
 
   companion object {
     val Zero = Vector2(0, 0)
-    fun random(maxX: Int, maxY: Int) = Vector2(Math.random() * maxX, Math.random() * maxY)
+    fun random(maxX: Int, maxY: Int) = Vector2(theRandom.nextInt(maxX), theRandom.nextInt(maxY))
   }
 }
