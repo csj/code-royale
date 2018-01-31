@@ -18,6 +18,9 @@ object Constants {
 
   val TOWER_MELT_RATE = 2
   val TOWER_COVERAGE_PER_HP = 1000
+
+  val WORLD_WIDTH = 1920
+  val WORLD_HEIGHT = 950
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,

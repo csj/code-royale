@@ -33,15 +33,10 @@ class Player : AbstractPlayer() {
   fun allUnits() = activeCreeps + kingUnit
 
   var health = KING_HP
+  var resources = 0
 
   fun checkKingHealth() {
-    if (health <= 0) {
-      kingUnit.kingFillSprite.alpha = 0.0
-      deactivate("Dead king")
-    } else {
-      kingUnit.kingFillSprite.alpha = 0.8 * health / KING_HP + 0.2
-    }
+    kingUnit.setHealth(health)
+    if (health <= 0) deactivate("Dead king")
   }
-
-  var resources = 0
 }

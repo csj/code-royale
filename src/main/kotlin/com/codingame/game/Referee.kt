@@ -1,5 +1,7 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.WORLD_HEIGHT
+import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
@@ -40,11 +42,10 @@ class Referee : AbstractReferee() {
 
     do {
       obstaclePairs.forEach { (o1, o2) ->
-        val mid = (o1.location + Vector2(1920-o2.location.x, 1080-o2.location.y)) / 2.0
+        val mid = (o1.location + Vector2(WORLD_WIDTH -o2.location.x, WORLD_HEIGHT -o2.location.y)) / 2.0
         o1.location = mid
-        o2.location = Vector2(1920-mid.x, 1080-mid.y)
+        o2.location = Vector2(WORLD_WIDTH -mid.x, WORLD_HEIGHT -mid.y)
         o2.radius = o1.radius
-        o2.entity.radius = o1.entity.radius
       }
 
     } while (fixCollisions(OBSTACLE_GAP.toDouble(), obstacles, dontLoop = true))
@@ -52,12 +53,17 @@ class Referee : AbstractReferee() {
     obstacles.forEach { it.updateEntities() }
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
-      val corner = if (invert) Vector2(1920-200, 1080-200) else Vector2(200, 200)
+      val spawnDistance = 200
+      val corner = if (invert)
+        Vector2(WORLD_WIDTH - spawnDistance, WORLD_HEIGHT - spawnDistance)
+      else
+        Vector2(spawnDistance, spawnDistance)
+
       activePlayer.kingUnit = King(activePlayer).also { it.location = corner }
     }
 
     fixCollisions()
-    allUnits().forEach { it.updateEntity() }
+//    allUnits().forEach { it.updateEntity() }
 
     gameManager.activePlayers.forEach { player ->
       player.sendInputLine(obstacles.size.toString())
@@ -77,13 +83,13 @@ class Referee : AbstractReferee() {
       var loopAgain = false
 
       for (u1 in allUnits) {
-        val rad = u1.entity.radius.toDouble()
+        val rad = u1.radius.toDouble()
         val clampDist = if (u1.mass == 0) OBSTACLE_GAP + rad else rad
-        u1.location = u1.location.clampWithin(clampDist, 1920-clampDist, clampDist, 1080-clampDist)
+        u1.location = u1.location.clampWithin(clampDist, WORLD_WIDTH -clampDist, clampDist, WORLD_HEIGHT -clampDist)
 
         for (u2 in allUnits) {
           if (u1 != u2) {
-            val overlap = u1.entity.radius + u2.entity.radius + acceptableGap - u1.location.distanceTo(u2.location)
+            val overlap = u1.radius + u2.radius + acceptableGap - u1.location.distanceTo(u2.location)
             if (overlap > 1e-6) {
               val (d1, d2) = when {
                 u1.mass == 0 && u2.mass == 0 -> Pair(0.5, 0.5)
@@ -155,10 +161,10 @@ class Referee : AbstractReferee() {
             repeat(barracks.creepType.count) {
               player.activeCreeps += when (barracks.creepType) {
                 CreepType.RANGED, CreepType.MELEE ->
-                  KingChasingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType)
+                  KingChasingCreep(barracks.owner, barracks.creepType)
                 CreepType.GIANT ->
-                  TowerBustingCreep(barracks.owner, barracks.obstacle.location, barracks.creepType, obstacles)
-              }
+                  TowerBustingCreep(barracks.owner, barracks.creepType, obstacles)
+              }.also { it.location = barracks.obstacle.location }
             }
           }
         }
@@ -181,7 +187,8 @@ class Referee : AbstractReferee() {
           "BUILD" -> {
             val king = player.kingUnit
             val obsK = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
-            val dist = obsK.location.distanceTo(king.location) - king.entity.radius - obsK.radius
+
+            val dist = obsK.location.distanceTo(king.location) - king.radius - obsK.radius
             if (dist > 10) throw PlayerInputException("Cannot build: too far away ($dist)")
 
             val struc = obsK.structure
@@ -238,7 +245,7 @@ class Referee : AbstractReferee() {
     // Tear down enemy mines
     allCreeps.forEach { creep ->
       val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
-      if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.entity.radius > 5) return@forEach
+      if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius > 5) return@forEach
       val struc = closestObstacle.structure
       if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
     }
@@ -250,7 +257,7 @@ class Referee : AbstractReferee() {
         .forEach { it.act() }
     }
 
-    allUnits().forEach { it.updateEntity() }
+//    allUnits().forEach { it.updateEntity() }
 
     // 5. Check end game
     gameManager.activePlayers.forEach { it.checkKingHealth() }

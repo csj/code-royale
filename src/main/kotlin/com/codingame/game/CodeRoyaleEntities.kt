@@ -1,35 +1,53 @@
 package com.codingame.game
 
 import com.codingame.game.Constants.GIANT_BUST_RATE
+import com.codingame.game.Constants.KING_HP
 import com.codingame.game.Constants.KING_MASS
 import com.codingame.game.Constants.KING_RADIUS
+import com.codingame.game.Constants.WORLD_HEIGHT
+import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_RADIUS_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
 import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_RANGE
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
+import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
 import java.lang.Integer.max
 
 lateinit var theEntityManager: GraphicEntityModule
 
-abstract class MyEntity {
-  var location = Vector2.Zero
-  abstract val mass: Int   // 0 := immovable
-  abstract val entity: Circle
+val viewportX = 0..1920
+val viewportY = 0..950
 
-  open fun updateEntity() {
-    entity.x = location.x.toInt()
-    entity.y = location.y.toInt()
-    entity.zIndex = 50
+fun worldToScreen(worldLocation: Vector2): Vector2 {
+  return Vector2(
+    worldLocation.x + viewportX.first,
+    worldLocation.y + viewportY.first
+  )
+}
+
+var <T : Entity<*>?> Entity<T>.location: Vector2
+  get() { return Vector2(x, y) }
+  set(value) {
+    val screenLoc = worldToScreen(value)
+    x = screenLoc.x.toInt(); y = screenLoc.y.toInt()
   }
+
+abstract class MyEntity {
+  open var location = Vector2.Zero
+  open var radius = 0
+
+  abstract val mass: Int   // 0 := immovable
 }
 
 abstract class MyOwnedEntity(val owner: Player) : MyEntity()
 
 class King(owner: Player) : MyOwnedEntity(owner) {
-  override val mass: Int = KING_MASS
-  override val entity = theEntityManager.createCircle()
+  override val mass = KING_MASS
+  override var radius = KING_RADIUS
+
+  private val kingOutline = theEntityManager.createCircle()
     .setRadius(KING_RADIUS)
     .setLineColor(owner.colorToken)
     .setLineWidth(2)!!
@@ -39,19 +57,27 @@ class King(owner: Player) : MyOwnedEntity(owner) {
     .setZIndex(40)
     .setAnchor(0.5)!!
 
-  val kingFillSprite = theEntityManager.createSprite()
+  private val kingFillSprite = theEntityManager.createSprite()
     .setImage("king-fill.png")
     .setTint(owner.colorToken)
     .setAnchor(0.5)
     .setZIndex(30)!!
 
-  override fun updateEntity() {
-    super.updateEntity()
-    kingSprite.x = location.x.toInt()
-    kingSprite.y = location.y.toInt()
-    kingFillSprite.x = location.x.toInt()
-    kingFillSprite.y = location.y.toInt()
+  fun setHealth(health: Int) {
+    when {
+      health <= 0 -> kingFillSprite.alpha = 0.0
+      else -> kingFillSprite.alpha = 0.8 * health / KING_HP + 0.2
+    }
   }
+
+  override var location: Vector2
+    get() = super.location
+    set(value) {
+      super.location = value
+      kingSprite.location = location
+      kingFillSprite.location = location
+      kingOutline.location = location
+    }
 }
 
 fun IntRange.sample(): Int {
@@ -65,21 +91,19 @@ interface Structure {
 }
 
 class Mine(private val obstacle: Obstacle, override val owner: Player, val incomeRate: Int) : Structure {
+
   private val text = theEntityManager.createText("+$incomeRate")
     .setFillColor(owner.colorToken)!!
-    .setX(obstacle.location.x.toInt() - 7)
-    .setY(obstacle.location.y.toInt())
+    .also { it.location = obstacle.location + Vector2(-7,0) }
 
   private val pickaxeSprite = theEntityManager.createSprite()
     .setImage("pickaxe.png")
     .setZIndex(40)
-    .setX(obstacle.location.x.toInt() - 20)
-    .setY(obstacle.location.y.toInt() + 15)
+    .also { it.location = obstacle.location + Vector2(-20, 15) }
     .setAnchor(0.5)!!
 
   private val mineralBarOutline = theEntityManager.createRectangle()
-    .setX(obstacle.location.x.toInt() - 40)
-    .setY(obstacle.location.y.toInt() - 30)
+    .also { it.location = obstacle.location + Vector2(-40, -30) }
     .setHeight(25)
     .setWidth(80)
     .setLineColor(0xFFFFFF)
@@ -87,8 +111,7 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
     .setZIndex(400)!!
 
   private val mineralBarFill = theEntityManager.createRectangle()
-    .setX(obstacle.location.x.toInt() - 40)
-    .setY(obstacle.location.y.toInt() - 30)
+    .also { it.location = obstacle.location + Vector2(-40, -30) }
     .setHeight(25)
     .setWidth(80)
     .setFillColor(0xffbf00)
@@ -116,21 +139,18 @@ class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: In
     .setFillColor(0)
     .setLineColor(0)
     .setZIndex(10)
-    .setX(obstacle.location.x.toInt())
-    .setY(obstacle.location.y.toInt())
+    .also { it.location = obstacle.location }
 
   private val sprite = theEntityManager.createSprite()
     .setImage("tower.png")
     .setZIndex(40)
-    .setX(obstacle.location.x.toInt())
-    .setY(obstacle.location.y.toInt())
+    .also { it.location = obstacle.location }
     .setAnchor(0.5)!!
 
   private val fillSprite = theEntityManager.createSprite()
     .setImage("tower-fill.png")
     .setZIndex(30)
-    .setX(obstacle.location.x.toInt())
-    .setY(obstacle.location.y.toInt())
+    .also { it.location = obstacle.location }
     .setAnchor(0.5)!!
 
   override fun hideEntities() {
@@ -154,8 +174,7 @@ class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: In
 class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType: CreepType) : Structure {
 
   private val progressOutline = theEntityManager.createRectangle()
-    .setX(obstacle.location.x.toInt() - 40)
-    .setY(obstacle.location.y.toInt() + 20)
+    .also { it.location = obstacle.location + Vector2(-40,20) }
     .setHeight(25)
     .setWidth(80)
     .setLineColor(0xFFFFFF)
@@ -163,8 +182,7 @@ class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType
     .setZIndex(400)
 
   private val progressFill = theEntityManager.createRectangle()
-    .setX(obstacle.location.x.toInt() - 40)
-    .setY(obstacle.location.y.toInt() + 20)
+    .also { it.location = obstacle.location + Vector2(-40,20) }
     .setHeight(25)
     .setWidth(80)
     .setFillColor(owner.colorToken)
@@ -179,24 +197,22 @@ class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType
   private val creepSprite = theEntityManager.createSprite()
     .setAnchor(0.5)
     .setZIndex(40)
-    .setX(obstacle.location.x.toInt())
-    .setY(obstacle.location.y.toInt() - 20)
+    .also { it.location = obstacle.location + Vector2(0, -20) }
     .setScale(2.0)!!
 
   private val creepFillSprite = theEntityManager.createSprite()
     .setTint(owner.colorToken)
     .setAnchor(0.5)
     .setZIndex(30)
-    .setX(obstacle.location.x.toInt())
-    .setY(obstacle.location.y.toInt() - 20)
+    .also { it.location = obstacle.location + Vector2(0, -20) }
     .setTint(owner.colorToken)
     .setScale(2.0)!!
 
   override fun updateEntities() {
     creepSprite.isVisible = true
     creepSprite.image = creepType.assetName
-    creepSprite.y = obstacle.location.y.toInt() - if(isTraining) 20 else 0
-    creepFillSprite.y = obstacle.location.y.toInt() - if(isTraining) 20 else 0
+    creepSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
+    creepFillSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
     creepFillSprite.isVisible = true
     creepFillSprite.image = creepType.fillAssetName
 
@@ -219,7 +235,29 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
   override val mass = 0
   var minerals = 300; set(value) { field = max(value, 0) }
 
-  var radius = OBSTACLE_RADIUS_RANGE.sample()
+  private val outline: Circle = theEntityManager.createCircle()
+    .setLineWidth(3)
+    .setLineColor(0xbbbbbb)
+    .setFillColor(0x222222)
+    .setZIndex(-20)
+
+  override var radius: Int = 0
+    set(value) {
+      field = value
+      outline.radius = value
+    }
+
+  override var location: Vector2
+    get() = super.location
+    set(value) {
+      super.location = value
+      outline.location = location
+    }
+
+  init {
+    radius = OBSTACLE_RADIUS_RANGE.sample()
+  }
+
   private val area = Math.PI * radius * radius
 
   var structure: Structure? = null
@@ -228,13 +266,6 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
       field = value
       structure?.updateEntities()
     }
-
-  override val entity: Circle = theEntityManager.createCircle()
-    .setRadius(radius)
-    .setLineWidth(3)
-    .setFillColor(0)
-    .setFillAlpha(0.0)
-    .setZIndex(100)
 
   fun updateEntities() {
     structure?.updateEntities()
@@ -286,7 +317,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
   }
 
   init {
-    location = Vector2.random(1920, 1080)
+    location = Vector2.random(WORLD_WIDTH, WORLD_HEIGHT)
   }
 
   fun setMine(owner: Player) {
@@ -304,10 +335,9 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
 
 class TowerBustingCreep(
   owner: Player,
-  location: Vector2,
   creepType: CreepType,
   private val obstacles: List<Obstacle>
-) : Creep(owner, location, creepType
+) : Creep(owner, creepType
 ) {
   override fun move() {
     obstacles
@@ -324,31 +354,31 @@ class TowerBustingCreep(
         it.structure != null
           && it.structure is Tower
           && (it.structure as Tower).owner == owner.enemyPlayer
-          && it.location.distanceTo(location) - entity.radius - it.radius < 10
+          && it.location.distanceTo(location) - radius - it.radius < 10
       }?.let {
       (it.structure as Tower).health -= GIANT_BUST_RATE
     }
 
     val enemyKing = owner.enemyPlayer.kingUnit
-    if (location.distanceTo(enemyKing.location) < entity.radius + enemyKing.entity.radius + attackRange + 10) {
+    if (location.distanceTo(enemyKing.location) < radius + enemyKing.radius + attackRange + 10) {
       owner.enemyPlayer.health -= 1
     }
   }
 }
 
-class KingChasingCreep(owner: Player, location: Vector2, creepType: CreepType)
-  : Creep(owner, location, creepType) {
+class KingChasingCreep(owner: Player, creepType: CreepType)
+  : Creep(owner, creepType) {
 
   override fun move() {
     val enemyKing = owner.enemyPlayer.kingUnit
     // move toward enemy king, if not yet in range
-    if (location.distanceTo(enemyKing.location) - entity.radius - enemyKing.entity.radius > attackRange)
+    if (location.distanceTo(enemyKing.location) - radius - enemyKing.radius > attackRange)
       location = location.towards((enemyKing.location + (location - enemyKing.location).resizedTo(3.0)), speed.toDouble())
   }
 
   override fun dealDamage() {
     val enemyKing = owner.enemyPlayer.kingUnit
-    if (location.distanceTo(enemyKing.location) < entity.radius + enemyKing.entity.radius + attackRange + 10) {
+    if (location.distanceTo(enemyKing.location) < radius + enemyKing.radius + attackRange + 10) {
       owner.enemyPlayer.health -= 1
     }
   }
@@ -356,26 +386,26 @@ class KingChasingCreep(owner: Player, location: Vector2, creepType: CreepType)
 
 abstract class Creep(
   owner: Player,
-  location: Vector2,
   val creepType: CreepType
 ) : MyOwnedEntity(owner) {
 
   protected val speed: Int = creepType.speed
   val attackRange: Int = creepType.range
-  private val radius: Int = creepType.radius
   override val mass: Int = creepType.mass
 
   var health: Int = creepType.hp
     set(value) {
       field = value
-      if (field < 0) field = 0
+      fillSprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
+
+      if (field <= 0) {
+        field = 0
+        sprite.alpha = 0.0
+        fillSprite.alpha = 0.0
+      }
     }
 
   private val maxHealth = health
-
-  override val entity = theEntityManager.createCircle()
-    .setRadius(radius)
-    .setVisible(false)!!
 
   private val sprite = theEntityManager.createSprite()
     .setImage(creepType.assetName)
@@ -388,26 +418,20 @@ abstract class Creep(
     .setAnchor(0.5)
     .setZIndex(30)!!
 
-  init {
-    this.location = location
-    @Suppress("LeakingThis") updateEntity()
-  }
+  override var location: Vector2 = Vector2.Zero
+    set(value) {
+      field = value
+      if (value != Vector2.Zero) {
+        sprite.location = value
+        fillSprite.location = value
+      }
+    }
 
-  override fun updateEntity() {
-    super.updateEntity()
-    fillSprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
-    fillSprite.x = location.x.toInt()
-    fillSprite.y = location.y.toInt()
-    sprite.x = location.x.toInt()
-    sprite.y = location.y.toInt()
-  }
+  override var radius = creepType.radius
 
   fun damage(hp: Int) {
     health -= hp
     if (health <= 0) {
-      entity.isVisible = false
-      sprite.alpha = 0.0
-      fillSprite.alpha = 0.0
       owner.activeCreeps.remove(this)
     }
   }
