@@ -32,11 +32,11 @@ class Player : AbstractPlayer() {
 
   fun allUnits() = activeCreeps + kingUnit
 
-  var health = KING_HP
+  var health by nonNegative(KING_HP)
   var resources = 0
 
   fun checkKingHealth() {
     kingUnit.setHealth(health)
-    if (health <= 0) deactivate("Dead king")
+    if (health == 0) deactivate("Dead king")
   }
 }

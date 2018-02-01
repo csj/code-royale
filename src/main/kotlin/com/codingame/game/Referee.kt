@@ -6,7 +6,6 @@ import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
-import com.codingame.game.Constants.UNIT_SPEED
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
@@ -34,21 +33,27 @@ class Referee : AbstractReferee() {
     gameManager.players[1].enemyPlayer = gameManager.players[0]
     gameManager.players[1].inverted = true
 
-    val obstaclePairs = (1..15).map {
-      val rate = (1..5).sample()
-      Pair(Obstacle(rate), Obstacle(rate))
-    }
-    obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
+    loop@ do {
+      nextObstacleId = 0
 
-    do {
-      obstaclePairs.forEach { (o1, o2) ->
-        val mid = (o1.location + Vector2(WORLD_WIDTH -o2.location.x, WORLD_HEIGHT -o2.location.y)) / 2.0
-        o1.location = mid
-        o2.location = Vector2(WORLD_WIDTH -mid.x, WORLD_HEIGHT -mid.y)
-        o2.radius = o1.radius
+      val obstaclePairs = (1..15).map {
+        val rate = (1..5).sample()
+        Pair(Obstacle(rate), Obstacle(rate))
       }
+      obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
 
-    } while (fixCollisions(OBSTACLE_GAP.toDouble(), obstacles, dontLoop = true))
+      for (iter in 1..100) {
+        obstaclePairs.forEach { (o1, o2) ->
+          val mid = (o1.location + Vector2(WORLD_WIDTH -o2.location.x, WORLD_HEIGHT -o2.location.y)) / 2.0
+          o1.location = mid
+          o2.location = Vector2(WORLD_WIDTH -mid.x, WORLD_HEIGHT -mid.y)
+          o2.radius = o1.radius
+        }
+        if (!fixCollisions(OBSTACLE_GAP.toDouble(), obstacles, dontLoop = true)) break@loop
+      }
+      obstacles.forEach { it.destroy() }
+      System.err.println("abandoning")
+    } while (true)
 
     obstacles.forEach { it.updateEntities() }
 
@@ -75,6 +80,9 @@ class Referee : AbstractReferee() {
     return params
   }
 
+  /**
+   * @return true if there is a correction
+   */
   private fun fixCollisions(acceptableGap: Double = 0.0, entities: List<MyEntity>? = null, dontLoop: Boolean = false): Boolean {
     val allUnits = entities ?: allUnits()
     var foundAny = false
@@ -115,8 +123,7 @@ class Referee : AbstractReferee() {
     return foundAny
   }
 
-  override fun gameTurn(turn: Int) {
-    // 1. Send game states
+  private fun sendGameStates() {
     for (activePlayer in gameManager.activePlayers) {
       activePlayer.sendInputLine("${activePlayer.kingUnit.location.x.toInt()} ${activePlayer.kingUnit.location.y.toInt()} ${activePlayer.health} ${activePlayer.resources}")
       activePlayer.sendInputLine("${activePlayer.enemyPlayer.kingUnit.location.x.toInt()} ${activePlayer.enemyPlayer.kingUnit.location.y.toInt()} ${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
@@ -130,14 +137,41 @@ class Referee : AbstractReferee() {
       }
       activePlayer.execute()
     }
+  }
 
-    // 2. Process player actions
-
+  private fun processPlayerActions() {
     val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
-    val structuresToBuild = mutableListOf<()->Unit>()
+    val scheduledBuildings = mutableListOf<()->Unit>()
     class PlayerInputException(message: String): Exception(message)
 
+    fun scheduleBuilding(player: Player, obs: Obstacle, toks: Iterator<String>) {
+      val struc = obs.structure
+      if (struc?.owner == player.enemyPlayer) throw PlayerInputException("Cannot build: owned by enemy player")
+      if (struc is Barracks && struc.owner == player && struc.progress > 0)
+        throw PlayerInputException("Cannot rebuild: training is in progress")
+
+      obstaclesAttemptedToBuildUpon += obs
+      scheduledBuildings += {
+        when (toks.next()) {
+          "MINE" -> obs.setMine(player)
+          "TOWER" -> {
+            if (struc is Tower) {
+              struc.health += TOWER_HP_INCREMENT
+              if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
+            } else {
+              obs.setTower(player, TOWER_HP_INITIAL)
+            }
+          }
+          "BARRACKS" -> {
+            val creepType = CreepType.valueOf(toks.next())
+            obs.setBarracks(player, creepType)
+          }
+        }
+      }
+    }
+
     playerLoop@ for (player in gameManager.activePlayers) {
+      val king = player.kingUnit
       try {
         // Process building creeps
         val buildingBarracks = player.outputs[1].split(" ").drop(1)
@@ -172,47 +206,34 @@ class Referee : AbstractReferee() {
         val line = player.outputs[0]
         val toks = line.split(" ").iterator()
         val command = toks.next()
+
         when (command) {
           "WAIT" -> { }
           "MOVE" -> {
             val x = toks.next().toInt()
             val y = toks.next().toInt()
-            player.kingUnit.location = player.kingUnit.location.towards(Vector2(x, y), UNIT_SPEED.toDouble())
+            king.moveTowards(Vector2(x,y))
           }
-          "MOVEOBSTACLE" -> {
+          "MOVETOOBSTACLE" -> {
             val obsId = toks.next().toInt()
             val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
-            player.kingUnit.location = player.kingUnit.location.towards(obs.location, UNIT_SPEED.toDouble())
+            king.moveTowards(obs.location)
           }
           "BUILD" -> {
-            val king = player.kingUnit
-            val obsK = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
-
-            val dist = obsK.location.distanceTo(king.location) - king.radius - obsK.radius
+            val obs = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
+            val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
             if (dist > 10) throw PlayerInputException("Cannot build: too far away ($dist)")
+            scheduleBuilding(player, obs, toks)
+          }
+          "BUILDONOBSTACLE" -> {
+            val obsId = toks.next().toInt()
+            val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
 
-            val struc = obsK.structure
-            if (struc?.owner == player.enemyPlayer) throw PlayerInputException("Cannot build: owned by enemy player")
-            if (struc is Barracks && struc.owner == player && struc.progress > 0)
-              throw PlayerInputException("Cannot rebuild: training is in progress")
-
-            obstaclesAttemptedToBuildUpon += obsK
-            structuresToBuild += {
-              when (toks.next()) {
-                "MINE" -> obsK.setMine(player)
-                "TOWER" -> {
-                  if (struc is Tower) {
-                    struc.health += TOWER_HP_INCREMENT
-                    if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
-                  } else {
-                    obsK.setTower(player, TOWER_HP_INITIAL)
-                  }
-                }
-                "BARRACKS" -> {
-                  val creepType = CreepType.valueOf(toks.next())
-                  obsK.setBarracks(player, creepType)
-                }
-              }
+            val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
+            if (dist > 10) {
+              king.moveTowards(obs.location)
+            } else {
+              scheduleBuilding(player, obs, toks)
             }
           }
           else -> throw PlayerInputException("Didn't understand command: $command")
@@ -222,18 +243,19 @@ class Referee : AbstractReferee() {
         player.deactivate("${player.nicknameToken}: timeout!")
       } catch (e: PlayerInputException) {
         e.printStackTrace()
-        player.deactivate(e.message)
+        player.deactivate("${player.nicknameToken}: ${e.message}")
       }
     }
 
     // If they're both building onto the same one, then actually build neither
     if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1])
-      structuresToBuild.clear()
+      scheduledBuildings.clear()
 
     // Execute builds that remain
-    structuresToBuild.forEach { it.invoke() }
+    scheduledBuildings.forEach { it.invoke() }
+  }
 
-    // 3. Creeps move and deal damage
+  private fun processCreeps() {
     val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
     allCreeps.forEach { it.damage(1) }
     repeat(5) {
@@ -250,20 +272,19 @@ class Referee : AbstractReferee() {
       if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
     }
 
-    // 4. Structures work
-    gameManager.players.forEach { player ->
-      obstacles
-        .filter { it.structure?.owner == player }
-        .forEach { it.act() }
-    }
+  }
 
-//    allUnits().forEach { it.updateEntity() }
+  override fun gameTurn(turn: Int) {
+    sendGameStates()
+    processPlayerActions()
+    processCreeps()
+
+    // Process structures
+    obstacles.forEach { it.act() }
 
     // 5. Check end game
     gameManager.activePlayers.forEach { it.checkKingHealth() }
-    if (gameManager.activePlayers.size < 2) {
-      gameManager.endGame()
-    }
+    if (gameManager.activePlayers.size < 2) gameManager.endGame()
 
     gameManager.players.forEach {
       gameManager.addToGameSummary("${it.nicknameToken} Health: ${it.health} Resources: ${it.resources}")

@@ -13,25 +13,18 @@ import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
-import java.lang.Integer.max
 
 lateinit var theEntityManager: GraphicEntityModule
 
 val viewportX = 0..1920
 val viewportY = 0..950
 
-fun worldToScreen(worldLocation: Vector2): Vector2 {
-  return Vector2(
-    worldLocation.x + viewportX.first,
-    worldLocation.y + viewportY.first
-  )
-}
-
 var <T : Entity<*>?> Entity<T>.location: Vector2
-  get() { return Vector2(x, y) }
+  get() = Vector2(x - viewportX.first, y - viewportY.first)
+
   set(value) {
-    val screenLoc = worldToScreen(value)
-    x = screenLoc.x.toInt(); y = screenLoc.y.toInt()
+    x = (value.x + viewportX.first).toInt()
+    y = (value.y + viewportY.first).toInt()
   }
 
 abstract class MyEntity {
@@ -70,6 +63,10 @@ class King(owner: Player) : MyOwnedEntity(owner) {
     }
   }
 
+  fun moveTowards(target: Vector2) {
+    location = location.towards(target, Constants.UNIT_SPEED.toDouble())
+  }
+
   override var location: Vector2
     get() = super.location
     set(value) {
@@ -78,10 +75,6 @@ class King(owner: Player) : MyOwnedEntity(owner) {
       kingFillSprite.location = location
       kingOutline.location = location
     }
-}
-
-fun IntRange.sample(): Int {
-  return theRandom.nextInt(last-first) + first
 }
 
 interface Structure {
@@ -229,11 +222,11 @@ class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType
   }
 }
 
-var nextObstacleId = 1
+var nextObstacleId = 0
 class Obstacle(private val mineralRate: Int): MyEntity() {
   val obstacleId = nextObstacleId++
   override val mass = 0
-  var minerals = 300; set(value) { field = max(value, 0) }
+  var minerals by nonNegative(300)
 
   private val outline: Circle = theEntityManager.createCircle()
     .setLineWidth(3)
@@ -269,6 +262,10 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
 
   fun updateEntities() {
     structure?.updateEntities()
+  }
+
+  fun destroy() {
+    outline.isVisible = false
   }
 
   fun act() {
@@ -351,13 +348,11 @@ class TowerBustingCreep(
   override fun dealDamage() {
     obstacles
       .firstOrNull {
-        it.structure != null
-          && it.structure is Tower
-          && (it.structure as Tower).owner == owner.enemyPlayer
+        val struc = it.structure
+        struc is Tower
+          && struc.owner == owner.enemyPlayer
           && it.location.distanceTo(location) - radius - it.radius < 10
-      }?.let {
-      (it.structure as Tower).health -= GIANT_BUST_RATE
-    }
+      }?.let { (it.structure as Tower).health -= GIANT_BUST_RATE }
 
     val enemyKing = owner.enemyPlayer.kingUnit
     if (location.distanceTo(enemyKing.location) < radius + enemyKing.radius + attackRange + 10) {

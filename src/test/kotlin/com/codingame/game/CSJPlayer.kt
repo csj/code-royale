@@ -53,7 +53,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
             .filter { it.owner == 0 && it.structureType == 1 }
             .minBy { it.location.distanceTo(kingLoc) - it.radius }
 
-          return closestTower?.let { "MOVEOBSTACLE ${it.obstacleId}" } ?: "WAIT"
+          return closestTower?.let { "MOVETOOBSTACLE ${it.obstacleId}" } ?: "WAIT"
         }
 
         val dist = kingTarget.location.distanceTo(kingLoc) - Constants.KING_RADIUS - kingTarget.radius
@@ -78,7 +78,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           return "BUILD BARRACKS $barracksType"
         }
 
-        return kingTarget.let { "MOVEOBSTACLE ${it.obstacleId}"}
+        return kingTarget.let { "MOVETOOBSTACLE ${it.obstacleId}"}
       }
 
       fun getTrainOrders(): List<ObstacleInput> {
