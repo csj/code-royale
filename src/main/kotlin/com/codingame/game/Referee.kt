@@ -31,7 +31,7 @@ class Referee : AbstractReferee() {
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
-    gameManager.players[1].inverted = true
+    gameManager.players[1].isSecondPlayer = true
 
     loop@ do {
       nextObstacleId = 0
@@ -68,7 +68,8 @@ class Referee : AbstractReferee() {
     }
 
     fixCollisions()
-//    allUnits().forEach { it.updateEntity() }
+
+    gameManager.activePlayers.forEach { it.hud.update() }
 
     gameManager.activePlayers.forEach { player ->
       player.sendInputLine(obstacles.size.toString())
@@ -275,6 +276,8 @@ class Referee : AbstractReferee() {
   }
 
   override fun gameTurn(turn: Int) {
+    gameManager.activePlayers.forEach { it.resourcesPerTurn = 0 }
+
     sendGameStates()
     processPlayerActions()
     processCreeps()

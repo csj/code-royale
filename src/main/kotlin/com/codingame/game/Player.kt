@@ -7,7 +7,7 @@ class Player : AbstractPlayer() {
   override fun getExpectedOutputLines(): Int = 2
   lateinit var kingUnit: King
   lateinit var enemyPlayer: Player
-  var inverted: Boolean = false
+  var isSecondPlayer: Boolean = false
 
   private fun fixOwner(player: Player?) = when (player) { null -> -1; this -> 0; else -> 1 }
 
@@ -34,9 +34,13 @@ class Player : AbstractPlayer() {
 
   var health by nonNegative(KING_HP)
   var resources = 0
+  var resourcesPerTurn = 0
 
   fun checkKingHealth() {
     kingUnit.setHealth(health)
     if (health == 0) deactivate("Dead king")
+    hud.update()
   }
+
+  val hud by lazy { PlayerHUD(this, isSecondPlayer) }
 }

@@ -289,6 +289,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
           }
         }
         is Mine -> {
+          it.owner.resourcesPerTurn += it.incomeRate
           it.owner.resources += it.incomeRate
           minerals -= it.incomeRate
           if (minerals <= 0) {
@@ -435,3 +436,60 @@ abstract class Creep(
   abstract fun move()
 }
 
+class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
+  private val left = if (isSecondPlayer) 1920/2 else 0
+  private val right = if (isSecondPlayer) 1920 else 1920/2
+  private val top = viewportY.last + 20
+  private val bottom = 1080
+
+  private val healthBarWidth = 450
+
+  private val background = theEntityManager.createRectangle()!!
+    .setX(left).setY(top)
+    .setWidth(right-left).setHeight(bottom-top)
+    .setFillColor(player.colorToken)
+    .setLineWidth(0)
+    .setZIndex(4000)
+
+  private val healthBarBackground = theEntityManager.createRectangle()!!
+    .setX(left + 100).setY(top + 30)
+    .setWidth(healthBarWidth).setHeight(bottom-top-30-30)
+    .setLineWidth(0)
+    .setFillColor(0).setFillAlpha(0.4)
+    .setZIndex(4001)
+
+  private val healthBarFill = theEntityManager.createRectangle()!!
+    .setX(left + 100).setY(top + 30)
+    .setWidth(healthBarWidth).setHeight(bottom-top-30-30)
+    .setFillColor(0x55ff55)
+    .setLineWidth(0)
+    .setZIndex(4002)
+
+  private val heartSprite = theEntityManager.createSprite()
+    .setX(left + 60).setY((top + bottom)/2)
+    .setScale(2.0)
+    .setImage("heart.png")
+    .setAnchor(0.5)
+    .setZIndex(4002)!!
+
+  private val moneySprite = theEntityManager.createSprite()
+    .setX(healthBarFill.x + healthBarFill.width + 100).setY((top + bottom)/2)
+    .setImage("money.png")
+    .setScale(2.0)
+    .setAnchor(0.5)
+    .setZIndex(4002)!!
+
+  private val moneyText = theEntityManager.createText("0")
+    .setX(moneySprite.x + 50).setY(top + 20)
+    .setScale(2.0)
+    .setZIndex(4002)!!
+
+  fun update() {
+    healthBarFill.width = healthBarWidth * player.health / KING_HP
+    moneyText.text = when (player.resourcesPerTurn) {
+      0 -> "${player.resources}"
+      else -> "${player.resources} (+${player.resourcesPerTurn})"
+    }
+  }
+
+}
