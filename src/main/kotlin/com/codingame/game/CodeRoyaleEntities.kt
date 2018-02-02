@@ -13,8 +13,10 @@ import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
+import tooltipModule.TooltipModule
 
 lateinit var theEntityManager: GraphicEntityModule
+lateinit var theTooltipModule: TooltipModule
 
 val viewportX = 0..1920
 val viewportY = 0..950
@@ -249,6 +251,9 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
 
   init {
     radius = OBSTACLE_RADIUS_RANGE.sample()
+    val params = java.util.HashMap<String, Object>()
+    params.put("id", obstacleId)
+    theTooltipModule.registerEntity(outline, params)
   }
 
   private val area = Math.PI * radius * radius
