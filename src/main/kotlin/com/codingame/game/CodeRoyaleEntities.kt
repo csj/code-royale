@@ -251,8 +251,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
 
   init {
     radius = OBSTACLE_RADIUS_RANGE.sample()
-    val params = java.util.HashMap<String, Object>()
-    params.put("id", obstacleId)
+    val params = hashMapOf("id" to obstacleId)
     theTooltipModule.registerEntity(outline, params)
   }
 
