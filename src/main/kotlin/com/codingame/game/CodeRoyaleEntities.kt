@@ -87,6 +87,7 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
 
   private val text = theEntityManager.createText("+$incomeRate")
     .setFillColor(owner.colorToken)!!
+    .setZIndex(401)
     .also { it.location = obstacle.location + Vector2(-7,0) }
 
   private val pickaxeSprite = theEntityManager.createSprite()
@@ -109,6 +110,7 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
     .setWidth(80)
     .setFillColor(0xffbf00)
     .setLineWidth(0)!!
+    .setZIndex(401)
 
   override fun hideEntities() {
     text.isVisible = false
@@ -128,9 +130,8 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
 
 class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: Int, var health: Int) : Structure {
   private val towerRangeCircle = theEntityManager.createCircle()
-    .setFillAlpha(0.15)
-    .setFillColor(0)
-    .setLineColor(0)
+    .setFillAlpha(0.2)
+    .setLineWidth(0)
     .setZIndex(10)
     .also { it.location = obstacle.location }
 
@@ -232,7 +233,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
     .setLineWidth(3)
     .setLineColor(0xbbbbbb)
     .setFillColor(0x222222)
-    .setZIndex(-20)
+    .setZIndex(20)
 
   override var radius: Int = 0
     set(value) {
