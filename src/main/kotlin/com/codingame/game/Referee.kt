@@ -10,6 +10,7 @@ import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.GraphicEntityModule
+import tooltipModule.TooltipModule;
 import com.google.inject.Inject
 import java.util.*
 
@@ -19,6 +20,7 @@ lateinit var theRandom: Random
 class Referee : AbstractReferee() {
   @Inject private lateinit var gameManager: GameManager<Player>
   @Inject private lateinit var entityManager: GraphicEntityModule
+  @Inject private lateinit var tooltipModule: TooltipModule
 
   private var obstacles: List<Obstacle> = listOf()
 
@@ -28,6 +30,7 @@ class Referee : AbstractReferee() {
     theRandom = (params["seed"] as? Long)?.let { Random(it) } ?: Random()
 
     theEntityManager = entityManager
+    theTooltipModule = tooltipModule
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
