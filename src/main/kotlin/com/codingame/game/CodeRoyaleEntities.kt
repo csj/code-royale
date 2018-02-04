@@ -252,7 +252,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
   init {
     radius = OBSTACLE_RADIUS_RANGE.sample()
     val params = hashMapOf("id" to obstacleId)
-    theTooltipModule.registerEntity(outline, params)
+    theTooltipModule.registerEntity(outline, params as Map<String, Any>?)
   }
 
   private val area = Math.PI * radius * radius
