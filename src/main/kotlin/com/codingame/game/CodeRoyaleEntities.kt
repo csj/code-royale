@@ -296,7 +296,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
     if (struc != null) {
       theTooltipModule.updateExtraTooltipText(outline, *struc.extraTooltipLines().toTypedArray())
     } else {
-      theTooltipModule.updateExtraTooltipText(outline)
+      theTooltipModule.updateExtraTooltipText(outline, "Remaining resources: $minerals")
     }
   }
 
@@ -401,6 +401,22 @@ class TowerBustingCreep(
 class KingChasingCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType) {
 
+  private var lastLocation: Vector2? = null
+  override fun finalizeFrame() {
+    val last = lastLocation
+
+    if (last != null) {
+      val movementVector = when {
+        last.distanceTo(location) > 30 -> location - last
+        else -> owner.enemyPlayer.kingUnit.location - location
+      }
+      sprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+      fillSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+    }
+
+    lastLocation = location
+  }
+
   override fun move() {
     val enemyKing = owner.enemyPlayer.kingUnit
     // move toward enemy king, if not yet in range
@@ -440,12 +456,12 @@ abstract class Creep(
 
   private val maxHealth = health
 
-  private val sprite = theEntityManager.createSprite()
+  protected val sprite = theEntityManager.createSprite()
     .setImage(creepType.assetName)
     .setAnchor(0.5)
     .setZIndex(40)!!
 
-  private val fillSprite = theEntityManager.createSprite()
+  protected val fillSprite = theEntityManager.createSprite()
     .setImage(creepType.fillAssetName)
     .setTint(owner.colorToken)
     .setAnchor(0.5)
@@ -454,11 +470,13 @@ abstract class Creep(
   override var location: Vector2 = Vector2.Zero
     set(value) {
       field = value
-      if (value != Vector2.Zero) {
-        sprite.location = value
-        fillSprite.location = value
-      }
+      if (value == Vector2.Zero) return
+
+      sprite.location = value
+      fillSprite.location = value
     }
+
+  open fun finalizeFrame() { }
 
   override var radius = creepType.radius
 
