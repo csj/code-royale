@@ -484,7 +484,8 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
   private val top = viewportY.last + 20
   private val bottom = 1080
 
-  private val healthBarWidth = 450
+  private val healthBarWidth = 400
+  private val healthBarPadding = 15
 
   private val background = theEntityManager.createRectangle()!!
     .setX(left).setY(top)
@@ -493,29 +494,41 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setLineWidth(0)
     .setZIndex(4000)
 
-  private val healthBarBackground = theEntityManager.createRectangle()!!
-    .setX(left + 100).setY(top + 30)
-    .setWidth(healthBarWidth).setHeight(bottom-top-30-30)
-    .setLineWidth(0)
-    .setFillColor(0).setFillAlpha(0.4)
-    .setZIndex(4001)
-
-  private val healthBarFill = theEntityManager.createRectangle()!!
-    .setX(left + 100).setY(top + 30)
-    .setWidth(healthBarWidth).setHeight(bottom-top-30-30)
-    .setFillColor(0x55ff55)
-    .setLineWidth(0)
-    .setZIndex(4002)
+  private val avatar = theEntityManager.createSprite()
+    .setImage(player.avatarToken)
+    .setX(left + 10).setY(top + 10)
+    .setScale(0.8)
+    .setZIndex(4003)!!
 
   private val heartSprite = theEntityManager.createSprite()
-    .setX(left + 60).setY((top + bottom)/2)
+    .setX(left + 155).setY((top + bottom)/2)
     .setScale(2.0)
     .setImage("heart.png")
     .setAnchor(0.5)
     .setZIndex(4002)!!
 
+  private val healthBarBackground = theEntityManager.createRectangle()!!
+    .setX(left + 200 - healthBarPadding).setY(top + 25 - healthBarPadding)
+    .setWidth(healthBarWidth + 2*healthBarPadding).setHeight(bottom-top-25-25+2*healthBarPadding)
+    .setLineWidth(0)
+    .setFillColor(0).setFillAlpha(0.4)
+    .setZIndex(4001)
+
+  private val healthBarFill = theEntityManager.createRectangle()!!
+    .setX(left + 200).setY(top + 25)
+    .setWidth(healthBarWidth).setHeight(bottom-top-25-25)
+    .setFillColor(0x55ff55)
+    .setLineWidth(0)
+    .setZIndex(4002)
+
+  private val playerName = theEntityManager.createText(player.nicknameToken)!!
+    .setX(left + 200 + 5).setY(top + 25)
+    .setFillColor(0)
+    .setScale(2.0)
+    .setZIndex(4003)
+
   private val moneySprite = theEntityManager.createSprite()
-    .setX(healthBarFill.x + healthBarFill.width + 100).setY((top + bottom)/2)
+    .setX(healthBarBackground.x + healthBarBackground.width + 50).setY((top + bottom)/2)
     .setImage("money.png")
     .setScale(2.0)
     .setAnchor(0.5)
