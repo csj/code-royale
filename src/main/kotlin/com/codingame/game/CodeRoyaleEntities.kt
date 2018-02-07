@@ -63,6 +63,11 @@ class King(owner: Player) : MyOwnedEntity(owner) {
       health <= 0 -> kingFillSprite.alpha = 0.0
       else -> kingFillSprite.alpha = 0.8 * health / KING_HP + 0.2
     }
+    theTooltipModule.updateExtraTooltipText(kingSprite, "Health: $health")
+  }
+
+  init {
+    theTooltipModule.registerEntity(kingSprite, mapOf("id" to kingSprite.id, "type" to "King"))
   }
 
   fun moveTowards(target: Vector2) {
@@ -83,9 +88,15 @@ interface Structure {
   val owner: Player
   fun updateEntities()
   fun hideEntities()
+  fun extraTooltipLines(): List<String>
 }
 
 class Mine(private val obstacle: Obstacle, override val owner: Player, val incomeRate: Int) : Structure {
+
+  override fun extraTooltipLines(): List<String> = listOf(
+    "MINE (+$incomeRate)",
+    "Remaining resources: ${obstacle.minerals}"
+  )
 
   private val text = theEntityManager.createText("+$incomeRate")
     .setFillColor(owner.colorToken)!!
@@ -129,6 +140,12 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
 }
 
 class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: Int, var health: Int) : Structure {
+  override fun extraTooltipLines(): List<String> = listOf(
+    "TOWER",
+    "Range: $attackRadius",
+    "Health: $health"
+  )
+
   private val towerRangeCircle = theEntityManager.createCircle()
     .setFillAlpha(0.15)
     .setFillColor(0)
@@ -167,6 +184,14 @@ class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: In
 }
 
 class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType: CreepType) : Structure {
+
+  override fun extraTooltipLines(): List<String> {
+    val retVal = mutableListOf(
+      "BARRACKS ($creepType)"
+    )
+    if (this.isTraining) retVal += "Progress: $progress/$progressMax"
+    return retVal
+  }
 
   private val progressOutline = theEntityManager.createRectangle()
     .also { it.location = obstacle.location + Vector2(-40,20) }
@@ -251,9 +276,8 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
 
   init {
     radius = OBSTACLE_RADIUS_RANGE.sample()
-    val params = java.util.HashMap<String, Object>()
-    params.put("id", obstacleId)
-    theTooltipModule.registerEntity(outline, params)
+    val params = hashMapOf("id" to obstacleId, "type" to "Obstacle")
+    theTooltipModule.registerEntity(outline, params as Map<String, Any>?)
   }
 
   private val area = Math.PI * radius * radius
@@ -267,6 +291,12 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
 
   fun updateEntities() {
     structure?.updateEntities()
+    val struc = structure
+    if (struc != null) {
+      theTooltipModule.updateExtraTooltipText(outline, *struc.extraTooltipLines().toTypedArray())
+    } else {
+      theTooltipModule.updateExtraTooltipText(outline)
+    }
   }
 
   fun destroy() {
@@ -403,6 +433,7 @@ abstract class Creep(
         field = 0
         sprite.alpha = 0.0
         fillSprite.alpha = 0.0
+        theTooltipModule.removeEntity(sprite)
       }
     }
 
@@ -435,10 +466,15 @@ abstract class Creep(
     if (health <= 0) {
       owner.activeCreeps.remove(this)
     }
+    theTooltipModule.updateExtraTooltipText(sprite, "Health: $health")
   }
 
   abstract fun dealDamage()
   abstract fun move()
+
+  init {
+    theTooltipModule.registerEntity(sprite, mapOf("id" to sprite.id, "type" to creepType.toString()))
+  }
 }
 
 class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
@@ -496,5 +532,4 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
       else -> "${player.resources} (+${player.resourcesPerTurn})"
     }
   }
-
 }
