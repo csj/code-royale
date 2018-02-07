@@ -73,7 +73,7 @@ function getMouseMoveFunc(tooltip, container, module) {
         const extras = module.extra[showing];
 
         if (extras) {
-          const frames = Object.keys(extras).map(a => +a).sort();
+          const frames = Object.keys(extras).map(a => +a).sort((b,c) => b - c);
           let index = 0;
           while (index < frames.length - 1 && frames[index] < module.currentFrame) {
             index++;
