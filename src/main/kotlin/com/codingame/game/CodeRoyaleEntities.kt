@@ -450,7 +450,6 @@ abstract class Creep(
         field = 0
         sprite.alpha = 0.0
         fillSprite.alpha = 0.0
-        theTooltipModule.removeEntity(sprite)
       }
     }
 
