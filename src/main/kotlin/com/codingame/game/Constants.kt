@@ -12,6 +12,8 @@ object Constants {
   val OBSTACLE_GAP = 60
   val OBSTACLE_RADIUS_RANGE = 60..100
 
+  val CREEP_DAMAGE = 1
+
   val KING_RADIUS = 20
   val KING_MASS = 10000
   val KING_HP = 200

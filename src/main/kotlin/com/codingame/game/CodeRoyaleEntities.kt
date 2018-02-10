@@ -1,5 +1,6 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.CREEP_DAMAGE
 import com.codingame.game.Constants.GIANT_BUST_RATE
 import com.codingame.game.Constants.KING_HP
 import com.codingame.game.Constants.KING_MASS
@@ -371,8 +372,7 @@ class TowerBustingCreep(
   owner: Player,
   creepType: CreepType,
   private val obstacles: List<Obstacle>
-) : Creep(owner, creepType
-) {
+) : Creep(owner, creepType) {
   override fun move() {
     obstacles
       .filter { it.structure != null && it.structure is Tower && (it.structure as Tower).owner == owner.enemyPlayer }
@@ -413,6 +413,35 @@ class KingChasingCreep(owner: Player, creepType: CreepType)
     if (location.distanceTo(enemyKing.location) < radius + enemyKing.radius + attackRange + 10) {
       owner.enemyPlayer.health -= 1
     }
+  }
+}
+
+//targets the closest enemy creep, king, or structure
+class AutoAttackCreep(owner: Player, creepType: CreepType)
+  : Creep(owner, creepType){
+
+  override fun move(){
+    location = location.towards(findTarget().location, speed.toDouble())
+  }
+
+  override fun dealDamage() {
+    findTarget().let {
+      if (location.distanceTo(it.location) < radius + it.radius + attackRange + 10){
+        when(it){
+          is King -> owner.enemyPlayer.health -= CREEP_DAMAGE
+          is Creep -> it.health -= CREEP_DAMAGE
+        }
+      }
+    }
+  }
+
+  private fun findTarget() : MyOwnedEntity{
+    val enemyCreeps = owner.enemyPlayer.activeCreeps
+    val enemyKing = owner.enemyPlayer.kingUnit
+    val targets = mutableListOf<MyOwnedEntity>()
+    targets.addAll(0, enemyCreeps)
+    targets.add(enemyKing)
+    return targets.minBy { it.location.distanceTo(location) } as MyOwnedEntity
   }
 }
 

@@ -10,7 +10,7 @@ import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.GraphicEntityModule
-import tooltipModule.TooltipModule;
+import tooltipModule.TooltipModule
 import com.google.inject.Inject
 import java.util.*
 
@@ -199,7 +199,7 @@ class Referee : AbstractReferee() {
             repeat(barracks.creepType.count) {
               player.activeCreeps += when (barracks.creepType) {
                 CreepType.RANGED, CreepType.MELEE ->
-                  KingChasingCreep(barracks.owner, barracks.creepType)
+                  AutoAttackCreep(barracks.owner, barracks.creepType)
                 CreepType.GIANT ->
                   TowerBustingCreep(barracks.owner, barracks.creepType, obstacles)
               }.also { it.location = barracks.obstacle.location }
