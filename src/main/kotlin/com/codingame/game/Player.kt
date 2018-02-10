@@ -19,7 +19,7 @@ class Player : AbstractPlayer() {
 
   fun printObstaclePerTurn(obstacle: Obstacle) {
     val struc = obstacle.structure
-    val toks = listOf(obstacle.obstacleId) + when (struc) {
+    val toks = listOf(obstacle.obstacleId, obstacle.minerals) + when (struc) {
       is Mine -> listOf(0, fixOwner(struc.owner), struc.incomeRate, -1)
       is Tower -> listOf(1, fixOwner(struc.owner), struc.health, struc.attackRadius)
       is Barracks -> listOf(2, fixOwner(struc.owner), struc.progress, struc.creepType.ordinal)

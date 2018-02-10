@@ -18,7 +18,7 @@ object Constants {
   val KING_MASS = 10000
   val KING_HP = 200
 
-  val TOWER_MELT_RATE = 2
+  val TOWER_MELT_RATE = 4
   val TOWER_COVERAGE_PER_HP = 1000
 
   val WORLD_WIDTH = viewportX.last - viewportX.first

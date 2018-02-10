@@ -276,6 +276,7 @@ class Referee : AbstractReferee() {
       if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
     }
 
+    allCreeps.forEach { it.finalizeFrame() }
   }
 
   override fun gameTurn(turn: Int) {

@@ -14,6 +14,7 @@ data class CreepInput(
 
 data class ObstaclePerTurnInput(
   val obstacleId: Int,
+  val minerals: Int,
   val structureType: Int,
   val owner: Int,
   val incomeRateOrHealthOrCooldown: Int,
@@ -24,7 +25,7 @@ data class ObstacleInput(
   val obstacleId: Int,
   val location: Vector2,
   val radius: Int,
-  val minerals: Int,
+  var minerals: Int,
   var structureType: Int = -1,                 // -1 = None, 0 = Mine, 1 = Tower, 2 = Barracks
   var owner: Int = -1,                         // 0 = Us, 1 = Enemy
   var incomeRateOrHealthOrCooldown: Int = -1,  // mine / tower / barracks
@@ -32,6 +33,7 @@ data class ObstacleInput(
 ) {
   fun applyUpdate(update: ObstaclePerTurnInput) {
     structureType = update.structureType
+    minerals = update.minerals
     owner = update.owner
     incomeRateOrHealthOrCooldown = update.incomeRateOrHealthOrCooldown
     attackRadiusOrCreepType = update.attackRadiusOrCreepType
@@ -63,7 +65,7 @@ abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stder
   )//.also { stderr.println("Read obstacle: $it")}
 
   private fun readObstaclePerTurn() = ObstaclePerTurnInput(
-    scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()
+    scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()
   )
 
   private fun readCreep() = CreepInput(

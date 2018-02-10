@@ -14,11 +14,9 @@ import com.google.inject.Inject;
 public class TooltipModule implements Module {
 
   GameManager<AbstractPlayer> gameManager;
-  @Inject GraphicEntityModule entityModule;
   Map<Integer, Map<String, Object>> registrations;
   Map<Integer, Map<String, Object>> newRegistrations;
   Map<Integer, String[]> extra, newExtra;
-  ArrayList<Integer> removals;
 
   @Inject
   TooltipModule(GameManager<AbstractPlayer> gameManager) {
@@ -28,12 +26,10 @@ public class TooltipModule implements Module {
     newRegistrations = new HashMap<>();
     extra = new HashMap<>();
     newExtra = new HashMap<>();
-    removals = new ArrayList<>();
   }
 
   @Override
   public void onGameInit() {
-    //            gameManager.setViewGlobalData("tooltips", null);
     sendFrameData();
   }
 
@@ -48,7 +44,7 @@ public class TooltipModule implements Module {
   }
 
   private void sendFrameData() {
-    Object[] data = { newRegistrations, newExtra, removals };
+    Object[] data = { newRegistrations, newExtra };
     gameManager.setViewData("tooltips", data);
     newRegistrations.clear();
     newExtra.clear();
@@ -64,10 +60,6 @@ public class TooltipModule implements Module {
       newRegistrations.put(id, params);
       registrations.put(id, params);
     }
-  }
-
-  public void removeEntity(Entity<?> entity){
-    removals.add(entity.getId());
   }
 
   public void updateExtraTooltipText(Entity<?> entity, String... lines) {

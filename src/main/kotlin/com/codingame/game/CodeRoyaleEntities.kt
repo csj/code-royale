@@ -297,7 +297,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
     if (struc != null) {
       theTooltipModule.updateExtraTooltipText(outline, *struc.extraTooltipLines().toTypedArray())
     } else {
-      theTooltipModule.updateExtraTooltipText(outline)
+      theTooltipModule.updateExtraTooltipText(outline, "Remaining resources: $minerals")
     }
   }
 
@@ -401,6 +401,22 @@ class TowerBustingCreep(
 class KingChasingCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType) {
 
+  private var lastLocation: Vector2? = null
+  override fun finalizeFrame() {
+    val last = lastLocation
+
+    if (last != null) {
+      val movementVector = when {
+        last.distanceTo(location) > 30 -> location - last
+        else -> owner.enemyPlayer.kingUnit.location - location
+      }
+      sprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+      fillSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+    }
+
+    lastLocation = location
+  }
+
   override fun move() {
     val enemyKing = owner.enemyPlayer.kingUnit
     // move toward enemy king, if not yet in range
@@ -463,18 +479,17 @@ abstract class Creep(
         field = 0
         sprite.alpha = 0.0
         fillSprite.alpha = 0.0
-        theTooltipModule.removeEntity(sprite)
       }
     }
 
   private val maxHealth = health
 
-  private val sprite = theEntityManager.createSprite()
+  protected val sprite = theEntityManager.createSprite()
     .setImage(creepType.assetName)
     .setAnchor(0.5)
     .setZIndex(40)!!
 
-  private val fillSprite = theEntityManager.createSprite()
+  protected val fillSprite = theEntityManager.createSprite()
     .setImage(creepType.fillAssetName)
     .setTint(owner.colorToken)
     .setAnchor(0.5)
@@ -483,11 +498,13 @@ abstract class Creep(
   override var location: Vector2 = Vector2.Zero
     set(value) {
       field = value
-      if (value != Vector2.Zero) {
-        sprite.location = value
-        fillSprite.location = value
-      }
+      if (value == Vector2.Zero) return
+
+      sprite.location = value
+      fillSprite.location = value
     }
+
+  open fun finalizeFrame() { }
 
   override var radius = creepType.radius
 
@@ -513,7 +530,8 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
   private val top = viewportY.last + 20
   private val bottom = 1080
 
-  private val healthBarWidth = 450
+  private val healthBarWidth = 400
+  private val healthBarPadding = 15
 
   private val background = theEntityManager.createRectangle()!!
     .setX(left).setY(top)
@@ -522,29 +540,41 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setLineWidth(0)
     .setZIndex(4000)
 
-  private val healthBarBackground = theEntityManager.createRectangle()!!
-    .setX(left + 100).setY(top + 30)
-    .setWidth(healthBarWidth).setHeight(bottom-top-30-30)
-    .setLineWidth(0)
-    .setFillColor(0).setFillAlpha(0.4)
-    .setZIndex(4001)
-
-  private val healthBarFill = theEntityManager.createRectangle()!!
-    .setX(left + 100).setY(top + 30)
-    .setWidth(healthBarWidth).setHeight(bottom-top-30-30)
-    .setFillColor(0x55ff55)
-    .setLineWidth(0)
-    .setZIndex(4002)
+  private val avatar = theEntityManager.createSprite()
+    .setImage(player.avatarToken)
+    .setX(left + 10).setY(top + 10)
+    .setScale(0.8)
+    .setZIndex(4003)!!
 
   private val heartSprite = theEntityManager.createSprite()
-    .setX(left + 60).setY((top + bottom)/2)
+    .setX(left + 155).setY((top + bottom)/2)
     .setScale(2.0)
     .setImage("heart.png")
     .setAnchor(0.5)
     .setZIndex(4002)!!
 
+  private val healthBarBackground = theEntityManager.createRectangle()!!
+    .setX(left + 200 - healthBarPadding).setY(top + 25 - healthBarPadding)
+    .setWidth(healthBarWidth + 2*healthBarPadding).setHeight(bottom-top-25-25+2*healthBarPadding)
+    .setLineWidth(0)
+    .setFillColor(0).setFillAlpha(0.4)
+    .setZIndex(4001)
+
+  private val healthBarFill = theEntityManager.createRectangle()!!
+    .setX(left + 200).setY(top + 25)
+    .setWidth(healthBarWidth).setHeight(bottom-top-25-25)
+    .setFillColor(0x55ff55)
+    .setLineWidth(0)
+    .setZIndex(4002)
+
+  private val playerName = theEntityManager.createText(player.nicknameToken)!!
+    .setX(left + 200 + 5).setY(top + 25)
+    .setFillColor(0)
+    .setScale(2.0)
+    .setZIndex(4003)
+
   private val moneySprite = theEntityManager.createSprite()
-    .setX(healthBarFill.x + healthBarFill.width + 100).setY((top + bottom)/2)
+    .setX(healthBarBackground.x + healthBarBackground.width + 50).setY((top + bottom)/2)
     .setImage("money.png")
     .setScale(2.0)
     .setAnchor(0.5)
