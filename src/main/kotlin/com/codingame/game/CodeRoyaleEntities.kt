@@ -37,7 +37,9 @@ abstract class MyEntity {
   abstract val mass: Int   // 0 := immovable
 }
 
-abstract class MyOwnedEntity(val owner: Player) : MyEntity()
+abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
+  abstract fun damage(damageAmount: Int)
+}
 
 class King(owner: Player) : MyOwnedEntity(owner) {
   override val mass = KING_MASS
@@ -83,6 +85,10 @@ class King(owner: Player) : MyOwnedEntity(owner) {
       kingFillSprite.location = location
       kingOutline.location = location
     }
+
+  override fun damage(damageAmount: Int) {
+    owner.health -= damageAmount
+  }
 }
 
 interface Structure {
@@ -436,28 +442,39 @@ class KingChasingCreep(owner: Player, creepType: CreepType)
 class AutoAttackCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType){
 
-  override fun move(){
-    location = location.towards(findTarget().location, speed.toDouble())
+  private var lastLocation: Vector2? = null
+  override fun finalizeFrame() {
+    val last = lastLocation
+
+    if (last != null) {
+      val movementVector = when {
+        last.distanceTo(location) > 30 -> location - last
+        else -> findTarget().location - location
+      }
+      sprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+      fillSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+    }
+
+    lastLocation = location
+  }
+
+  override fun move() {
+    val target = findTarget()
+    // move toward target, if not yet in range
+    if (location.distanceTo(target.location) - radius - target.radius > attackRange)
+      location = location.towards((target.location + (location - target.location).resizedTo(3.0)), speed.toDouble())
   }
 
   override fun dealDamage() {
-    findTarget().let {
-      if (location.distanceTo(it.location) < radius + it.radius + attackRange + 10){
-        when(it){
-          is King -> owner.enemyPlayer.health -= CREEP_DAMAGE
-          is Creep -> it.health -= CREEP_DAMAGE
-        }
-      }
+    val target = findTarget()
+    if (location.distanceTo(target.location) < radius + target.radius + attackRange + 10) {
+      target.damage(CREEP_DAMAGE)
     }
   }
 
   private fun findTarget() : MyOwnedEntity{
-    val enemyCreeps = owner.enemyPlayer.activeCreeps
-    val enemyKing = owner.enemyPlayer.kingUnit
-    val targets = mutableListOf<MyOwnedEntity>()
-    targets.addAll(0, enemyCreeps)
-    targets.add(enemyKing)
-    return targets.minBy { it.location.distanceTo(location) } as MyOwnedEntity
+    return owner.enemyPlayer.allUnits()
+      .minBy { it.location.distanceTo(location) }!!
   }
 }
 
@@ -508,7 +525,7 @@ abstract class Creep(
 
   override var radius = creepType.radius
 
-  fun damage(hp: Int) {
+  override fun damage(hp: Int) {
     health -= hp
     if (health <= 0) {
       owner.activeCreeps.remove(this)
