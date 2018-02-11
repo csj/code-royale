@@ -202,7 +202,12 @@ class Referee : AbstractReferee() {
                   KingChasingCreep(barracks.owner, barracks.creepType)
                 CreepType.GIANT ->
                   TowerBustingCreep(barracks.owner, barracks.creepType, obstacles)
-              }.also { it.location = barracks.obstacle.location }
+              }.also {
+                it.location = barracks.obstacle.location
+                it.finalizeFrame()
+                it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.kingUnit.location, 20.0)
+                it.finalizeFrame()
+              }
             }
           }
         }
