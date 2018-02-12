@@ -147,12 +147,13 @@ class Referee : AbstractReferee() {
     val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
     val scheduledBuildings = mutableListOf<()->Unit>()
     class PlayerInputException(message: String): Exception(message)
+    class PlayerInputWarning(message: String): Exception(message)
 
     fun scheduleBuilding(player: Player, obs: Obstacle, toks: Iterator<String>) {
       val struc = obs.structure
-      if (struc?.owner == player.enemyPlayer) throw PlayerInputException("Cannot build: owned by enemy player")
+      if (struc?.owner == player.enemyPlayer) throw PlayerInputWarning("Cannot build: owned by enemy player")
       if (struc is Barracks && struc.owner == player && struc.progress > 0)
-        throw PlayerInputException("Cannot rebuild: training is in progress")
+        throw PlayerInputWarning("Cannot rebuild: training is in progress")
 
       obstaclesAttemptedToBuildUpon += obs
       scheduledBuildings += {
@@ -182,14 +183,14 @@ class Referee : AbstractReferee() {
           .map { obsIdStr -> obsIdStr.toIntOrNull() ?: throw PlayerInputException("Couldn't process obstacleId: $obsIdStr") }
           .map { obsId -> obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("No obstacle with id = $obsId") }
           .map { obs ->
-            val struc = obs.structure as? Barracks ?: throw PlayerInputException("Cannot spawn from ${obs.obstacleId}: not a barracks")
-            if (struc.owner != player) throw PlayerInputException("Cannot spawn from ${obs.obstacleId}: not owned")
-            if (struc.isTraining) throw PlayerInputException("Barracks ${obs.obstacleId} is training")
+            val struc = obs.structure as? Barracks ?: throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not a barracks")
+            if (struc.owner != player) throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not owned")
+            if (struc.isTraining) throw PlayerInputWarning("Barracks ${obs.obstacleId} is training")
             struc
           }
 
         val sum = buildingBarracks.sumBy { it.creepType.cost }
-        if (sum > player.resources) throw PlayerInputException("Building too many creeps")
+        if (sum > player.resources) throw PlayerInputWarning("Training too many creeps ($sum total resources requested)")
 
         player.resources -= sum
         buildingBarracks.forEach { barracks ->
@@ -249,10 +250,12 @@ class Referee : AbstractReferee() {
         }
       } catch (e: AbstractPlayer.TimeoutException) {
         e.printStackTrace()
-        player.deactivate("${player.nicknameToken}: timeout!")
+        player.deactivate("Timeout!")
       } catch (e: PlayerInputException) {
         e.printStackTrace()
-        player.deactivate("${player.nicknameToken}: ${e.message}")
+        player.deactivate("${e.message}")
+      } catch (e: PlayerInputWarning) {
+        gameManager.addToGameSummary("WARNING: ${e.message}")
       }
     }
 
@@ -297,10 +300,6 @@ class Referee : AbstractReferee() {
     // 5. Check end game
     gameManager.activePlayers.forEach { it.checkKingHealth() }
     if (gameManager.activePlayers.size < 2) gameManager.endGame()
-
-    gameManager.players.forEach {
-      gameManager.addToGameSummary("${it.nicknameToken} Health: ${it.health} Resources: ${it.resources}")
-    }
   }
 }
 
