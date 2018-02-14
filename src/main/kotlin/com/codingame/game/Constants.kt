@@ -10,7 +10,7 @@ object Constants {
   val GIANT_BUST_RATE = 80
 
   val OBSTACLE_GAP = 60
-  val OBSTACLE_RADIUS_RANGE = 60..100
+  val OBSTACLE_RADIUS_RANGE = 60..95
 
   val CREEP_DAMAGE = 1
 

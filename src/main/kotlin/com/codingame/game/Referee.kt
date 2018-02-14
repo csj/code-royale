@@ -178,77 +178,89 @@ class Referee : AbstractReferee() {
     playerLoop@ for (player in gameManager.activePlayers) {
       val king = player.kingUnit
       try {
-        // Process building creeps
-        val buildingBarracks = player.outputs[1].split(" ").drop(1)
-          .map { obsIdStr -> obsIdStr.toIntOrNull() ?: throw PlayerInputException("Couldn't process obstacleId: $obsIdStr") }
-          .map { obsId -> obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("No obstacle with id = $obsId") }
-          .map { obs ->
-            val struc = obs.structure as? Barracks ?: throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not a barracks")
-            if (struc.owner != player) throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not owned")
-            if (struc.isTraining) throw PlayerInputWarning("Barracks ${obs.obstacleId} is training")
-            struc
-          }
+        try {
 
-        val sum = buildingBarracks.sumBy { it.creepType.cost }
-        if (sum > player.resources) throw PlayerInputWarning("Training too many creeps ($sum total resources requested)")
+          // Process building creeps
+          val buildingBarracks = player.outputs[1].split(" ").drop(1)
+            .map { obsIdStr -> obsIdStr.toIntOrNull() ?: throw PlayerInputException("Couldn't process obstacleId: $obsIdStr") }
+            .map { obsId -> obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("No obstacle with id = $obsId") }
+            .map { obs ->
+              val struc = obs.structure as? Barracks ?: throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not a barracks")
+              if (struc.owner != player) throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not owned")
+              if (struc.isTraining) throw PlayerInputWarning("Barracks ${obs.obstacleId} is training")
+              struc
+            }
 
-        player.resources -= sum
-        buildingBarracks.forEach { barracks ->
-          barracks.progress = 0
-          barracks.isTraining = true
-          barracks.onComplete = {
-            repeat(barracks.creepType.count) {
-              player.activeCreeps += when (barracks.creepType) {
-                CreepType.MELEE ->
-                  KingChasingCreep(barracks.owner, barracks.creepType)
-                CreepType.RANGED ->
-                  AutoAttackCreep(barracks.owner, barracks.creepType)
-                CreepType.GIANT ->
-                  TowerBustingCreep(barracks.owner, barracks.creepType, obstacles)
-              }.also {
-                it.location = barracks.obstacle.location
-                it.finalizeFrame()
-                it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.kingUnit.location, 20.0)
-                it.finalizeFrame()
+          val sum = buildingBarracks.sumBy { it.creepType.cost }
+          if (sum > player.resources) throw PlayerInputWarning("Training too many creeps ($sum total resources requested)")
+
+          player.resources -= sum
+          buildingBarracks.forEach { barracks ->
+            barracks.progress = 0
+            barracks.isTraining = true
+            barracks.onComplete = {
+              repeat(barracks.creepType.count) {
+                player.activeCreeps += when (barracks.creepType) {
+                  CreepType.MELEE ->
+                    KingChasingCreep(barracks.owner, barracks.creepType)
+                  CreepType.RANGED ->
+                    AutoAttackCreep(barracks.owner, barracks.creepType)
+                  CreepType.GIANT ->
+                    TowerBustingCreep(barracks.owner, barracks.creepType, obstacles)
+                }.also {
+                  it.location = barracks.obstacle.location
+                  it.finalizeFrame()
+                  it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.kingUnit.location, 20.0)
+                  it.finalizeFrame()
+                }
               }
             }
           }
         }
+        catch (e: PlayerInputWarning) {
+          gameManager.addToGameSummary("WARNING: ${e.message}")
+        }
 
-        val line = player.outputs[0]
-        val toks = line.split(" ").iterator()
-        val command = toks.next()
+        // Process king command
+        try {
+          val line = player.outputs[0]
+          val toks = line.split(" ").iterator()
+          val command = toks.next()
 
-        when (command) {
-          "WAIT" -> { }
-          "MOVE" -> {
-            val x = toks.next().toInt()
-            val y = toks.next().toInt()
-            king.moveTowards(Vector2(x,y))
-          }
-          "MOVETOOBSTACLE" -> {
-            val obsId = toks.next().toInt()
-            val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
-            king.moveTowards(obs.location)
-          }
-          "BUILD" -> {
-            val obs = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
-            val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
-            if (dist > 10) throw PlayerInputException("Cannot build: too far away ($dist)")
-            scheduleBuilding(player, obs, toks)
-          }
-          "BUILDONOBSTACLE" -> {
-            val obsId = toks.next().toInt()
-            val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
-
-            val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
-            if (dist > 10) {
+          when (command) {
+            "WAIT" -> {
+            }
+            "MOVE" -> {
+              val x = toks.next().toInt()
+              val y = toks.next().toInt()
+              king.moveTowards(Vector2(x, y))
+            }
+            "MOVETOOBSTACLE" -> {
+              val obsId = toks.next().toInt()
+              val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
               king.moveTowards(obs.location)
-            } else {
+            }
+            "BUILD" -> {
+              val obs = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
+              val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
+              if (dist > 10) throw PlayerInputException("Cannot build: too far away ($dist)")
               scheduleBuilding(player, obs, toks)
             }
+            "BUILDONOBSTACLE" -> {
+              val obsId = toks.next().toInt()
+              val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
+
+              val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
+              if (dist > 10) {
+                king.moveTowards(obs.location)
+              } else {
+                scheduleBuilding(player, obs, toks)
+              }
+            }
+            else -> throw PlayerInputException("Didn't understand command: $command")
           }
-          else -> throw PlayerInputException("Didn't understand command: $command")
+        } catch (e: PlayerInputWarning) {
+          gameManager.addToGameSummary("WARNING: ${e.message}")
         }
       } catch (e: AbstractPlayer.TimeoutException) {
         e.printStackTrace()
@@ -256,8 +268,6 @@ class Referee : AbstractReferee() {
       } catch (e: PlayerInputException) {
         e.printStackTrace()
         player.deactivate("${e.message}")
-      } catch (e: PlayerInputWarning) {
-        gameManager.addToGameSummary("WARNING: ${e.message}")
       }
     }
 
