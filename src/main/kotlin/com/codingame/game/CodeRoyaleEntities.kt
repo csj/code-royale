@@ -438,18 +438,20 @@ class KingChasingCreep(owner: Player, creepType: CreepType)
   }
 }
 
-//targets the closest enemy creep, king, or structure
+//targets the closest enemy creep
 class AutoAttackCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType){
 
   private var lastLocation: Vector2? = null
   override fun finalizeFrame() {
+    val target = findTarget() ?: owner.enemyPlayer.kingUnit
+
     val last = lastLocation
 
     if (last != null) {
       val movementVector = when {
         last.distanceTo(location) > 30 -> location - last
-        else -> findTarget().location - location
+        else -> target.location - location
       }
       sprite.rotation = Math.atan2(movementVector.y, movementVector.x)
       fillSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
@@ -459,22 +461,22 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   }
 
   override fun move() {
-    val target = findTarget()
+    val target = findTarget() ?: return
     // move toward target, if not yet in range
     if (location.distanceTo(target.location) - radius - target.radius > attackRange)
       location = location.towards((target.location + (location - target.location).resizedTo(3.0)), speed.toDouble())
   }
 
   override fun dealDamage() {
-    val target = findTarget()
+    val target = findTarget() ?: return
     if (location.distanceTo(target.location) < radius + target.radius + attackRange + 10) {
       target.damage(CREEP_DAMAGE)
     }
   }
 
-  private fun findTarget() : MyOwnedEntity{
-    return owner.enemyPlayer.allUnits()
-      .minBy { it.location.distanceTo(location) }!!
+  private fun findTarget(): Creep? {
+    return owner.enemyPlayer.activeCreeps
+      .minBy { it.location.distanceTo(location) }
   }
 }
 
