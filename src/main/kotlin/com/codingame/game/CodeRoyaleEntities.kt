@@ -12,6 +12,7 @@ import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
 import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_RANGE
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
+import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
 import tooltipModule.TooltipModule
@@ -148,7 +149,7 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
   }
 }
 
-class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: Int, var health: Int) : Structure {
+class Tower(private val obstacle: Obstacle, override val owner: Player, var attackRadius: Int, var health: Int) : Structure {
   override fun extraTooltipLines(): List<String> = listOf(
     "TOWER",
     "Range: $attackRadius",
@@ -167,11 +168,20 @@ class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: In
     .also { it.location = obstacle.location }
     .setAnchor(0.5)!!
 
-  private val fillSprite = theEntityManager.createSprite()
+  private val fillSprite = theEntityManager.createSprite()!!
     .setImage("tower-fill.png")
     .setZIndex(30)
     .also { it.location = obstacle.location }
-    .setAnchor(0.5)!!
+    .setAnchor(0.5)
+
+  private val projectile = theEntityManager.createCircle()!!
+      .setZIndex(30)
+      .setRadius(8)
+      .setFillColor(owner.colorToken)
+      .setLineColor(0xffffff)
+      .setLineWidth(3)
+
+  public var attackTarget: MyEntity? = null
 
   override fun hideEntities() {
     towerRangeCircle.isVisible = false
@@ -187,6 +197,18 @@ class Tower(obstacle: Obstacle, override val owner: Player, var attackRadius: In
     sprite.isVisible = true
     fillSprite.isVisible = true
     fillSprite.tint = owner.colorToken
+
+    val localAttackTarget = attackTarget
+    if (localAttackTarget != null) {
+      projectile.isVisible = true
+      projectile.setX(obstacle.location.x.toInt(), Curve.NONE)
+      projectile.setY(obstacle.location.y.toInt(), Curve.NONE)
+      theEntityManager.commitEntityState(0.0, projectile)
+      projectile.setX(localAttackTarget.location.x.toInt(), Curve.EASE_IN_AND_OUT)
+      projectile.setY(localAttackTarget.location.y.toInt(), Curve.EASE_IN_AND_OUT)
+      theEntityManager.commitEntityState(1.0, projectile)
+      projectile.isVisible = false
+    }
   }
 
 }
@@ -319,8 +341,12 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
           val closestEnemy = it.owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
           if (closestEnemy != null && closestEnemy.location.distanceTo(location) < it.attackRadius) {
             closestEnemy.damage(damage)
+            it.attackTarget = closestEnemy
           } else if (it.owner.enemyPlayer.kingUnit.location.distanceTo(location) < it.attackRadius) {
             it.owner.enemyPlayer.health -= 1
+            it.attackTarget = it.owner.enemyPlayer.kingUnit
+          } else {
+            it.attackTarget = null
           }
 
           it.health -= TOWER_MELT_RATE
@@ -443,6 +469,16 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType){
 
   private var lastLocation: Vector2? = null
+
+  public var attackTarget: Creep? = null
+
+  private val projectile = theEntityManager.createCircle()!!
+      .setZIndex(30)
+      .setRadius(4)
+      .setFillColor(owner.colorToken)
+      .setLineColor(0xffffff)
+      .setLineWidth(2)
+
   override fun finalizeFrame() {
     val target = findTarget() ?: owner.enemyPlayer.kingUnit
 
@@ -458,6 +494,19 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
     }
 
     lastLocation = location
+
+    val localAttackTarget = attackTarget
+    if (localAttackTarget != null) {
+      projectile.isVisible = true
+      projectile.setX(location.x.toInt(), Curve.NONE)
+      projectile.setY(location.y.toInt(), Curve.NONE)
+      theEntityManager.commitEntityState(0.0, projectile)
+      projectile.setX(localAttackTarget.location.x.toInt(), Curve.EASE_IN_AND_OUT)
+      projectile.setY(localAttackTarget.location.y.toInt(), Curve.EASE_IN_AND_OUT)
+      theEntityManager.commitEntityState(0.9, projectile)
+      projectile.isVisible = false
+      theEntityManager.commitEntityState(1.0, projectile)
+    }
   }
 
   override fun move() {
@@ -468,9 +517,11 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   }
 
   override fun dealDamage() {
+    attackTarget = null
     val target = findTarget() ?: return
     if (location.distanceTo(target.location) < radius + target.radius + attackRange + 10) {
       target.damage(CREEP_DAMAGE)
+      attackTarget = target
     }
   }
 

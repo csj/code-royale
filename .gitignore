@@ -3,4 +3,4 @@
 /.classpath
 /.idea/
 /.settings/
-/skeleton.iml
+*.iml
