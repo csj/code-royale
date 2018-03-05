@@ -13,11 +13,12 @@ abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stder
   private fun readObstacleInit() = ObstacleInput(
     scanner.nextInt(),
     Vector2(scanner.nextInt(), scanner.nextInt()),
-    scanner.nextInt(), scanner.nextInt()
+    scanner.nextInt()
   )//.also { stderr.println("Read obstacle: $it")}
 
   private fun readObstaclePerTurn() = ObstaclePerTurnInput(
-    scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt()
+    scanner.nextInt(), scanner.nextInt(), scanner.nextInt(), scanner.nextInt(),
+      scanner.nextInt(), scanner.nextInt(), scanner.nextInt()
   )
 
   private fun readCreep() = CreepInput(

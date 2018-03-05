@@ -11,6 +11,7 @@ object Constants {
 
   val OBSTACLE_GAP = 60
   val OBSTACLE_RADIUS_RANGE = 60..95
+  val OBSTACLE_MINERAL_RANGE = 250..350
 
   val CREEP_DAMAGE = 1
 
@@ -23,6 +24,7 @@ object Constants {
 
   val WORLD_WIDTH = viewportX.last - viewportX.first
   val WORLD_HEIGHT = viewportY.last - viewportY.first
+  val KING_VISION = 300
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,

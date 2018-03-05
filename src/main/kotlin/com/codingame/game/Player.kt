@@ -13,14 +13,19 @@ class Player : AbstractPlayer() {
 
   fun printObstacleInit(obstacle: Obstacle) {
     val (x,y) = obstacle.location
-    val toks = listOf(obstacle.obstacleId, x.toInt(), y.toInt(), obstacle.radius, obstacle.minerals)
+    val toks = listOf(obstacle.obstacleId, x.toInt(), y.toInt(), obstacle.radius)
     sendInputLine(toks.joinToString(" "))
   }
 
   fun printObstaclePerTurn(obstacle: Obstacle) {
     val struc = obstacle.structure
-    val toks = listOf(obstacle.obstacleId, obstacle.minerals) + when (struc) {
-      is Mine -> listOf(0, fixOwner(struc.owner), struc.incomeRate, -1)
+    val visible = (struc != null && struc.owner == this) || obstacle.location.distanceTo(kingUnit.location) < Constants.KING_VISION
+
+    val toks = listOf(
+        obstacle.obstacleId,
+        if (visible) obstacle.minerals else -1,
+        if (visible) obstacle.maxMineralRate else -1) + when (struc) {
+      is Mine -> listOf(0, fixOwner(struc.owner), if (visible) struc.incomeRate else -1, -1)
       is Tower -> listOf(1, fixOwner(struc.owner), struc.health, struc.attackRadius)
       is Barracks -> listOf(2, fixOwner(struc.owner), struc.progress, struc.creepType.ordinal)
       else -> listOf(-1, -1, -1, -1)

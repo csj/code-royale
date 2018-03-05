@@ -3,6 +3,7 @@ package com.codingame.game
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_GAP
+import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
@@ -41,7 +42,8 @@ class Referee : AbstractReferee() {
 
       val obstaclePairs = (1..15).map {
         val rate = (1..5).sample()
-        Pair(Obstacle(rate), Obstacle(rate))
+        val resources = OBSTACLE_MINERAL_RANGE.sample()
+        Pair(Obstacle(rate, resources), Obstacle(rate, resources))
       }
       obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
 
@@ -158,7 +160,13 @@ class Referee : AbstractReferee() {
       obstaclesAttemptedToBuildUpon += obs
       scheduledBuildings += {
         when (toks.next()) {
-          "MINE" -> obs.setMine(player)
+          "MINE" ->
+            if (struc is Mine) {
+              struc.incomeRate++
+              if (struc.incomeRate > obs.maxMineralRate) struc.incomeRate = obs.maxMineralRate
+            } else {
+              obs.setMine(player)
+            }
           "TOWER" -> {
             if (struc is Tower) {
               struc.health += TOWER_HP_INCREMENT
@@ -297,6 +305,15 @@ class Referee : AbstractReferee() {
     }
 
     allCreeps.forEach { it.finalizeFrame() }
+
+    // Queens tear down enemy structures (not TOWERs)
+    gameManager.activePlayers.forEach {
+      val queen = it.kingUnit
+      val closestObstacle = obstacles.minBy { it.location.distanceTo(queen.location) }!!
+      if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius > 5) return@forEach
+      val struc = closestObstacle.structure
+      if ((struc is Mine || struc is Barracks) && struc.owner != queen.owner) closestObstacle.structure = null
+    }
   }
 
   override fun gameTurn(turn: Int) {

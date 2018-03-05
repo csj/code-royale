@@ -5,6 +5,7 @@ import com.codingame.game.Constants.GIANT_BUST_RATE
 import com.codingame.game.Constants.KING_HP
 import com.codingame.game.Constants.KING_MASS
 import com.codingame.game.Constants.KING_RADIUS
+import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_RADIUS_RANGE
@@ -99,7 +100,7 @@ interface Structure {
   fun extraTooltipLines(): List<String>
 }
 
-class Mine(private val obstacle: Obstacle, override val owner: Player, val incomeRate: Int) : Structure {
+class Mine(private val obstacle: Obstacle, override val owner: Player, incomeRate: Int) : Structure {
 
   override fun extraTooltipLines(): List<String> = listOf(
     "MINE (+$incomeRate)",
@@ -133,6 +134,12 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
     .setLineWidth(0)!!
     .setZIndex(401)
 
+  var incomeRate = incomeRate
+    set(value) {
+      field = value
+      text.text = "+$incomeRate"
+    }
+
   override fun hideEntities() {
     text.isVisible = false
     pickaxeSprite.isVisible = false
@@ -145,7 +152,7 @@ class Mine(private val obstacle: Obstacle, override val owner: Player, val incom
     pickaxeSprite.isVisible = true
     mineralBarOutline.isVisible = true
     mineralBarFill.isVisible = true
-    mineralBarFill.width = 80 * obstacle.minerals / 300
+    mineralBarFill.width = 80 * obstacle.minerals / OBSTACLE_MINERAL_RANGE.last
   }
 }
 
@@ -180,6 +187,7 @@ class Tower(private val obstacle: Obstacle, override val owner: Player, var atta
       .setFillColor(owner.colorToken)
       .setLineColor(0xffffff)
       .setLineWidth(3)
+      .setVisible(false)
 
   public var attackTarget: MyEntity? = null
 
@@ -280,10 +288,10 @@ class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType
 }
 
 var nextObstacleId = 0
-class Obstacle(private val mineralRate: Int): MyEntity() {
+class Obstacle(val maxMineralRate: Int, initialAmount: Int): MyEntity() {
   val obstacleId = nextObstacleId++
   override val mass = 0
-  var minerals by nonNegative(300)
+  var minerals by nonNegative(initialAmount)
 
   private val outline: Circle = theEntityManager.createCircle()
     .setLineWidth(3)
@@ -388,7 +396,7 @@ class Obstacle(private val mineralRate: Int): MyEntity() {
   }
 
   fun setMine(owner: Player) {
-    structure = Mine(this, owner, mineralRate)
+    structure = Mine(this, owner, 1)
   }
 
   fun setTower(owner: Player, health: Int) {
@@ -478,6 +486,7 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
       .setFillColor(owner.colorToken)
       .setLineColor(0xffffff)
       .setLineWidth(2)
+      .setVisible(false)
 
   override fun finalizeFrame() {
     val target = findTarget() ?: owner.enemyPlayer.kingUnit
