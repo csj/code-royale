@@ -4,6 +4,8 @@ import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
+import com.codingame.game.Constants.OBSTACLE_MINERAL_RATE_RANGE
+import com.codingame.game.Constants.OBSTACLE_PAIRS
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
@@ -40,8 +42,8 @@ class Referee : AbstractReferee() {
     loop@ do {
       nextObstacleId = 0
 
-      val obstaclePairs = (1..15).map {
-        val rate = (1..5).sample()
+      val obstaclePairs = (1 until OBSTACLE_PAIRS).map {
+        val rate = OBSTACLE_MINERAL_RATE_RANGE.sample()
         val resources = OBSTACLE_MINERAL_RANGE.sample()
         Pair(Obstacle(rate, resources), Obstacle(rate, resources))
       }
@@ -69,7 +71,7 @@ class Referee : AbstractReferee() {
       else
         Vector2(spawnDistance, spawnDistance)
 
-      activePlayer.kingUnit = King(activePlayer).also { it.location = corner }
+      activePlayer.queenUnit = Queen(activePlayer).also { it.location = corner }
     }
 
     fixCollisions()
@@ -131,8 +133,8 @@ class Referee : AbstractReferee() {
 
   private fun sendGameStates() {
     for (activePlayer in gameManager.activePlayers) {
-      activePlayer.sendInputLine("${activePlayer.kingUnit.location.x.toInt()} ${activePlayer.kingUnit.location.y.toInt()} ${activePlayer.health} ${activePlayer.resources}")
-      activePlayer.sendInputLine("${activePlayer.enemyPlayer.kingUnit.location.x.toInt()} ${activePlayer.enemyPlayer.kingUnit.location.y.toInt()} ${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
+      activePlayer.sendInputLine("${activePlayer.queenUnit.location.x.toInt()} ${activePlayer.queenUnit.location.y.toInt()} ${activePlayer.health} ${activePlayer.resources}")
+      activePlayer.sendInputLine("${activePlayer.enemyPlayer.queenUnit.location.x.toInt()} ${activePlayer.enemyPlayer.queenUnit.location.y.toInt()} ${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
       obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
       for (player in listOf(activePlayer, activePlayer.enemyPlayer)) {
@@ -184,7 +186,7 @@ class Referee : AbstractReferee() {
     }
 
     playerLoop@ for (player in gameManager.activePlayers) {
-      val king = player.kingUnit
+      val queen = player.queenUnit
       try {
         try {
 
@@ -210,7 +212,7 @@ class Referee : AbstractReferee() {
               repeat(barracks.creepType.count) {
                 player.activeCreeps += when (barracks.creepType) {
                   CreepType.MELEE ->
-                    KingChasingCreep(barracks.owner, barracks.creepType)
+                    QueenChasingCreep(barracks.owner, barracks.creepType)
                   CreepType.RANGED ->
                     AutoAttackCreep(barracks.owner, barracks.creepType)
                   CreepType.GIANT ->
@@ -218,7 +220,7 @@ class Referee : AbstractReferee() {
                 }.also {
                   it.location = barracks.obstacle.location
                   it.finalizeFrame()
-                  it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.kingUnit.location, 20.0)
+                  it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 20.0)
                   it.finalizeFrame()
                 }
               }
@@ -229,7 +231,7 @@ class Referee : AbstractReferee() {
           gameManager.addToGameSummary("WARNING: ${e.message}")
         }
 
-        // Process king command
+        // Process queen command
         try {
           val line = player.outputs[0]
           val toks = line.split(" ").iterator()
@@ -241,16 +243,16 @@ class Referee : AbstractReferee() {
             "MOVE" -> {
               val x = toks.next().toInt()
               val y = toks.next().toInt()
-              king.moveTowards(Vector2(x, y))
+              queen.moveTowards(Vector2(x, y))
             }
             "MOVETOOBSTACLE" -> {
               val obsId = toks.next().toInt()
               val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
-              king.moveTowards(obs.location)
+              queen.moveTowards(obs.location)
             }
             "BUILD" -> {
-              val obs = obstacles.minBy { it.location.distanceTo(king.location) - it.radius }!!
-              val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
+              val obs = obstacles.minBy { it.location.distanceTo(queen.location) - it.radius }!!
+              val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
               if (dist > 10) throw PlayerInputException("Cannot build: too far away ($dist)")
               scheduleBuilding(player, obs, toks)
             }
@@ -258,9 +260,9 @@ class Referee : AbstractReferee() {
               val obsId = toks.next().toInt()
               val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
 
-              val dist = obs.location.distanceTo(king.location) - king.radius - obs.radius
+              val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
               if (dist > 10) {
-                king.moveTowards(obs.location)
+                queen.moveTowards(obs.location)
               } else {
                 scheduleBuilding(player, obs, toks)
               }
@@ -308,7 +310,7 @@ class Referee : AbstractReferee() {
 
     // Queens tear down enemy structures (not TOWERs)
     gameManager.activePlayers.forEach {
-      val queen = it.kingUnit
+      val queen = it.queenUnit
       val closestObstacle = obstacles.minBy { it.location.distanceTo(queen.location) }!!
       if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius > 5) return@forEach
       val struc = closestObstacle.structure
@@ -327,7 +329,7 @@ class Referee : AbstractReferee() {
     obstacles.forEach { it.act() }
 
     // 5. Check end game
-    gameManager.activePlayers.forEach { it.checkKingHealth() }
+    gameManager.activePlayers.forEach { it.checkQueenHealth() }
     if (gameManager.activePlayers.size < 2) gameManager.endGame()
   }
 }

@@ -39,10 +39,10 @@ data class ObstacleInput(
 }
 
 data class AllInputs(
-  val kingLoc: Vector2,
+  val queenLoc: Vector2,
   val health: Int,
   val resources: Int,
-  val enemyKingLoc: Vector2,
+  val enemyQueenLoc: Vector2,
   val enemyHealth: Int,
   val enemyResources: Int,
   val obstacles: List<ObstacleInput>,

@@ -10,21 +10,23 @@ object Constants {
   val GIANT_BUST_RATE = 80
 
   val OBSTACLE_GAP = 60
-  val OBSTACLE_RADIUS_RANGE = 60..95
+  val OBSTACLE_RADIUS_RANGE = 60..110
   val OBSTACLE_MINERAL_RANGE = 250..350
+  val OBSTACLE_MINERAL_RATE_RANGE = 1 until 5
+  val OBSTACLE_PAIRS = 14
 
   val CREEP_DAMAGE = 1
 
-  val KING_RADIUS = 20
-  val KING_MASS = 10000
-  val KING_HP = 200
+  val QUEEN_RADIUS = 20
+  val QUEEN_MASS = 10000
+  val QUEEN_HP = 200
 
   val TOWER_MELT_RATE = 4
   val TOWER_COVERAGE_PER_HP = 1000
 
   val WORLD_WIDTH = viewportX.last - viewportX.first
   val WORLD_HEIGHT = viewportY.last - viewportY.first
-  val KING_VISION = 300
+  val QUEEN_VISION = 300
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,

@@ -13,7 +13,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
     while (true) {
       turn++
 
-      val (kingLoc, _, resources, _, _, _, obstacles, _, enemyCreeps) = readInputs()
+      val (queenLoc, _, resources, _, _, _, obstacles, _, enemyCreeps) = readInputs()
 
       // strategy:
       // build mines
@@ -30,39 +30,39 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         .filter { it.owner == 0 && it.structureType == 2 }
         .sumBy { CreepType.values()[it.attackRadiusOrCreepType].let { it.cost / it.buildTime } }
 
-      val danger = enemyCreeps.any { it.location.distanceTo(kingLoc) < 300 }
+      val danger = enemyCreeps.any { it.location.distanceTo(queenLoc) < 300 }
 
-      fun getKingAction(): String {
+      fun getQueenAction(): String {
         // if touching a tower that isn't at max health, keep growing it
         val growingTower = obstacles
           .filter { it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrCooldown < 400 }
-          .firstOrNull { it.location.distanceTo(kingLoc) - it.radius - Constants.KING_RADIUS < 5 }
+          .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - Constants.QUEEN_RADIUS < 5 }
 
         if (growingTower != null) return "BUILD TOWER"
 
-        val kingTarget = obstacles
+        val queenTarget = obstacles
           .filter { it.owner == -1 }
           .filter { target -> !obstacles.any {
             it.owner == 1 && it.structureType == 1 &&
               it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < -30 }}
-          .minBy { it.location.distanceTo(kingLoc) - it.radius }
+          .minBy { it.location.distanceTo(queenLoc) - it.radius }
 
-        if (kingTarget == null) {
+        if (queenTarget == null) {
           // bear toward closest friendly tower
           val closestTower = obstacles
             .filter { it.owner == 0 && it.structureType == 1 }
-            .minBy { it.location.distanceTo(kingLoc) - it.radius }
+            .minBy { it.location.distanceTo(queenLoc) - it.radius }
 
           return closestTower?.let { "MOVETOOBSTACLE ${it.obstacleId}" } ?: "WAIT"
         }
 
-        val dist = kingTarget.location.distanceTo(kingLoc) - Constants.KING_RADIUS - kingTarget.radius
+        val dist = queenTarget.location.distanceTo(queenLoc) - Constants.QUEEN_RADIUS - queenTarget.radius
 
         if (dist < 5) {
           // Touching an obstacle; do something here
           if (danger) return "BUILD TOWER"
           if (totalIncome * 1.5 <= totalProduction)
-            return if (kingTarget.minerals > 0) "BUILD MINE" else "BUILD TOWER"
+            return if (queenTarget.minerals > 0) "BUILD MINE" else "BUILD TOWER"
 
           // count enemy towers; make sure we have a giant if they have more than 3
           val ourMelees = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }
@@ -78,7 +78,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           return "BUILD BARRACKS $barracksType"
         }
 
-        return kingTarget.let { "MOVETOOBSTACLE ${it.obstacleId}"}
+        return queenTarget.let { "MOVETOOBSTACLE ${it.obstacleId}"}
       }
 
       fun getTrainOrders(): List<ObstacleInput> {
@@ -92,7 +92,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
       }
 
       try {
-        stdout.println(getKingAction())
+        stdout.println(getQueenAction())
         stdout.println("TRAIN${getTrainOrders().joinToString("") { " " + it.obstacleId }}")
       } catch (ex: Exception) {
         ex.printStackTrace(stderr)

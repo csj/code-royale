@@ -30,10 +30,10 @@ abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stder
   }
 
   protected fun readInputs() = AllInputs(
-    kingLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
+    queenLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
     health = scanner.nextInt(),
     resources = scanner.nextInt(),
-    enemyKingLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
+    enemyQueenLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
     enemyHealth = scanner.nextInt(),
     enemyResources = scanner.nextInt(),
     obstacles = (0 until obstacles.size).map { applyObstacleUpdate(readObstaclePerTurn()) },

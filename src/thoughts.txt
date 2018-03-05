@@ -1,17 +1,17 @@
-- king tags obstacles: these become sources of income
+- queen tags obstacles: these become sources of income
 - engineer can touch an obstacle and construct a tower. Towers will lose range over time and eventually just melt
 - engineer can also touch an existing friendly tower and extend its radius and life
 - general can spend money to spawn creeps
-- Creeps chase kings and take down their HP (0 HP = gg). Creeps also slowly melt.
+- Creeps chase queens and take down their HP (0 HP = gg). Creeps also slowly melt.
 - Towers shoot down creeps
 - Towers repel generals
 
 New ideas:
 - An obstacle can have a tower or a source of income -- not both
 - Different obstacles have different rates and totals of resources, once the total is used up the minerals are gone
-- Only the King can see the output of an obstacle, by getting close to it
+- Only the Queen can see the output of an obstacle, by getting close to it
 - Obstacles in the middle tend to have higher rates and totals
-- King touches an obstacle to establish a mine (only if there's no tower): this generates a rate of resources until it's all used up
-- Optional: King can stay and increase the output of a mine (up to the maximum)
+- Queen touches an obstacle to establish a mine (only if there's no tower): this generates a rate of resources until it's all used up
+- Optional: Queen can stay and increase the output of a mine (up to the maximum)
 - Any unit including creeps can destroy enemy mines simply by touching them, but they can be re-established -- by either team!
 - Engineer touches an obstacle to establish a tower: this destroys any pre-existing mine

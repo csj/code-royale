@@ -2,9 +2,9 @@ package com.codingame.game
 
 import com.codingame.game.Constants.CREEP_DAMAGE
 import com.codingame.game.Constants.GIANT_BUST_RATE
-import com.codingame.game.Constants.KING_HP
-import com.codingame.game.Constants.KING_MASS
-import com.codingame.game.Constants.KING_RADIUS
+import com.codingame.game.Constants.QUEEN_HP
+import com.codingame.game.Constants.QUEEN_MASS
+import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
@@ -43,36 +43,36 @@ abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
   abstract fun damage(damageAmount: Int)
 }
 
-class King(owner: Player) : MyOwnedEntity(owner) {
-  override val mass = KING_MASS
-  override var radius = KING_RADIUS
+class Queen(owner: Player) : MyOwnedEntity(owner) {
+  override val mass = QUEEN_MASS
+  override var radius = QUEEN_RADIUS
 
-  private val kingOutline = theEntityManager.createCircle()
-    .setRadius(KING_RADIUS)
+  private val queenOutline = theEntityManager.createCircle()
+    .setRadius(QUEEN_RADIUS)
     .setLineColor(owner.colorToken)
     .setLineWidth(2)!!
 
-  private val kingSprite = theEntityManager.createSprite()
-    .setImage("king.png")
+  private val queenSprite = theEntityManager.createSprite()
+    .setImage("queen.png")
     .setZIndex(40)
     .setAnchor(0.5)!!
 
-  private val kingFillSprite = theEntityManager.createSprite()
-    .setImage("king-fill.png")
+  private val queenFillSprite = theEntityManager.createSprite()
+    .setImage("queen-fill.png")
     .setTint(owner.colorToken)
     .setAnchor(0.5)
     .setZIndex(30)!!
 
   fun setHealth(health: Int) {
     when {
-      health <= 0 -> kingFillSprite.alpha = 0.0
-      else -> kingFillSprite.alpha = 0.8 * health / KING_HP + 0.2
+      health <= 0 -> queenFillSprite.alpha = 0.0
+      else -> queenFillSprite.alpha = 0.8 * health / QUEEN_HP + 0.2
     }
-    theTooltipModule.updateExtraTooltipText(kingSprite, "Health: $health")
+    theTooltipModule.updateExtraTooltipText(queenSprite, "Health: $health")
   }
 
   init {
-    theTooltipModule.registerEntity(kingSprite, mapOf("id" to kingSprite.id, "type" to "King"))
+    theTooltipModule.registerEntity(queenSprite, mapOf("id" to queenSprite.id, "type" to "Queen"))
   }
 
   fun moveTowards(target: Vector2) {
@@ -83,9 +83,9 @@ class King(owner: Player) : MyOwnedEntity(owner) {
     get() = super.location
     set(value) {
       super.location = value
-      kingSprite.location = location
-      kingFillSprite.location = location
-      kingOutline.location = location
+      queenSprite.location = location
+      queenFillSprite.location = location
+      queenOutline.location = location
     }
 
   override fun damage(damageAmount: Int) {
@@ -350,9 +350,9 @@ class Obstacle(val maxMineralRate: Int, initialAmount: Int): MyEntity() {
           if (closestEnemy != null && closestEnemy.location.distanceTo(location) < it.attackRadius) {
             closestEnemy.damage(damage)
             it.attackTarget = closestEnemy
-          } else if (it.owner.enemyPlayer.kingUnit.location.distanceTo(location) < it.attackRadius) {
+          } else if (it.owner.enemyPlayer.queenUnit.location.distanceTo(location) < it.attackRadius) {
             it.owner.enemyPlayer.health -= 1
-            it.attackTarget = it.owner.enemyPlayer.kingUnit
+            it.attackTarget = it.owner.enemyPlayer.queenUnit
           } else {
             it.attackTarget = null
           }
@@ -431,14 +431,14 @@ class TowerBustingCreep(
           && it.location.distanceTo(location) - radius - it.radius < 10
       }?.let { (it.structure as Tower).health -= GIANT_BUST_RATE }
 
-    val enemyKing = owner.enemyPlayer.kingUnit
-    if (location.distanceTo(enemyKing.location) < radius + enemyKing.radius + attackRange + 10) {
+    val enemyQueen = owner.enemyPlayer.queenUnit
+    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 10) {
       owner.enemyPlayer.health -= 1
     }
   }
 }
 
-class KingChasingCreep(owner: Player, creepType: CreepType)
+class QueenChasingCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType) {
 
   private var lastLocation: Vector2? = null
@@ -448,7 +448,7 @@ class KingChasingCreep(owner: Player, creepType: CreepType)
     if (last != null) {
       val movementVector = when {
         last.distanceTo(location) > 30 -> location - last
-        else -> owner.enemyPlayer.kingUnit.location - location
+        else -> owner.enemyPlayer.queenUnit.location - location
       }
       sprite.rotation = Math.atan2(movementVector.y, movementVector.x)
       fillSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
@@ -458,15 +458,15 @@ class KingChasingCreep(owner: Player, creepType: CreepType)
   }
 
   override fun move() {
-    val enemyKing = owner.enemyPlayer.kingUnit
-    // move toward enemy king, if not yet in range
-    if (location.distanceTo(enemyKing.location) - radius - enemyKing.radius > attackRange)
-      location = location.towards((enemyKing.location + (location - enemyKing.location).resizedTo(3.0)), speed.toDouble())
+    val enemyQueen = owner.enemyPlayer.queenUnit
+    // move toward enemy queen, if not yet in range
+    if (location.distanceTo(enemyQueen.location) - radius - enemyQueen.radius > attackRange)
+      location = location.towards((enemyQueen.location + (location - enemyQueen.location).resizedTo(3.0)), speed.toDouble())
   }
 
   override fun dealDamage() {
-    val enemyKing = owner.enemyPlayer.kingUnit
-    if (location.distanceTo(enemyKing.location) < radius + enemyKing.radius + attackRange + 10) {
+    val enemyQueen = owner.enemyPlayer.queenUnit
+    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 10) {
       owner.enemyPlayer.health -= 1
     }
   }
@@ -489,7 +489,7 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
       .setVisible(false)
 
   override fun finalizeFrame() {
-    val target = findTarget() ?: owner.enemyPlayer.kingUnit
+    val target = findTarget() ?: owner.enemyPlayer.queenUnit
 
     val last = lastLocation
 
@@ -665,7 +665,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4002)!!
 
   fun update() {
-    healthBarFill.width = healthBarWidth * player.health / KING_HP
+    healthBarFill.width = healthBarWidth * player.health / QUEEN_HP
     moneyText.text = when (player.resourcesPerTurn) {
       0 -> "${player.resources}"
       else -> "${player.resources} (+${player.resourcesPerTurn})"

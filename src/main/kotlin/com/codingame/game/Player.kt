@@ -1,11 +1,11 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.KING_HP
+import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.gameengine.core.AbstractPlayer
 
 class Player : AbstractPlayer() {
   override fun getExpectedOutputLines(): Int = 2
-  lateinit var kingUnit: King
+  lateinit var queenUnit: Queen
   lateinit var enemyPlayer: Player
   var isSecondPlayer: Boolean = false
 
@@ -19,7 +19,7 @@ class Player : AbstractPlayer() {
 
   fun printObstaclePerTurn(obstacle: Obstacle) {
     val struc = obstacle.structure
-    val visible = (struc != null && struc.owner == this) || obstacle.location.distanceTo(kingUnit.location) < Constants.KING_VISION
+    val visible = (struc != null && struc.owner == this) || obstacle.location.distanceTo(queenUnit.location) < Constants.QUEEN_VISION
 
     val toks = listOf(
         obstacle.obstacleId,
@@ -35,15 +35,15 @@ class Player : AbstractPlayer() {
 
   val activeCreeps = mutableListOf<Creep>()
 
-  fun allUnits() = activeCreeps + kingUnit
+  fun allUnits() = activeCreeps + queenUnit
 
-  var health by nonNegative(KING_HP)
+  var health by nonNegative(QUEEN_HP)
   var resources = 0
   var resourcesPerTurn = 0
 
-  fun checkKingHealth() {
-    kingUnit.setHealth(health)
-    if (health == 0) deactivate("Dead king")
+  fun checkQueenHealth() {
+    queenUnit.setHealth(health)
+    if (health == 0) deactivate("Dead queen")
     hud.update()
   }
 
