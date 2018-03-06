@@ -37,7 +37,7 @@ class Player : AbstractPlayer() {
 
   fun allUnits() = activeCreeps + queenUnit
 
-  var health by nonNegative(QUEEN_HP)
+  var health by nonNegative<Player>(QUEEN_HP).andAlso { score = it }
   var resources = 0
   var resourcesPerTurn = 0
 
