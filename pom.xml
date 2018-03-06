@@ -8,7 +8,7 @@
 
     <properties>
         <kotlin.version>1.2.10</kotlin.version>
-        <gameengine.version>1.12</gameengine.version>
+        <gameengine.version>1.20</gameengine.version>
     </properties>
 
     <dependencies>
@@ -65,6 +65,8 @@
                             <sourceDirs>
                                 <source>src/main/java</source>
                                 <source>src/main/kotlin</source>
+                                <source>src/test/java</source>
+                                <source>src/test/kotlin</source>
                             </sourceDirs>
                         </configuration>
                     </execution>

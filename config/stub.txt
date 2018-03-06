@@ -1,0 +1,23 @@
+read numObstacles:int
+loop numObstacles read obstacleId:int x:int y:int radius:int
+gameloop
+read queenX:int queenY:int health:int gold:int
+read enemyQueenX:int enemyQueenY:int enemyHealth:int
+loop numObstacles read obstacleId:int goldRemaining:int maxMineSize:int structureType:int owner:int param1:int param2:int
+read numMyCreeps:int
+loop numMyCreeps read x:int y:int creepHealth:int creepType:int
+read numEnemyCreeps:int
+loop numEnemyCreeps read x:int y:int creepHealth:int creepType:int
+write WAIT
+TRAIN
+
+INPUT
+goldRemaining: -1 if unknown
+maxMineSize: -1 if unknown
+structureType: -1 = No structure, 0 = Resource Mine, 1 = Tower, 2 = Barracks
+owner: -1 = No structure, 0 = Friendly, 1 = Enemy
+creepType: 0 = MELEE, 1 = RANGED, 2 = GIANT
+
+OUTPUT
+First line: A valid queen action
+Second line: A set of training instructions

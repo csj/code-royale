@@ -11,7 +11,7 @@ class AllMeleePlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStrea
   init {
 
     while (true) {
-      val (queenLoc, _, _, _, _, _, obstacles, _, _) = readInputs()
+      val (queenLoc, _, _, _, _, obstacles, _, _) = readInputs()
 
       // strategy:
       // build all mines

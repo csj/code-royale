@@ -622,7 +622,8 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
   private val avatar = theEntityManager.createSprite()
     .setImage(player.avatarToken)
     .setX(left + 10).setY(top + 10)
-    .setScale(0.8)
+    .setBaseWidth(bottom - top - 10 - 10)
+    .setBaseHeight(bottom - top - 10 - 10)
     .setZIndex(4003)!!
 
   private val heartSprite = theEntityManager.createSprite()

@@ -7,7 +7,7 @@ public class Main {
 
         // Adds as many player as you need to test your game
         gameRunner.addAgent(AllTowersPlayer.class);
-        gameRunner.addAgent(AllMeleePlayer.class);
+        gameRunner.addAgent(CSJPlayer.class);
 
         // gameRunner.addCommandLinePlayer("python3 /home/user/player.py");
 

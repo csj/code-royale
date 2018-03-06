@@ -35,7 +35,6 @@ abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stder
     resources = scanner.nextInt(),
     enemyQueenLoc = Vector2(scanner.nextInt(), scanner.nextInt()),
     enemyHealth = scanner.nextInt(),
-    enemyResources = scanner.nextInt(),
     obstacles = (0 until obstacles.size).map { applyObstacleUpdate(readObstaclePerTurn()) },
     friendlyCreeps = (0 until scanner.nextInt()).map { readCreep() },
     enemyCreeps = (0 until scanner.nextInt()).map { readCreep() }

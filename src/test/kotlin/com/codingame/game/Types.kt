@@ -44,7 +44,6 @@ data class AllInputs(
   val resources: Int,
   val enemyQueenLoc: Vector2,
   val enemyHealth: Int,
-  val enemyResources: Int,
   val obstacles: List<ObstacleInput>,
   val friendlyCreeps: List<CreepInput>,
   val enemyCreeps: List<CreepInput>

@@ -134,7 +134,7 @@ class Referee : AbstractReferee() {
   private fun sendGameStates() {
     for (activePlayer in gameManager.activePlayers) {
       activePlayer.sendInputLine("${activePlayer.queenUnit.location.x.toInt()} ${activePlayer.queenUnit.location.y.toInt()} ${activePlayer.health} ${activePlayer.resources}")
-      activePlayer.sendInputLine("${activePlayer.enemyPlayer.queenUnit.location.x.toInt()} ${activePlayer.enemyPlayer.queenUnit.location.y.toInt()} ${activePlayer.enemyPlayer.health} ${activePlayer.enemyPlayer.resources}")
+      activePlayer.sendInputLine("${activePlayer.enemyPlayer.queenUnit.location.x.toInt()} ${activePlayer.enemyPlayer.queenUnit.location.y.toInt()} ${activePlayer.enemyPlayer.health}")
       obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
       for (player in listOf(activePlayer, activePlayer.enemyPlayer)) {

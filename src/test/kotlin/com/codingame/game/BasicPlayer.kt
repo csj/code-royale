@@ -32,7 +32,7 @@ class BasicPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
       turn++
 
       val (queenLoc, health, resources,
-        enemyQueenLoc, enemyHealth, enemyResources,
+        enemyQueenLoc, enemyHealth,
         obstacles, friendlyCreeps, enemyCreeps) = readInputs()
 
       fun getQueenAction(): String {

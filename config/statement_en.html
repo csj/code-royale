@@ -1,0 +1,769 @@
+<div id="statement_back" class="statement_back" style="display:none"></div>
+
+
+
+
+        <div class="statement-body">
+
+
+        <!-- LEAGUE ALERT -->
+        <div style="color: #7cc576;
+        background-color: rgba(124, 197, 118,.1);
+        padding: 20px;
+        margin-right: 15px;
+        margin-left: 15px;
+        margin-bottom: 10px;
+        text-align: left;">
+            <div style="text-align: center; margin-bottom: 6px">
+                <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
+            </div>
+
+
+
+            <!-- BEGIN bronze -->
+            <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
+                Summary of new rules
+            </p>
+            <span class="statement-league-alert-content">
+	          Starting from the bronze league each hero has <const>3</const> unique skills.<br />
+				This is the last rule change.<br />
+				See the updated statement for details.
+	      </span>
+            <!-- END -->
+        </div>
+
+
+        <!-- GOAL -->
+        <div class="statement-section statement-goal">
+            <h1>
+                <span class="icon icon-goal">&nbsp;</span>
+                <span>The Goal</span>
+            </h1>
+            <div class="statement-goal-content">
+                <!-- LEAGUES wood3 wood2 wood1 bronze -->
+                Destroy your opponent's tower.
+            </div>
+        </div>
+
+
+        <!-- RULES -->
+        <div class="statement-section statement-rules">
+            <h1>
+                <span class="icon icon-rules">&nbsp;</span>
+                <span>Rules</span>
+            </h1>
+            <div><div class="statement-rules-content">
+
+                <p>The game is played on a map <const>1920 </const>units wide and <const>750</const> units high with 2 players.<br>
+                    The coordinate <const>X=0</const>,<const> Y=0</const> is the top left pixel.</p>
+
+                <!-- BEGIN wood3 wood2 -->
+                <p>Each player controls <const>2</const> heroes of their choice, which they pick before the game begins by outputting each hero’s name.</p>
+
+                <p>Both players pick their first hero simultaneously and then pick their second hero simultaneously, so they can adjust their second hero pick based on their opponent’s first hero pick.</p>
+                <!-- END -->
+
+
+                <p>The teams start out on opposite sides of the road stretching along the map.</p>
+
+                <p>An allied tower is placed for each team next to their starting position. Each player must protect their own tower, while trying to destroy their opponent's tower.</p>
+
+                <p>Every <const>15</const> turns a wave of allied units spawns for each player next to their tower, to aid them in battle against their opponent. These units will head straight for the enemy tower, but will stop to fight any enemy they encounter in their path.</p>
+
+ <!-- BEGIN wood1 bronze-->
+                <p>A random amount of neutral creatures, between <const>3</const> and <const>5</const>,  will spawn amongst the bushes above the road. They won't attack anyone, unless they are attacked.</p>
+                <!-- END -->
+
+                <br>
+
+                <p><strong>The Heroes</strong><br>
+                    <br>
+
+                    You can select from following heroes:<br>
+                    <action>DEADPOOL</action> <br>
+                    <action>DOCTOR_STRANGE</action><br>
+                    <action>HULK</action><br>
+                    <action>IRONMAN</action> <br>
+                    <action>VALKYRIE</action><br></p>
+
+<br>
+
+<!-- BEGIN wood2-->
+                When your heroes kill enemy units, enemy heroes or even neutral creatures, you gain gold which you can use to buy equipment that will instantly make them more powerful.</p>
+                <!-- END -->
+<br>
+<!-- BEGIN bronze-->
+                <p><strong>Spells/Skills</strong><br>
+                    <br>
+
+                    Each Hero has its own unique skills and follows almost the exact same set of commands.<br>
+                    <br>
+                    <!-- END -->
+
+                <p><strong>Actions</strong><br>
+                    <br>
+                    Every turn your heroes must perform one of the following actions:
+                </p><ul>
+                <li>  <action>WAIT</action></li>
+                <li> <action>MOVE  x y</action> move towards <const>(x, y)</const> </li>
+                <li> <action>ATTACK</action> <var>unitId</var>  try to attack <const>unitId</const></li>
+                <li> <action>ATTACK_NEAREST</action> <var>unitType</var> attacks nearest entity of given type</li>
+                <li>  <action>MOVE_ATTACK x y</action> <var>unitId</var> move towards <const>(x, y)</const> and attacks <const>unitId</const></li>
+                <li> <action>BUY</action> <var>item_name</var></li>
+                <li><action>SELL</action> <var>item_name</var> </li>
+                <li>One of the 3 skills the heroes you picked possesses. Check expert rules for details.</li>
+                </ul></p>
+            </div>
+
+                 <p><strong>Items</strong><br>
+                    <br>
+
+                    Items are pieces of equipment that increase various attributes of your heroes.</p><br>
+
+                <!-- Victory conditions -->
+                <div class="statement-victory-conditions">
+                    <div class="icon victory"></div>
+                    <div class="blk">
+                        <div class="title">Victory Conditions</div>
+                        <div class="text">
+                            <ul>
+                                <li>Destroy the enemy tower</li>
+                                <!-- BEGIN wood3 wood2 -->
+                                <li>Kill both enemy heroes</li>
+                                <!-- END -->
+
+                                <!-- BEGIN wood2 wood1 bronze -->
+                                <li>Have more last hits / denies than your opponent</li>
+                                <!-- END -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lose conditions -->
+                <div class="statement-lose-conditions">
+                    <div class="icon lose"></div>
+                    <div class="blk">
+                        <div class="title">Lose Conditions</div>
+                        <div class="text">
+                            <ul>
+                                <li>Output wrong command</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- EXPERT RULES -->
+        <div class="statement-section statement-expertrules">
+            <h1>
+                <span class="icon icon-expertrules">&nbsp;</span>
+                <span>Expert Rules</span>
+            </h1>
+            <div class="statement-expert-rules-content">
+                <br>
+
+                <p><strong>Collisions</strong><br>
+                    <br>
+
+                    There are no collisions between units.</p><br>
+
+                <p><strong>Round types</strong><br>
+                    <br>
+
+                    There are two different types of turns in this game.
+<br><br>
+                    The first one is for hero picks and occurs at the beginning of the game.  When the input variable <var>roundType</var> is negative, you must output the name of the hero you want to play. If you output <action> WAIT </action> instead of a hero name, a hero will be selected for you.
+<br>
+                    <br>You can only pick each hero only once. You can pick a hero your opponent has already picked.<br>
+                    <br>The second type of turn is a normal game turn where you have to fight your way towards the win conditions. <var>roundType</var> will be positive and its value will represent the amount of heroes that you have to order.</p><br>
+
+                <p><strong>Bushes</strong><br>
+                    <br>
+Bushes are areas on the map where your heroes can become invisible while standing inside them.
+<br><br>
+The turn after a visible hero enters a bush they become invisible if no enemy hero shares the same hiding spot. <br><br>
+Invisible heroes are not targetable by attacks nor by single target skills. Their information will be available in the input on the next round, but not the ones following after, if they stay invisible.
+                    <br><br>
+A bush is represented by a point on the map and the hiding area is a <const>50</const> radius all around the bush.<br><br>
+Neutral Units (Groot) and towers can still target an invisible hero.<br><br>
+Invisibility is lost when the hero attacks an enemy unit, hero or tower or when an enemy hero enters the same bush area. Invisibility is not lost if the hero attacks a neutral unit.</p><br>
+
+                <p><strong>Game Entities: Units / Heroes / Towers / Neutral Creatures</strong><br>
+                    <br>
+
+                    Every entity has the following attributes:<br>
+                <li><var>unitId</var></li>
+                <li><var>team</var> - the team they belong to. -1 for Neutral Units (Groot)</li>
+                <li><var>type</var> - it can be an Unit / Hero / Tower / Groot(Neutral Unit)</li>
+                <li><var>attackRange</var> - the distance from which entities can attack</li>
+                <li><var>health</var> - the current amount of damage they can take before they die</li>
+                <li><var>shield</var> - extra temporary health removed after a few rounds. Shield is reduced before health when damage is inflicted.</li>
+                <li><var>mana</var> - the current amount of mana they have available to perform their skills</li>
+                <li><var>attack_damage</var> - the amount of damage they can deal with an <action>ATTACK</action> command</li>
+                <li><var>movement_speed</var> - the distance they can travel in a single turn.  An entity will stop where it arrives and won't travel any further until the following round.</li>
+<br>
+Entities also have <var>maxHealth</var> and <var>maxMana</var>. These represent the maximum values of <var>health</var> and <var>mana</var> they can have.
+<br><br>
+Towers are stationary. They do not move. Ever.
+                </p><br>
+
+                <p><strong>Spawn Locations</strong><br>
+                    <br>
+
+                   <!-- BEGIN wood1 bronze -->
+                    Heroes for player 0 spawn at:<br>
+                    x: <const>400</const>,  y: <const>500</const><br>
+                    x: <const>500</const>,  y: <const>560</const><br>
+                    Heroes for player 1 spawn at:<br>
+                    x: <const>1520</const>, y: <const>500</const><br>
+                    x: <const>1420</const>, y: <const>560</const><br>
+                </p><br>
+                <!-- END -->
+
+                <p><strong>Hero stats <!-- BEGIN bronze -->and skill details<!-- END --></strong><br>
+                    <br>
+
+
+                    <!-- BEGIN bronze -->
+                <table border="1" style="width:100%; border: 1px solid white;">
+                    <tr>
+                        <th>Name</th>
+                        <th>Stats</th>
+                        <th>Skills</th>
+                    </tr>
+                    <tr>
+                        <td>Deadpool</td>
+                        <td><ul><li>health 1380</li>
+                            <li>mana 100</li>
+                            <li>damage 80</li>
+                            <li>move speed 200</li>
+                            <li>mana regen 1</li>
+                            <li>range 110</li>
+                        </ul></td>
+                        <td>
+                            <ul> COUNTER
+                                <ul><li>reflects all damage he takes towards the closest entity enemy and recovers health while COUNTER was active. Dies if health reaches 0.</li>
+                                    <li>manacost: 40</li>
+                                    <li>cast duration: 0.05</li>
+                                    <li>range: 350</li>
+                                    <li>duration in rounds: 1</li>
+                                    <li>cooldown: 5</li>
+                                    <li>damage: damage received * 1.5</li>
+                                </ul>
+                            </ul>
+                            <ul>WIRE x y
+                                <ul><li>throws a missile that stuns the first enemy it hits, a huge electric shock is sent through the wire damaging that enemy</li>
+                                    <li>manacost 50</li>
+                                    <li>range: 200</li>
+                                    <li>radius: 50</li>
+                                    <li>stun time: current turn and next 1 turns</li>
+                                    <li>cast duration: 0.3</li>
+                                    <li>cooldown: 9</li>
+                                    <li>damage multiplier: target hero's maxMana * 0.5</li>
+                                </ul>
+                            </ul>
+                            <ul>STEALTH x y
+                                <ul><li>becomes temporarily invisible</li>
+                                    <li>manacost 30</li>
+                                    <li>duration : 5</li>
+                                    <li>cooldown: 6</li>
+                                </ul>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Hulk</td>
+                        <td><ul><li>health 1450</li>
+                            <li>mana 90</li>
+                            <li>damage 80</li>
+                            <li>move speed 200</li>
+                            <li>mana regen 1</li>
+                            <li>range 95</li>
+                        </ul></td>
+                        <td>
+                            <ul>CHARGE unitId
+                                <ul><li> moves next to the target and attacks it</li>
+                                    <li>manacost: 20</li>
+                                    <li>cast duration: 0.5</li>
+                                    <li>range: 500</li>
+                                    <li>cooldown: 4</li>
+                                </ul>
+                            </ul>
+                            <ul>EXPLOSIVESHIELD
+                                <ul><li>temporarily shields itself. if the shield is destroyed before it expires, it explodes and damages all nearby enemies</li>
+                                    <li>manacost: 30</li>
+                                    <li>duration in rounds: 4</li>
+                                    <li>temporary health bonus: maxHealth*0.07 + 50</li>
+                                    <li>explosion range: 151</li>
+                                    <li>explosion damage: 50</li>
+                                    <li>cooldown: 8</li>
+                                </ul>
+                            </ul>
+                            <ul>BASH unitId
+                                <ul><li>attacks and stuns an enemy entity excluding towers</li>
+                                    <li>manacost: 40</li>
+                                    <li>duration: current round and next round</li>
+                                    <li>range: 120</li>
+                                    <li>cooldown: 10</li>
+                                </ul>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Valkyrie</td>
+                        <td><ul><li>health 1400</li>
+                            <li>mana 155</li>
+                            <li>damage 65</li>
+                            <li>move speed 200</li>
+                            <li>mana regen 2</li>
+                            <li>range 130</li>
+                        </ul></td>
+                        <td>
+                            <ul>SPEARFLIP unitId
+                                <ul><li>moves target unit to the opposite side of the lancer</li>
+                                    <li>manacost: 20</li>
+                                    <li>cast duration: 0</li>
+                                    <li>range: 155</li>
+                                    <li>cooldown: 3</li>
+                                    <li>damage: attack damage * 0.4 </li>
+                                </ul>
+                            </ul>
+                            <ul>JUMP x y
+                                <ul><li>jumps to target location and damages closest enemy</li>
+                                    <li>manacost 35</li>
+                                    <li>cast duration: 0.2</li>
+                                    <li>range: 250</li>
+                                    <li>cooldown: 3</li>
+                                    <li>damage: attack damage</li>
+                                </ul>
+                            </ul>
+                            <ul>POWERUP
+                                <ul><li> temporarily boosts its own attributes</li>
+                                    <li>manacost: 50</li>
+                                    <li>duration: 4</li>
+                                    <li>cooldown: 7</li>
+                                    <li>bonus range: 10</li>
+                                    <li>bonus attack damage: speed * 0.3</li>
+                                </ul>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ironman</td>
+                        <td><ul><li>health 820</li>
+                            <li>mana 200</li>
+                            <li>damage 60</li>
+                            <li>move speed 200</li>
+                            <li>mana regen 2</li>
+                            <li>range 270</li>
+                        </ul></td>
+                        <td>
+                            <ul> BLINK x y
+                                <ul><li> jumps to target location and recovers 20 mana</li>
+                                    <li>manacost: 16</li>
+                                    <li>range: 200</li>
+                                    <li>cast duration: instant</li>
+                                    <li>cooldown: 3</li>
+                                </ul>
+                            </ul>
+                            <ul> FIREBALL x y
+                                <ul><li>throws a ball of fire that damages all enemy heroes and neutral creatures in a line</li>
+                                    <li>manacost: 60</li>
+                                    <li>range: 900</li>
+                                    <li>impact radius: 50</li>
+                                    <li>damage: 55 + current mana * 0.2 + distance traveled/ 1000 </li>
+                                    <li>cast duration: 0.2</li>
+                                    <li>cooldown: 6</li>
+                                </ul>
+                            </ul>
+                            <ul> BURNING x y
+                                <ul><li>makes that target location burn and damages all enemy units in the area</li>
+                                    <li>manacost: 50</li>
+                                    <li>range: 250</li>
+                                    <li>radius: 150</li>
+                                    <li>cast duration: 0.5</li>
+                                    <li>damage: manaRegeneration * 3 + 30</li>
+                                    <li>cooldown: 5</li>
+                                </ul>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Doctor Strange</td>
+                        <td><ul><li>health 955</li>
+                            <li>mana 300</li>
+                            <li>damage 50</li>
+                            <li>move speed 200</li>
+                            <li>mana regen 2</li>
+                            <li>range 245</li>
+                        </ul></td>
+                        <td>
+                            <ul>AOEHEAL x y
+                                <ul><li>heals all nearby allied units</li>
+                                    <li>manacost: 50</li>
+                                    <li>cast duration: 0.05</li>
+                                    <li>range: 250</li>
+                                    <li>radius: 155</li>
+                                    <li>healing amount: mana * 0.2</li>
+                                    <li>cooldown: 7</li>
+                                </ul>
+                            </ul>
+                            <ul>SHIELD unitId
+                                <ul><li>gives a shield to an allied units</li>
+                                    <li>manacost 20</li>
+                                    <li>duration in rounds: 2</li>
+                                    <li>range: 500</li>
+                                    <li>temporary health bonus: maxMana * 0.3</li>
+                                    <li>cooldown: 6</li>
+                                </ul>
+                            </ul>
+                            <ul>PULL unitId
+                                <ul><li>pulls unitId towards the Dr. Strange's current location, drains some of its mana if it's an enemy hero </li>
+                                    <li>manacost 40</li>
+                                    <li>displacement range: 200</li>
+                                    <li>cast range: 300</li>
+                                    <li>mana drained from target: target's manaRegeneration * 3 + 5 </li>
+                                    <li>cooldown: 5</li>
+                                </ul>
+                            </ul>
+                        </td>
+                    </tr>
+                </table>
+                <br><br>
+                Extra skill and stat details:<br>
+                <a href="https://github.com/CodinGameCommunity/team-1/blob/master/team-1%20project/README.md">Skills and Stats Table</a>
+                <!-- END --></p><br><br>
+
+                <p><strong>Attacking</strong><br>
+
+                    <br>
+
+Heroes have an attack time of <const>0.1</const> and units have an attack time of <const>0.2</const><br><br>
+
+Ranged units require an additional attack time * distance / <var>attackRange</var> for their projectiles to hit the target. <br><br>
+
+A unit or hero is ranged if their attack <var>attackRange</var> is greater than <const>150</const>.<br><br>
+
+If a unit is out of range, your hero will first move closer towards the target and then try to attack it. This helps a lot if you're only slightly out of range.<br><br>
+
+The time used to move is distance / <var>moveSpeed</var> <br><br>
+
+So if your hero has <const>75</const> range and travels a distance of <const>100</const> on the map, at <const>200</const> <var>moveSpeed</var>, it uses up <const>100</const> / <const>200</const> = <const>0.5</const> turn time and still has half the turn left to attack. The attack will take place at <const>0.5</const> + <const>0.1</const> since the hero is melee in this case.<br><br>
+The distance to the unit still needs to be equal or smaller to the hero's range for the attack to take place.<br><br>
+Attacks with an attack time higher than <const>1</const> don't carry over to the next round.<br><br>
+
+<action>ATTACK_NEAREST</action> <var>unitType</var> works like a regular attack command, except it attacks nearest entity of given type.<br>
+<action>MOVE_ATTACK x y </action>  <var>unitId</var> : your hero first moves to target location and then executes the attack, only if enough time is left during the current round to hit the target.
+
+                </p><br>
+
+<!-- BEGIN wood2 wood1 bronze -->
+                <p><strong>Last Hit & Deny</strong><br>
+                    <br>
+
+                <p>Any attack that takes away the last bit of health from a entity is called a Last Hit. A last hit performed on an enemy entity by one of your heroes grants you gold.</p>
+
+                <p>A last hit performed on one of your own entities is called a Deny and prevents your opponent from getting gold when the entity dies. You can only attack an allied hero or allied unit when their health is below <const>40%</const>.</p>
+                </p><br>
+                <!-- END -->
+
+                <p><strong>Lane units aggro and attack pattern</strong><br>
+                    <br>
+
+                    If your hero attacks an enemy hero while his allied units are around him, these units will follow and attack your hero. This is called aggro. The attacking hero needs to be within <const>300</const> distance to the enemy units for this to take effect and it's canceled if the hero moves out of this range. Unit aggro lasts for <const>3</const> rounds, including the initial round.<br><br>
+
+Lane units will always first try to hit the hero that aggroed them.<br><br>
+
+If not aggroed, units move straight towards the enemy tower from their current location. <br>
+On their way they always stop to hit the closest unit from the enemy <var>team</var>, if the enemy is within <var>attackRange</var>.<br>
+- If multiple targets are at the same distance, the lowest <var>health</var> enemy is selected.<br>
+- Then the enemy with highest <var>y</var> coordinate in their location is selected.<br>
+- And last the enemy with lowest <var>unitId</var> is selected.</p><br>
+
+<p><strong>Tower aggro and attack pattern</strong><br>
+                    <br>
+The tower will attack in the following order:
+<br><br>
+First targets any enemy hero that attacks an allied hero.<br>
+Targets closest enemy unit within range.<br>
+Targets closest enemy hero.
+<br><br>
+Using spells or hitting the tower, doesn't force tower aggro.
+                    </p><br>
+
+                <p><strong>Neutral Units</strong><br>
+                    <br>
+
+                    When damaged, they attack the closest Hero, if there is any in <const>300</const> range.  They chase the targeted hero up to a maximum distance of <const>300</const>, after which they return to their spawn point.<br><br>
+                    They regain all their health when they reach their spawn point.
+                    <br><br>
+                    Neutral Units will start spawning on turn <const>4</const> and then respawn stronger every <const>40th</const> turn afterwards if they are dead. Their stats and the gold reward is scaled by <const>20%</const> bonus each time.  (<var>damage</var>, <var>health</var>,<var> gold</var>)</p><br>
+
+<!-- BEGIN bronze -->
+                <p><strong>Skills</strong><br>
+                    <br>
+
+                <p>All skills have a cost called <var>mana</var>, maximum casting <var>range</var> and a <var>cooldown</var> which prevents you from using the same skill every single round.</p>
+
+                <p>Skills also have a duration that can last between a turn and multiple turns. For example <action>SHIELD</action> and <action>POWERUP</action>. </p>
+                </p><br>
+
+                <p><strong>Stun Effects</strong><br>
+                    <br>
+
+                    Some skills apply a <b>stun</b> effect to an unit. Heroes who are stunned won’t be able to execute any new actions for the duration of the <b>stun</b>  effect.</p><br>
+                <!-- END -->
+
+                    <p><strong>Gold rewards</strong><br>
+                    <br>
+
+<table style="width:100%; border: 1px solid white; ">
+<th>
+Entity Type
+</th>
+<th>
+Gold Reward
+</th>
+<tr>
+<td>
+Melee Unit
+</td>
+<td>
+30
+</td>
+</tr>
+<tr>
+<td>
+Ranged Unit
+</td>
+<td>
+50
+</td>
+</tr>
+<tr>
+<td>
+Hero
+</td>
+<td>
+300
+</td>
+</tr>
+<tr>
+<td>
+Denied Hero
+</td>
+<td>
+150
+</td>
+</tr>
+<tr>
+<td>
+Groot
+</td>
+<td>
+100 - first spawn
+</td>
+</tr>
+</table>
+
+                    </p><br>
+
+
+<!-- BEGIN wood2 wood1 bronze -->
+                <p><strong>Items</strong><br>
+                    <br>
+
+                    Items increase hero attributes when equipped.  The amount of attributes and the bonuses vary from item to item. These attributes are added to the hero's current stats and are lost when the item is sold. <br> <br>
+                    Possible item bonuses are <var>health</var>, <var>maxHealth</var>, <var>mana</var>, <var>maxMana</var>, <var>manaRegeneration</var>, <var>attack_damage</var>, <var>moveSpeed</var>.<br><br>
+
+                    When selling a <var>mana</var> boosting item your current <var>mana</var> will be minimum of <const>0</const> and current<var>mana</var> - bonus <var>mana</var> granted by the item. <br><br>
+
+                    When selling a <var>health</var> boosting item your current <var>health</var> will be minimum of <const>0</const> and current<var>health</var> - bonus <var>health</var> granted by the item. <br><br>
+
+                <p><strong>Buying and Selling</strong><br>
+                    <br>
+
+                    <p>A hero can purchase an item with the <action>BUY</action> <var>item_name</var> command.</p>
+
+                <p>A hero can sell an item with the <action>SELL</action> <var>item_name</var> command. <const>50%</const> of the initial item <var>gold</var> value is refunded when selling an item.</p>
+
+                <p>Each hero can have up to <const>4</const> items at once. You can have multiple copies of the same item on a hero, but can only <action>BUY</action> and <action>SELL</action> one at a time.</p>
+                </p><br>
+
+               <p><strong>Potions</strong><br>
+                    <br>
+
+                <p>Potions are items that get consumed immediately after purchase. Their values are permanently added to the hero. You can't sell them and they get removed from the hero's item slots, at the end of the round they are purchased. You hero still needs an empty item slot to purchase a potion.</p>
+
+                <p>Potions can either recover current <var>mana</var> or current <var>health</var>. The bonus health and mana gained from potions won't go above <var>maxHealth</var> or <var>maxMana</var>.</p><br>
+
+                <p><strong>Item Stats</strong><br>
+                    <br>
+
+                <p>All items will be generated at the start of the game with completely random stats.</p>
+
+                <p>Right at the beginning of the game you get a random amount of gold between <const>100</const> and <const>650</const>. There will be items that are randomly generated to match this gold amount, so they’re affordable to players when the game starts.</p>
+
+                <p>All other items are generated to match different costs of all the game phases you go through, from early to late game.</p></p><br>
+                <!-- END -->
+
+
+                <p><strong>General information</strong><br>
+                    <br>
+
+                    Overall it looks complex, but it's very simple and fun.</p><br>
+
+
+            </div>
+        </div>
+
+
+
+         <!-- PROTOCOL -->
+        <div class="statement-section statement-protocol">
+            <h1>
+                <span class="icon icon-protocol">&nbsp;</span>
+                <span>Game Input</span>
+            </h1>
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Initialization input</div>
+                <div class="text"><span class="statement-lineno">Line 1:</span> your <var>team</var>’s number, can be either 0 or 1.<br>
+                    <span class="statement-lineno">Line 2:</span><var>bushAndSpawnPointCount</var> the number of bushes and spawn points<br><br>
+
+                    <span class="statement-lineno">Next <var>bushAndSpawnPointCount</var> lines:</span> String entityType [Bush, Spawn], Integer <var>x</var>, Integer <var>y</var>, Integer <var>radius</var><br><br>
+
+                    <span class="statement-lineno">Next Line:</span> <var>itemCount</var> the total number of items available in game.<br>
+                    <span class="statement-lineno">Next <var>itemCount</var> lines:</span>
+                    <ul>
+                        <li>String <var>itemName</var></li>
+                        <li>Integer <var>itemCost</var></li>
+                        <li>Integer <var>damage</var></li>
+                        <li> Integer <var>health</var></li>
+                        <li>Integer <var>maxHealth</var></li>
+                        <li>Integer <var>mana</var></li>
+                        <li> Integer <var>maxMana</var></li>
+                        <li>Integer <var>moveSpeed</var></li>
+                        <li>Integer <var>manaRegeneration</var></li>
+                        <li> Integer <var>isPotion</var> [it’s a potion if it’s equal to 1]</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Input for one game turn</div>
+                <div class="text">
+                    <span class="statement-lineno">Line 1:</span> your <var>gold</var> as Integer<br>
+                    <span class="statement-lineno">Line 2:</span> your opponent’s<var> gold</var> as Integer<br>
+                    <span class="statement-lineno">Line 3:</span> <var>roundType</var> an Integer that lets you know if you’re in the Hero pick phase or during the actual game phase.<br>
+                    <span class="statement-lineno">Line 4:</span> <var>entityCount</var> a number that represents the sum of all heroes, units, towers and neutral creatures currently on the map<br>
+                    <br>
+
+                    <span class="statement-lineno">Next <var>entityCount</var> inputs of:</span>
+                    <ul>
+                        <li>Integer <var>unitId</var></li>
+                        <li>Integer <var>team</var></li>
+                        <li>String <var>unitType</var></li>
+                        <li> Integer <var>x</var></li>
+                        <li>Integer <var>y</var></li>
+                        <li>Integer <var>attackRange</var></li>
+                        <li> Integer <var>health</var></li>
+                        <li>Integer <var>max_health</var></li>
+                        <li>Integer <var>shield</var></li>
+                        <li>Integer <var>attack_damage</var></li>
+                        <li> Integer <var>movement_speed</var></li>
+                        <li>Integer <var>stun_duration</var></li>
+                        <li> Integer <var>gold_value</var></li>
+                    </ul>
+                    <br><br>If the <var>unitType</var> is a <action>HERO</action> it will also have:<br>
+                    <ul>
+                        <li> Integers <var>countDown1</var>, <var>countDown2</var> and <var>countDown3</var> representing the countdown on each skill before next skill usage is possible</li>
+                        <li>Integer <var>mana</var></li>
+                        <li>Integer <var>maxMana</var></li>
+                        <li> Integer <var>manaRegeneration</var></li>
+                        <li>String <var>heroType</var></li>
+                        <li>Integer <var>isVisible</var> [1 if visible]</li>
+                        <li> Integer <var>itemsOwned</var></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Output for one game turn</div>
+                <div class="text">Depending on the value of <var>roundType</var> your output must be either a hero pick or a hero command.
+                    <br><br>
+                    If <var>roundType</var> is negative you must select a hero:
+                    </br><br>
+                    <strong>One Output line:</strong> <var>heroName</var> must be one of the available heroes <action>DEADPOOL</action>, <action>DOCTOR_STRANGE</action>, <action>HULK</action>, <action>IRONMAN</action>, <action>VALKYRIE</action>
+                    <br></br>
+                    If <var>roundType</var> is positive, it means you own <var>roundType</var> heroes and you must output:
+                    <br></br>
+                    <strong>One line for each living hero you own, containing any of the following actions:</strong>
+                    </br>
+                    <ul>
+                        <li><action>WAIT</action></li>
+                        <li><action>MOVE x y</action></li>
+                        <li><action>ATTACK unitId</action></li>
+                        <li><action>ATTACK_NEAREST unitType</action> [UNIT, HERO, TOWER, GROOT]</li>
+                        <li><action>MOVE_ATTACK x y unitId</action></li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Constraints</div>
+                <div class="text">
+                    Response time for first turn ≤ 1000ms <br>
+                    Response time for one turn ≤ 50ms</div>
+            </div>
+        </div>
+
+
+
+
+
+
+    <!-- STORY -->
+    <div class="statement-story-background">
+        <div class="statement-story-cover" style="background-size: cover; background-image: url(https://image.redbull.com/rbcom/010/2017-05-05/1331856442107_2/0012/0/48/0/858/1620/1050/1/the-howling-abyss-home-to-aram.jpg)">
+            <div class="statement-story" style="min-height: 300px; position: relative">
+                <h2><font color="#fff">Galaxies at War</font></h2>
+                <div class="story-text"><font color="#fff">
+                  <p>The armored towers rose above the desolated area, stretching into the collapsing skies of two fusing pocket universes.</p>
+
+                  <p>Droves of mighty raccoons broke the silence as they emerged from their strongholds where they had been lying in wait. Now relentlessly marching forward into the rocky desert, they sought to destroy the intruders.</p>
+
+                  <p>The intruders were the ones who came to take down the dark armies and put a stop to their conquest.</p>
+
+                  <p>When the boulder sized fist hit, it was hard and unforgiving. Their bodies were flung away, clearing the path. A skillful lance wielder was keeping them at bay, while the ground was scorched to seal them away.</p>
+
+                  <p>Heroes had gathered! </p>
+
+                  <p>“You know the plan, right?” asked Ironman.</p>
+
+                  <p>“It's all about taking over the towers and control the bots so we can take over the galaxy.”</p>
+
+                  <p>“No, it's not! We are here to save the galaxy from the raccoons!” exclaimed Valkyrie.</p>
+
+                  <p>“Have you lost touch with ...” Reality? Doctor Strange was about to ask, but then a sudden realisation came to mind. They had been fighting alongside alternate versions of themselves from different universes. It was uncertain which reality came into question. </p>
+
+                  <p>A heavy gaze turned inwards the group. Eyes widened, fists clenched and stares intensified.</p>
+
+                  <p>“Justice will prevail,” growled Hulk.</p>
+
+                  <p>“Hah, agreed. Whose justice though?” asked Deadpool.</p>
+
+                  <p>“Fine, we each have a side to play on, so let's sort out things properly,” said the other Deadpool.</p>
+
+                  <p>And there inbetween, within the twilight of the colliding bubble universes, they were battling. Each one of them fighting to uphold their own morals. As the worlds were falling apart they were trying to prove whose justice is true justice. To themselves and to the others, to the silent witnesses who could no longer stay silent …<p>
+                </font></div>
+            </div></div>
+    </div>
+</div>
