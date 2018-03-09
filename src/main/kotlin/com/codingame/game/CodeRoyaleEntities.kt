@@ -10,8 +10,8 @@ import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_RADIUS_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
-import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_RANGE
 import com.codingame.game.Constants.TOWER_MELT_RATE
+import com.codingame.game.Constants.TOWER_SLOW
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
@@ -76,7 +76,7 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
   }
 
   fun moveTowards(target: Vector2) {
-    location = location.towards(target, Constants.UNIT_SPEED.toDouble())
+    location = location.towards(target, Constants.QUEEN_SPEED.toDouble())
   }
 
   override var location: Vector2
@@ -165,8 +165,17 @@ class Tower(private val obstacle: Obstacle, override val owner: Player, var atta
 
   private val towerRangeCircle = theEntityManager.createCircle()
     .setFillAlpha(0.2)
+    .setFillColor(owner.colorToken)
     .setLineWidth(0)
     .setZIndex(10)
+    .also { it.location = obstacle.location }
+
+  private val towerRangeWeb = theEntityManager.createSprite()!!
+    .setImage("web.png")
+    .setTint(owner.colorToken)
+    .setAlpha(0.4)
+    .setZIndex(11)
+    .setAnchor(0.5)
     .also { it.location = obstacle.location }
 
   private val sprite = theEntityManager.createSprite()
@@ -192,6 +201,7 @@ class Tower(private val obstacle: Obstacle, override val owner: Player, var atta
   public var attackTarget: MyEntity? = null
 
   override fun hideEntities() {
+    towerRangeWeb.isVisible = false
     towerRangeCircle.isVisible = false
     sprite.isVisible = false
     fillSprite.isVisible = false
@@ -199,9 +209,10 @@ class Tower(private val obstacle: Obstacle, override val owner: Player, var atta
 
   override fun updateEntities()
   {
-    towerRangeCircle.isVisible = true
-    towerRangeCircle.fillColor = owner.colorToken
+    towerRangeCircle.isVisible = false
     towerRangeCircle.radius = attackRadius
+    towerRangeWeb.isVisible = true
+    towerRangeWeb.setScale(attackRadius / 25.0) // 50x50 was the original size of the image
     sprite.isVisible = true
     fillSprite.isVisible = true
     fillSprite.tint = owner.colorToken
@@ -345,10 +356,12 @@ class Obstacle(val maxMineralRate: Int, initialAmount: Int): MyEntity() {
     structure?.also {
       when (it) {
         is Tower -> {
-          val damage = TOWER_CREEP_DAMAGE_RANGE.sample()
-          val closestEnemy = it.owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
+//          val damage = TOWER_CREEP_DAMAGE_RANGE.sample()
+          val closestEnemy = it.owner.enemyPlayer.activeCreeps
+            .filter { it.speed > TOWER_SLOW }
+            .minBy { it.location.distanceTo(location) }
           if (closestEnemy != null && closestEnemy.location.distanceTo(location) < it.attackRadius) {
-            closestEnemy.damage(damage)
+            closestEnemy.speed -= TOWER_SLOW
             it.attackTarget = closestEnemy
           } else if (it.owner.enemyPlayer.queenUnit.location.distanceTo(location) < it.attackRadius) {
             it.owner.enemyPlayer.health -= 1
@@ -519,7 +532,7 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   }
 
   override fun move() {
-    val target = findTarget() ?: return
+    val target = findTarget() ?: owner.queenUnit
     // move toward target, if not yet in range
     if (location.distanceTo(target.location) - radius - target.radius > attackRange)
       location = location.towards((target.location + (location - target.location).resizedTo(3.0)), speed.toDouble())
@@ -545,7 +558,8 @@ abstract class Creep(
   val creepType: CreepType
 ) : MyOwnedEntity(owner) {
 
-  protected val speed: Int = creepType.speed
+  var speed: Int by nonNegativeCeiling(creepType.speed, creepType.speed)
+
   val attackRange: Int = creepType.range
   override val mass: Int = creepType.mass
 

@@ -1,11 +1,11 @@
 package com.codingame.game
 
 object Constants {
-  val UNIT_SPEED = 60
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
   val TOWER_HP_MAXIMUM = 800
   val TOWER_CREEP_DAMAGE_RANGE = 6..8
+  val TOWER_SLOW = 6
 
   val GIANT_BUST_RATE = 80
 
@@ -17,6 +17,7 @@ object Constants {
 
   val CREEP_DAMAGE = 1
 
+  val QUEEN_SPEED = 80
   val QUEEN_RADIUS = 20
   val QUEEN_MASS = 10000
   val QUEEN_HP = 200
@@ -31,7 +32,7 @@ object Constants {
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val buildTime: Int, val assetName: String, val fillAssetName: String) {
-  MELEE(   4, 80,  20, 0,   10, 400,  30,  5, "bug.png",  "bug-fill.png"),
-  RANGED(  2, 120, 13, 200, 15, 900,  45,  8, "archer.png", "archer-fill.png"),
-  GIANT(   1, 140, 10, 0,   25, 2000, 200, 10, "bulldozer.png", "bulldozer-fill.png")
+  MELEE(   4, 80,  20, 0,   10, 400,  20, 5, "bug.png",  "bug-fill.png"),
+  RANGED(  2, 120, 13, 200, 15, 900,  30, 8, "archer.png", "archer-fill.png"),
+  GIANT(   1, 140, 10, 0,   25, 2000, 50, 10, "bulldozer.png", "bulldozer-fill.png")
 }

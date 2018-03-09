@@ -296,6 +296,7 @@ class Referee : AbstractReferee() {
       allCreeps.forEach { it.move() }
       fixCollisions(dontLoop = true)
     }
+    allCreeps.forEach { it.speed++ }
     allCreeps.forEach { it.dealDamage() }
 
     // Tear down enemy mines

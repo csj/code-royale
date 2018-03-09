@@ -22,6 +22,7 @@ class ClampingPropertyDelegate<in S, T : Comparable<T>>(initialValue: T, private
 }
 
 fun <S> nonNegative(initialValue: Int) = ClampingPropertyDelegate<S,Int>(initialValue, minValue = 0)
+fun <S> nonNegativeCeiling(initialValue: Int, max: Int) = ClampingPropertyDelegate<S,Int>(initialValue, minValue = 0, maxValue = max)
 
 fun <S,T> PropertyDelegate<S,T>.andAlso(cont: (T) -> Unit): PropertyDelegate<S,T> {
   val that = this

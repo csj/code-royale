@@ -28,7 +28,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         .filter { it.owner == 0 && it.structureType == 2 }
         .sumBy { CreepType.values()[it.attackRadiusOrCreepType].let { it.cost / it.buildTime } }
 
-      val danger = enemyCreeps.any { it.location.distanceTo(queenLoc) < 300 }
+      val danger = enemyCreeps.any { it.creepType == CreepType.MELEE && it.location.distanceTo(queenLoc) < 300 }
 
       fun getQueenAction(): String {
         // if touching a tower that isn't at max health, keep growing it
@@ -47,7 +47,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         }
 
         val queenTarget = obstacles
-          .filter { it.owner == -1 }
+          .filter { it.owner == -1 || (it.owner == 1 && it.structureType != 1) }
           .filter { target -> !obstacles.any {
             it.owner == 1 && it.structureType == 1 &&
               it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < -30 }}
@@ -77,6 +77,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           val theirTowers = obstacles.count { it.owner == 1 && it.structureType == 1 }
 
           val barracksType = when {
+            ourRanged == 0 -> CreepType.RANGED
             theirTowers >= 2 && ourGiants == 0 -> CreepType.GIANT
             ourMelees > ourRanged -> CreepType.RANGED
             else -> CreepType.MELEE
