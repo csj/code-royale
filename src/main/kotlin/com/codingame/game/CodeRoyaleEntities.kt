@@ -218,6 +218,11 @@ class Tower(private val obstacle: Obstacle, override val owner: Player, var atta
     }
   }
 
+    fun distanceScaledDamage(minDamage: Int, maxDamage: Int, target: MyEntity) : Int {
+        val damageRange = maxDamage - minDamage + 1
+        val distance = target.location.distanceTo(obstacle.location)
+        return maxDamage - (Constants.TOWER_TIER_DAMAGE_INCREMENT * Math.floor(distance / (attackRadius / damageRange)).toInt())
+    }
 }
 
 class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType: CreepType) : Structure {
@@ -340,22 +345,16 @@ class Obstacle(val maxMineralRate: Int, initialAmount: Int): MyEntity() {
     outline.isVisible = false
   }
 
-  private fun tierDamage(maxDamage: Int, numTiers: Int, distance: Double, maxDistance: Int) : Int {
-    return maxDamage - (Constants.TOWER_TIER_DAMAGE_INCREMENT * Math.floor(distance / (maxDistance / numTiers)).toInt())
-  }
-
   fun act() {
     structure?.also {
       when (it) {
         is Tower -> {
           val closestEnemy = it.owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
           if (closestEnemy != null && closestEnemy.location.distanceTo(location) < it.attackRadius) {
-            closestEnemy.damage(tierDamage(Constants.TOWER_CREEP_DAMAGE_MAX, Constants.TOWER_CREEP_DAMAGE_NUM_TIERS,
-                    closestEnemy.location.distanceTo(location), it.attackRadius))
+            closestEnemy.damage(it.distanceScaledDamage(Constants.TOWER_CREEP_DAMAGE_MIN, Constants.TOWER_CREEP_DAMAGE_MAX, closestEnemy))
             it.attackTarget = closestEnemy
           } else if (it.owner.enemyPlayer.queenUnit.location.distanceTo(location) < it.attackRadius) {
-            it.owner.enemyPlayer.health -= tierDamage(Constants.TOWER_QUEEN_DAMAGE_MAX, Constants.TOWER_QUEEN_DAMAGE_NUM_TIERS,
-                    it.owner.enemyPlayer.queenUnit.location.distanceTo(location), it.attackRadius)
+            it.owner.enemyPlayer.health -= it.distanceScaledDamage(Constants.TOWER_CREEP_DAMAGE_MIN, Constants.TOWER_QUEEN_DAMAGE_MAX, it.owner.enemyPlayer.queenUnit)
             it.attackTarget = it.owner.enemyPlayer.queenUnit
           } else {
             it.attackTarget = null
