@@ -333,7 +333,6 @@
             <!-- Protocol block -->
             <div class="blk">
                 <div class="title">Output for one game turn
-                    <br>
                     <strong>First line:</strong> One of the following
                     <ul>
                         <li><action>WAIT</action> Do nothing</li>
@@ -344,7 +343,7 @@
                         <li><action>BUILD BARRACKS type</action> Will attempt to build a barracks at the obstacle touched by the Queen. The type must be given as either <action>MELEE</action>, <action>RANGED</action>, or <action>GIANT</action>.</li>
                         <li><action>BUILDONOBSTACLE obstacleId type</action> Will attempt to build a barracks at the specified obstacle of the specified type. If not in range, the Queen will instead move towards the obstacle automatically.</li>
                     </ul>
-
+                    <strong>Second line:</strong> <action>TRAIN</action> followed by a list of <const>obstacleId</const>s to start training at
                 </div>
             </div>
 
@@ -357,16 +356,11 @@
             </div>
         </div>
 
-
-
-
-
-
     <!-- STORY -->
     <div class="statement-story-background">
         <div class="statement-story-cover" style="background-size: cover;">
             <div class="statement-story" style="min-height: 300px; position: relative">
-                <h2>Code Royale</h2>
+                <h2>Dead Code Garden</h2>
                 <div class="story-text">
                     <!--TODO: Write engaging story.-->
                     <p>Engaging story.</p>

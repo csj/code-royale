@@ -5,7 +5,12 @@ object Constants {
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
   val TOWER_HP_MAXIMUM = 800
-  val TOWER_CREEP_DAMAGE_RANGE = 6..8
+  val TOWER_CREEP_DAMAGE_MAX = 5 //minimum damage to creeps by towers
+  val TOWER_CREEP_DAMAGE_NUM_TIERS = 6 //# of different damage values (full range is 5-10)
+  val TOWER_QUEEN_DAMAGE_MAX = 1
+  val TOWER_QUEEN_DAMAGE_NUM_TIERS = 2 //queen damage range is 1-2
+
+  val TOWER_TIER_DAMAGE_INCREMENT = 1
 
   val GIANT_BUST_RATE = 80
 

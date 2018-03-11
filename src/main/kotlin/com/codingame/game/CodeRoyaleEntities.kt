@@ -10,7 +10,6 @@ import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_RADIUS_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
-import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_RANGE
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Curve
@@ -341,17 +340,22 @@ class Obstacle(val maxMineralRate: Int, initialAmount: Int): MyEntity() {
     outline.isVisible = false
   }
 
+  private fun tierDamage(maxDamage: Int, numTiers: Int, distance: Double, maxDistance: Int) : Int {
+    return maxDamage - (Constants.TOWER_TIER_DAMAGE_INCREMENT * Math.floor(distance / (maxDistance / numTiers)).toInt())
+  }
+
   fun act() {
     structure?.also {
       when (it) {
         is Tower -> {
-          val damage = TOWER_CREEP_DAMAGE_RANGE.sample()
           val closestEnemy = it.owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
           if (closestEnemy != null && closestEnemy.location.distanceTo(location) < it.attackRadius) {
-            closestEnemy.damage(damage)
+            closestEnemy.damage(tierDamage(Constants.TOWER_CREEP_DAMAGE_MAX, Constants.TOWER_CREEP_DAMAGE_NUM_TIERS,
+                    closestEnemy.location.distanceTo(location), it.attackRadius))
             it.attackTarget = closestEnemy
           } else if (it.owner.enemyPlayer.queenUnit.location.distanceTo(location) < it.attackRadius) {
-            it.owner.enemyPlayer.health -= 1
+            it.owner.enemyPlayer.health -= tierDamage(Constants.TOWER_QUEEN_DAMAGE_MAX, Constants.TOWER_QUEEN_DAMAGE_NUM_TIERS,
+                    it.owner.enemyPlayer.queenUnit.location.distanceTo(location), it.attackRadius)
             it.attackTarget = it.owner.enemyPlayer.queenUnit
           } else {
             it.attackTarget = null
