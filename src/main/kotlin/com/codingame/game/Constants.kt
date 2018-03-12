@@ -5,12 +5,11 @@ object Constants {
   val TOWER_HP_INITIAL = 200
   val TOWER_HP_INCREMENT = 100
   val TOWER_HP_MAXIMUM = 800
-  val TOWER_CREEP_DAMAGE_MIN = 5
   val TOWER_CREEP_DAMAGE_MAX = 10
-  val TOWER_QUEEN_DAMAGE_MIN = 1
-  val TOWER_QUEEN_DAMAGE_MAX = 2
-
-  val TOWER_TIER_DAMAGE_INCREMENT = 1
+  val TOWER_CREEP_DAMAGE_DROP_DISTANCE = 200
+  val TOWER_QUEEN_DAMAGE = 1
+  val TOWER_MELT_RATE = 4
+  val TOWER_COVERAGE_PER_HP = 1000
 
   val GIANT_BUST_RATE = 80
 
@@ -25,13 +24,10 @@ object Constants {
   val QUEEN_RADIUS = 20
   val QUEEN_MASS = 10000
   val QUEEN_HP = 200
-
-  val TOWER_MELT_RATE = 4
-  val TOWER_COVERAGE_PER_HP = 1000
+  val QUEEN_VISION = 300
 
   val WORLD_WIDTH = viewportX.last - viewportX.first
   val WORLD_HEIGHT = viewportY.last - viewportY.first
-  val QUEEN_VISION = 300
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,

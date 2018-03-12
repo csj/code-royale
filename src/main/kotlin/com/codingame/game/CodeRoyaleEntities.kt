@@ -10,7 +10,10 @@ import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_RADIUS_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
+import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_DROP_DISTANCE
+import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_MAX
 import com.codingame.game.Constants.TOWER_MELT_RATE
+import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
@@ -188,7 +191,7 @@ class Tower(private val obstacle: Obstacle, override val owner: Player, var atta
       .setLineWidth(3)
       .setVisible(false)
 
-  public var attackTarget: MyEntity? = null
+  var attackTarget: MyEntity? = null
 
   override fun hideEntities() {
     towerRangeCircle.isVisible = false
@@ -218,11 +221,11 @@ class Tower(private val obstacle: Obstacle, override val owner: Player, var atta
     }
   }
 
-    fun distanceScaledDamage(minDamage: Int, maxDamage: Int, target: MyEntity) : Int {
-        val damageRange = maxDamage - minDamage + 1
-        val distance = target.location.distanceTo(obstacle.location)
-        return maxDamage - (Constants.TOWER_TIER_DAMAGE_INCREMENT * Math.floor(distance / (attackRadius / damageRange)).toInt())
-    }
+  fun damageCreepByDistance(target: Creep, maxDamage: Int) {
+    val shotDistance = target.location.distanceTo(obstacle.location) - obstacle.radius  // should be maximum right at the foot
+    target.damage((maxDamage - shotDistance / TOWER_CREEP_DAMAGE_DROP_DISTANCE).toInt())
+  }
+
 }
 
 class Barracks(val obstacle: Obstacle, override val owner: Player, var creepType: CreepType) : Structure {
@@ -350,12 +353,14 @@ class Obstacle(val maxMineralRate: Int, initialAmount: Int): MyEntity() {
       when (it) {
         is Tower -> {
           val closestEnemy = it.owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(location) }
+          val enemyQueen = it.owner.enemyPlayer.queenUnit
+
           if (closestEnemy != null && closestEnemy.location.distanceTo(location) < it.attackRadius) {
-            closestEnemy.damage(it.distanceScaledDamage(Constants.TOWER_CREEP_DAMAGE_MIN, Constants.TOWER_CREEP_DAMAGE_MAX, closestEnemy))
+            it.damageCreepByDistance(closestEnemy, TOWER_CREEP_DAMAGE_MAX)
             it.attackTarget = closestEnemy
-          } else if (it.owner.enemyPlayer.queenUnit.location.distanceTo(location) < it.attackRadius) {
-            it.owner.enemyPlayer.health -= it.distanceScaledDamage(Constants.TOWER_CREEP_DAMAGE_MIN, Constants.TOWER_QUEEN_DAMAGE_MAX, it.owner.enemyPlayer.queenUnit)
-            it.attackTarget = it.owner.enemyPlayer.queenUnit
+          } else if (enemyQueen.location.distanceTo(location) < it.attackRadius) {
+            enemyQueen.damage(TOWER_QUEEN_DAMAGE)
+            it.attackTarget = enemyQueen
           } else {
             it.attackTarget = null
           }
@@ -555,12 +560,13 @@ abstract class Creep(
   var health: Int = creepType.hp
     set(value) {
       field = value
-      fillSprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
 
       if (field <= 0) {
         field = 0
         sprite.alpha = 0.0
         fillSprite.alpha = 0.0
+      } else {
+        fillSprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
       }
     }
 
