@@ -8,7 +8,7 @@
 
     <properties>
         <kotlin.version>1.2.10</kotlin.version>
-        <gameengine.version>1.20</gameengine.version>
+        <gameengine.version>1.21</gameengine.version>
     </properties>
 
     <dependencies>

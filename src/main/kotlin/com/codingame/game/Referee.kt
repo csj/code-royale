@@ -328,7 +328,7 @@ class Referee : AbstractReferee() {
     // Process structures
     obstacles.forEach { it.act() }
 
-    // 5. Check end game
+    // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }
     if (gameManager.activePlayers.size < 2) gameManager.endGame()
   }
