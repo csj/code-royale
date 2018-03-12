@@ -596,8 +596,10 @@ abstract class Creep(
 
   override var radius = creepType.radius
 
-  override fun damage(hp: Int) {
-    health -= hp
+  override fun damage(damageAmount: Int) {
+    if (damageAmount <= 0) return   // no accidental healing!
+
+    health -= damageAmount
     if (health <= 0) {
       owner.activeCreeps.remove(this)
     }
