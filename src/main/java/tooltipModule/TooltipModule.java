@@ -1,15 +1,13 @@
 package tooltipModule;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.codingame.gameengine.core.AbstractPlayer;
 import com.codingame.gameengine.core.GameManager;
 import com.codingame.gameengine.core.Module;
 import com.codingame.gameengine.module.entities.Entity;
-import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.google.inject.Inject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TooltipModule implements Module {
 

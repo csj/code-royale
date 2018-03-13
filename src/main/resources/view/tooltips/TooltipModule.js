@@ -61,13 +61,8 @@ function getMouseMoveFunc(tooltip, container, module) {
           'id: ' + params.id
           + '\ntype: ' + params.type
           + '\nx: ' + state.x
-          + '\ny: ' + state.y
+          + '\ny: ' + (state.y - hudHeight)
           ;
-
-        //TODO: entity-specific settings
-        if (params.type == 'TOWER') {
-          tooltip.label.text += '';
-        }
 
         tooltip.visible = true;
         const extras = module.extra[showing];
@@ -84,8 +79,8 @@ function getMouseMoveFunc(tooltip, container, module) {
           }
         }
       } else {
-        tooltip.visible = point.y <= 780 && point.y >= 0 && point.x >= 0 && point.x < WIDTH;
-        tooltip.label.text = 'x: ' + Math.round(point.x) + '\ny: ' + Math.round(point.y);
+        tooltip.visible = point.y <= 1080 && point.y >= hudHeight && point.x >= 0 && point.x < WIDTH;
+        tooltip.label.text = 'x: ' + Math.round(point.x) + '\ny: ' + Math.round(point.y - hudHeight);
       }
 
       tooltip.background.width = tooltip.label.width + 20;
@@ -105,6 +100,8 @@ function getMouseMoveFunc(tooltip, container, module) {
     }
   };
 }
+
+var hudHeight = 110;
 
 export class TooltipModule {
   constructor(assets) {
@@ -150,7 +147,11 @@ export class TooltipModule {
 
   reinitScene(container, canvasData) {
     this.toDestroy.forEach(texture => {
-      texture.destroy(true);
+      try {
+        texture.destroy(true);
+      } catch (ouch) {
+        // ignore, carry on
+      }
     });
 
     this.tooltip = this.initTooltip();
