@@ -71,7 +71,7 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
   }
 
   fun moveTowards(target: Vector2) {
-    location = location.towards(target, Constants.UNIT_SPEED.toDouble())
+    location = location.towards(target, Constants.QUEEN_SPEED.toDouble())
   }
 
   override var location: Vector2
@@ -147,7 +147,7 @@ abstract class Creep(
   }
 
   abstract fun dealDamage()
-  abstract fun move()
+  abstract fun move(frames: Double)
 
   init {
     theTooltipModule.registerEntity(sprite, mapOf("id" to sprite.id, "type" to creepType.toString()))
@@ -159,12 +159,12 @@ class TowerBustingCreep(
   creepType: CreepType,
   private val obstacles: List<Obstacle>
 ) : Creep(owner, creepType) {
-  override fun move() {
+  override fun move(frames: Double)  {
     obstacles
       .filter { it.structure != null && it.structure is Tower && (it.structure as Tower).owner == owner.enemyPlayer }
       .minBy { it.location.distanceTo(location) }
       ?.let {
-        location = location.towards(it.location, speed.toDouble())
+        location = location.towards(it.location, speed.toDouble() * frames)
       }
   }
 
@@ -203,11 +203,11 @@ class QueenChasingCreep(owner: Player, creepType: CreepType)
     lastLocation = location
   }
 
-  override fun move() {
+  override fun move(frames: Double)  {
     val enemyQueen = owner.enemyPlayer.queenUnit
     // move toward enemy queen, if not yet in range
     if (location.distanceTo(enemyQueen.location) - radius - enemyQueen.radius > attackRange)
-      location = location.towards((enemyQueen.location + (location - enemyQueen.location).resizedTo(3.0)), speed.toDouble())
+      location = location.towards((enemyQueen.location + (location - enemyQueen.location).resizedTo(3.0)), speed.toDouble() * frames)
   }
 
   override fun dealDamage() {
@@ -264,11 +264,11 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
     }
   }
 
-  override fun move() {
+  override fun move(frames: Double) {
     val target = findTarget() ?: owner.queenUnit
     // move toward target, if not yet in range
     if (location.distanceTo(target.location) - radius - target.radius > attackRange)
-      location = location.towards((target.location + (location - target.location).resizedTo(3.0)), speed.toDouble())
+      location = location.towards((target.location + (location - target.location).resizedTo(3.0)), speed.toDouble() * frames)
   }
 
   override fun dealDamage() {

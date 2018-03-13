@@ -302,7 +302,7 @@ class Referee : AbstractReferee() {
     val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
     allCreeps.forEach { it.damage(1) }
     repeat(5) {
-      allCreeps.forEach { it.move() }
+      allCreeps.forEach { it.move(1.0 / 5) }
       fixCollisions(dontLoop = true)
     }
     allCreeps.forEach { it.dealDamage() }

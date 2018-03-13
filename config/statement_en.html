@@ -1,10 +1,6 @@
 <div id="statement_back" class="statement_back" style="display:none"></div>
 
-
-
-
     <div class="statement-body">
-
 
     <!-- LEAGUE ALERT -->
     <div style="color: #7cc576;
@@ -18,15 +14,13 @@
             <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
         </div>
 
-
-
         <!-- BEGIN bronze -->
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
             Summary of new rules
         </p>
         <span class="statement-league-alert-content">
             <!--TODO: League alerts and specific rule sections-->
-          Placeholder.<br />
+            Placeholder.<br />
             See the updated statement for details.
       </span>
         <!-- END -->
@@ -54,29 +48,32 @@
         </h1>
         <div><div class="statement-rules-content">
 
+            <p><strong>Field</strong></p>
+
             <p>
-                The game is played by two players on a semi-open two-dimensional field <const>1920</const> units wids and <const>950</const> units wide, littered with circular obstacles of varying radius.<br>
-                Each player controls a single Queen character, who can establish different structures on those obstacles.<br>
-                <br>
-                The field is generated randomly every game, with the obstacles being symmetrically laid out.<br>
+                The game is played by two players on a semi-open two-dimensional field <const>1920</const> units wide and <const>970</const>
+                units high, littered with circular obstacles of varying radius. The top-left corner is 0,0.<br>
+                The field is generated randomly every game, with the obstacles being symmetrically laid out (rotationally around the map's center).
             </p>
 
             <!-- BEGIN wood3 wood2 -->
             <!-- END -->
 
-            <p><strong>Queens</strong><br>
-                <br>
-                The Queen is the player’s only way to directly interact with the field.<br>
-                The Queen is modeled as a circle with radius 20 units, and moves up to 60 units every turn.<br>
-                Queen characters each start with 200 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
-                <br>
-                If both Queens are destroyed in the same turn, the game will end in a draw.<br>
-            </p>
+            <p><strong>Queens</strong>
 
-            <p><strong>Structures</strong><br>
+            <p>Each player controls a single Queen character, who can establish different structures on those obstacles.
+            The Queen is the player’s only way to directly interact with the field.
+
+            The Queen is modeled as a circle with radius 20 units, and moves up to 60 units every turn.<br>
+            Each Queen starts with 200 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
+            If both Queens are destroyed in the same turn, the game will end in a draw.<br>
+
+            <p><strong>Structures</strong></p>
+
+            <p>
                 <br>
                 A Queen character can build a structure on an obstacle that she is in contact with.<br>
-                If she so chooses, a Queen can replace an existing friendly structure simply by building another one in its place.<br>
+                If she so chooses, a Queen can replace an existing friendly structure simply by building another one in its place (unless it is a Barracks that is currently training).<br>
                 If an enemy structure is already in place on an obstacle, a Queen cannot replace it.<br>
                 If both Queens try simultaneously to build a structure on the same obstacle, neither structure will be built.<br>
                 <br>
@@ -89,13 +86,16 @@
                 A Queen can establish a resource mine on an obstacle by issuing the command BUILD MINE while touching an obstacle, or using the command BUILDONOBSTACLE {id} MINE to move toward an obstacle and build a mine when touching that obstacle.<br>
                 <br>
                 Each obstacle has a different rate at which resources can be collected, ranging from +1/turn to +5/turn.<br>
-                Once a mine is established, resources will accumulate in the player’s bank over several turns.<br>
-                However, the obstacle will be exhausted of resources over time (all obstacles begin the game with the same amount).<br>
+                When a mine is first built, it has an income rate of +1. This can be increased by issuing repeated commands to build a mine on the same obstacle, up to its maximum capacity.<br>
+                Resources will accumulate in the player’s bank over several turns automatically. However, the obstacle will be exhausted of resources over time.<br>
+                Obstacles begin with different, random amounts of resources every game. Obstacles near the middle of the field have higher resources available, and higher maximum mining rates.<br>
+                Resource totals and mining rates are not given for all obstacles, they must be discovered by the Queen. These numbers will be available for any
+                obstacle whose center is within 300 units from the Queen.<br>
                 <br>
                 A mine will be destroyed if:
                 <ul>
                     <li>It runs out of resources</li>
-                    <li>An enemy creep comes in contact with it</li>
+                    <li>An enemy creep or the enemy Queen comes in contact with it</li>
                 </ul>
             </p>
 
@@ -121,7 +121,7 @@
                         <td>MELEE</td>
                         <td>80</td>
                         <td>4</td>
-                        <td>20</td>
+                        <td>100</td>
                         <td>0</td>
                         <td>30</td>
                         <td>5</td>
@@ -130,7 +130,7 @@
                         <td>RANGED</td>
                         <td>120</td>
                         <td>2</td>
-                        <td>13</td>
+                        <td>75</td>
                         <td>200</td>
                         <td>45</td>
                         <td>8</td>
@@ -139,7 +139,7 @@
                         <td>GIANT</td>
                         <td>140</td>
                         <td>1</td>
-                        <td>10</td>
+                        <td>50</td>
                         <td>0</td>
                         <td>200</td>
                         <td>10</td>
@@ -147,14 +147,15 @@
                 </table>
 
                 <br>
-                MELEE units are light, fast units which attack the enemy Queen, dealing 1 damage every turn they end contacting the enemy Queen.<br>
+                MELEE units are light, fast units which attack the enemy Queen, dealing 1 damage every turn they end in contact with the enemy Queen.<br>
                 RANGED units are slower, ranged units which move toward and attack nearby enemy creeps from a short distance.<br>
                 They deal 1 damage to the their nearest enemy creep every turn they end within range of that creep. (Note: they can shoot past obstacles).<br>
-                GIANT units do not attack the enemy Queen, but instead attack nearby enemy towers and break them down over time.<br>
+                GIANT units do not attack the enemy Queen or enemy creeps, but instead attack nearby enemy towers and break them down over time.<br>
                 <br>
                 A player needs to build a BARRACKS with his Queen in order to create creeps.<br>
                 A Queen can establish a barracks on an obstacle by issuing the command BUILD BARRACKS {type} while touching an obstacle, for example: BUILD BARRACKS RANGED, or using the command BUILDONOBSTACLE {id} BARRACKS {type}  to move toward an obstacle and build a barracks when touching that obstacle.<br>
-                Training creeps is explained in a section below.<br>
+                A barracks can be destroyed if it is touched by the enemy Queen.<br>
+                Training creeps is explained in a section below.<br><br>
             </p>
 
             <p><strong>Towers</strong><br>
@@ -162,13 +163,13 @@
                 With enemy creeps hunting down the Queen, a player will be well-advised to create some static defense in the form of towers.<br>
                 A Queen can establish a tower on an obstacle by issuing the command BUILD TOWER while touching an obstacle, or using the command BUILDONOBSTACLE {id} TOWER to move toward an obstacle and build a tower when touching that obstacle.<br>
                 <br>
-                The first such command will establish a small tower with a small firing radius.<br> A player can grow an existing tower by having the Queen stand next to it and issuing the same order again; this will increase the tower’s firing radius over several turns.<br>
-                Once built, towers start to degrade slowly.<br>
-                A tower will eventually degrade completely and be destroyed.<br>
+                The first such command will establish a small tower with a small firing radius.<br>
+                A player can grow an existing tower by having the Queen stand next to it and issuing the same order again; this will increase the tower’s firing radius over several turns.<br>
+                Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.<br>
                 This can be delayed by regular visits by the Queen, and issuing the BUILD TOWER command again.<br>
                 <br>
-                Every turn, towers automatically fire upon the nearest enemy creep inside their firing radius, dealing 6-8 damage.<br>
-                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon it instead, dealing 1 damage.<br>
+                Every turn, towers automatically fire upon the nearest enemy creep inside their firing radius, dealing at most 10 damage. This damage decreases with range.<br>
+                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her instead, dealing 1 damage.<br>
                 <br>
                 If the enemy player is investing a lot of effort into towers, a player may wish to train GIANT creeps to knock them down.<br>
             </p>
@@ -186,7 +187,7 @@
                 <br>
                 Every barracks is built with the ability to train a single creep type.<br>
                 When the train commands are sent, the player pays the total cost in resources, and indicated barracks will begin training the appropriate set of units.<br>
-                After the appointed number of turns elapses, a set of creeps emerges from the barracks and begins acting by themselves on the next turn.<br>
+                After the appointed number of turns elapses, a set of creeps emerges from the barracks and begins acting by themselves on the following turn.<br>
                 <br>
                 A barracks that is already in the middle of training cannot begin training again until the current creep set is built.<br>
                 Also, such a barracks cannot be replaced by another structure.<br>
@@ -235,8 +236,42 @@
 
                 <p><strong>Collisions</strong><br>
                     <br>
-                    <!--TODO: Collision details-->
-                    Units cannot share space.<br>
+                    Units cannot share space. All obstacles, Queens and creeps are modeled as circles.<br>
+                    Unit movement is done by simply moving toward the desired target. However, at the end of every turn, a series of collision
+                    checks are performed. While there are any collisions, the offending units are simply translated away from each other (except for
+                    obstacles, they stay put.) Hence it is possible for a Queen to be "shoved" out of her way by a swarm of creeps.<br>
+                    For this purpose, units are assigned a weight as follows:<br>
+                </p>
+                <ul>
+                    <li>Obstacle: infinite (unmovable)</li>
+                    <li>Queen: 100</li>
+                    <li>Giant: 20</li>
+                    <li>Ranged: 9</li>
+                    <li>Melee: 4</li>
+                </ul>
+                <p>In case of collisions, a lower-weight unit will be displaced more than a higher-weight unit.</p>
+
+                <p><strong>Obstacle resources</strong></p>
+
+                <p>
+                    All obstacles are randomized in pairs: attributes that apply to mirroring obstacles are always the same at the game's start.<br>
+                    Each obstacle-pair gets assigned a random resource pool amount between 200 and 250, a maximum mining rate between +1 and +3, and a radius between 60 and 110 units.<br>
+                    Obstacles whose center is located within 500 units of the map's center are given a bonus of 50 resources, and +1 to maximum mining rate.<br>
+                    Obstacles whose center is located within 200 units of the map's center are given a further bonus of 50 resources, and +1 to maximum mining rate.<br>
+                </p>
+
+                <p><strong>Tower HP</strong></p>
+
+                <p>
+                    Though not conveyed through the input, each tower has a number of HP that determines its effective attack radius.<br>
+                    Each 1HP allows the tower to cover 1000 square-units (a square unit is not very much!), not including the area of the obstacle on which it sits.<br>
+                    The attack radius is calculated every turn according to the tower's HP according to the formula: <br>
+                    attackRadius = sqrt((hp * 1000 + obstacleArea) / PI) -- this is measured from the obstacle's center.<br>
+                    This is so that PI * attackRadius^2 = hp * 1000 + obstacleArea.<br>
+                    When a tower is first built, it receives 200HP. This corresponds to a variable attack range: longer attack range for a smaller radius obstacle.<br>
+                    When an existing tower is grown, it receives 100 additional HP.<br>
+                    Every tower loses 4 HP per turn due to exposure to the elements.<br>
+                    Each GIANT that ends its turn next to a tower reduces its HP by 80. Hence a Queen can slightly outpace a single GIANT by building at the same time.<br>
                 </p>
 
                 <p><strong>Draws</strong><br>
@@ -302,18 +337,18 @@
                         </li>
                         <li><var>param1</var>:
                             <ul>
-                                <li>When no structure <const>-1</const></li>
-                                <li>When resource mine, the income rate ranging from <const>1</const> to <const>5</const></li>
-                                <li>When tower, the remaining lifetime in turns before disintegrating</li>
+                                <li>When no structure: <const>-1</const></li>
+                                <li>When resource mine: the income rate ranging from <const>1</const> to <const>5</const></li>
+                                <li>When tower: the remaining HP</li>
                                 <li>When barracks, the current progress of a set of creeps being trained or <const>0</const> if nothing is being trained</li>
                             </ul>
                         </li>
                         <li><var>param2</var>
                             <ul>
-                                <li>When no structure <const>-1</const></li>
-                                <li>When resource mine <const>-1</const></li>
-                                <li>When tower, the attack radius measure from its center</li>
-                                <li>When barracks, the creep type: <const>0</const> for MELEE, <const>1</const> for RANGED, <const>2</const> for GIANT</li>
+                                <li>When no structure: <const>-1</const></li>
+                                <li>When resource mine: <const>-1</const></li>
+                                <li>When tower: the attack radius measured from its center</li>
+                                <li>When barracks: the creep type: <const>0</const> for MELEE, <const>1</const> for RANGED, <const>2</const> for GIANT</li>
                             </ul>
                         </li>
                     </ul>
