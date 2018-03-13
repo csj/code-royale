@@ -5,6 +5,7 @@ import com.codingame.game.Constants.GIANT_BUST_RATE
 import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.game.Constants.QUEEN_MASS
 import com.codingame.game.Constants.QUEEN_RADIUS
+import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
@@ -12,9 +13,10 @@ import tooltipModule.TooltipModule
 
 lateinit var theEntityManager: GraphicEntityModule
 lateinit var theTooltipModule: TooltipModule
+lateinit var theGameManager: GameManager<Player>
 
 val viewportX = 0..1920
-val viewportY = 0..950
+val viewportY = 110..1080
 
 var <T : Entity<*>?> Entity<T>.location: Vector2
   get() = Vector2(x - viewportX.first, y - viewportY.first)
@@ -250,11 +252,11 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
     val localAttackTarget = attackTarget
     if (localAttackTarget != null) {
       projectile.isVisible = true
-      projectile.setX(location.x.toInt(), Curve.NONE)
-      projectile.setY(location.y.toInt(), Curve.NONE)
+      projectile.setX(location.x.toInt() + viewportX.first, Curve.NONE)
+      projectile.setY(location.y.toInt() + viewportY.first, Curve.NONE)
       theEntityManager.commitEntityState(0.0, projectile)
-      projectile.setX(localAttackTarget.location.x.toInt(), Curve.EASE_IN_AND_OUT)
-      projectile.setY(localAttackTarget.location.y.toInt(), Curve.EASE_IN_AND_OUT)
+      projectile.setX(localAttackTarget.location.x.toInt() + viewportX.first, Curve.EASE_IN_AND_OUT)
+      projectile.setY(localAttackTarget.location.y.toInt() + viewportY.first, Curve.EASE_IN_AND_OUT)
       theEntityManager.commitEntityState(0.99, projectile)
       projectile.isVisible = false
       theEntityManager.commitEntityState(1.0, projectile)
@@ -286,8 +288,8 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
 class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
   private val left = if (isSecondPlayer) 1920/2 else 0
   private val right = if (isSecondPlayer) 1920 else 1920/2
-  private val top = viewportY.last + 20
-  private val bottom = 1080
+  private val top = 0 //viewportY.last
+  private val bottom = viewportY.first //1080
 
   private val healthBarWidth = 400
   private val healthBarPadding = 15

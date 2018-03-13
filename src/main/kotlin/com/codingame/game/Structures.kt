@@ -1,10 +1,12 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE
+import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Curve
 
 var nextObstacleId = 0
-class Obstacle(val maxMineralRate: Int, initialAmount: Int): MyEntity() {
+class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
   val obstacleId = nextObstacleId++
   override val mass = 0
   var minerals by nonNegative(initialAmount)
@@ -140,7 +142,7 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     pickaxeSprite.isVisible = true
     mineralBarOutline.isVisible = true
     mineralBarFill.isVisible = true
-    mineralBarFill.width = 80 * obstacle.minerals / Constants.OBSTACLE_MINERAL_RANGE.last
+    mineralBarFill.width = 80 * obstacle.minerals / (OBSTACLE_MINERAL_RANGE.last + 2 * OBSTACLE_MINERAL_INCREASE)
   }
 
   override fun act(): Boolean {
@@ -209,11 +211,11 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     val localAttackTarget = attackTarget
     if (localAttackTarget != null) {
       projectile.isVisible = true
-      projectile.setX(obstacle.location.x.toInt(), Curve.NONE)
-      projectile.setY(obstacle.location.y.toInt(), Curve.NONE)
+      projectile.setX(obstacle.location.x.toInt() + viewportX.first, Curve.NONE)
+      projectile.setY(obstacle.location.y.toInt() + viewportY.first, Curve.NONE)
       theEntityManager.commitEntityState(0.0, projectile)
-      projectile.setX(localAttackTarget.location.x.toInt(), Curve.EASE_IN_AND_OUT)
-      projectile.setY(localAttackTarget.location.y.toInt(), Curve.EASE_IN_AND_OUT)
+      projectile.setX(localAttackTarget.location.x.toInt() + viewportX.first, Curve.EASE_IN_AND_OUT)
+      projectile.setY(localAttackTarget.location.y.toInt() + viewportY.first, Curve.EASE_IN_AND_OUT)
       theEntityManager.commitEntityState(0.99, projectile)
       projectile.isVisible = false
       theEntityManager.commitEntityState(1.0, projectile)
@@ -302,7 +304,9 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
 
     progressOutline.isVisible = isTraining
     progressFill.isVisible = isTraining
+    theEntityManager.commitEntityState(0.0, progressFill, progressOutline)
     progressFill.width = (80 * progress / (progressMax-1))
+    theEntityManager.commitEntityState(1.0, progressFill, progressOutline)
   }
 
   override fun hideEntities() {
