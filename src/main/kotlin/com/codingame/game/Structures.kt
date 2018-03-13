@@ -114,7 +114,8 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     .setWidth(80)
     .setLineColor(0xFFFFFF)
     .setLineWidth(1)
-    .setZIndex(400)!!
+    .setFillAlpha(0.0)
+    .setZIndex(401)!!
 
   private val mineralBarFill = theEntityManager.createRectangle()
     .also { it.location = obstacle.location + Vector2(-40, -30) }
@@ -122,7 +123,7 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     .setWidth(80)
     .setFillColor(0xffbf00)
     .setLineAlpha(0.0)!!
-    .setZIndex(401)
+    .setZIndex(400)
 
   var incomeRate = incomeRate
     set(value) {
@@ -167,7 +168,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
 
   private val towerRangeCircle = theEntityManager.createCircle()
     .setFillAlpha(0.2)
-    .setLineColor(0)
+    .setLineWidth(0)
     .setZIndex(10)
     .also { it.location = obstacle.location }
 
@@ -264,7 +265,8 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     .setWidth(80)
     .setLineColor(0xFFFFFF)
     .setLineWidth(1)
-    .setZIndex(400)
+    .setFillAlpha(0.0)
+    .setZIndex(401)
 
   private val progressFill = theEntityManager.createRectangle()
     .also { it.location = obstacle.location + Vector2(-40,20) }
@@ -272,7 +274,7 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     .setWidth(80)
     .setLineAlpha(0.0)
     .setFillColor(owner.colorToken)
-    .setZIndex(401)
+    .setZIndex(400)
 
   var progressMax = creepType.buildTime
   var progress = 0

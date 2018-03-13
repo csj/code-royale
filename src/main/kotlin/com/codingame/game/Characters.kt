@@ -45,6 +45,7 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
     .setRadius(QUEEN_RADIUS)
     .setLineColor(owner.colorToken)
     .setLineWidth(2)!!
+    .setFillAlpha(0.0)
 
   private val queenSprite = theEntityManager.createSprite()
     .setImage("queen.png")
@@ -264,7 +265,7 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   }
 
   override fun move() {
-    val target = findTarget() ?: return
+    val target = findTarget() ?: owner.queenUnit
     // move toward target, if not yet in range
     if (location.distanceTo(target.location) - radius - target.radius > attackRange)
       location = location.towards((target.location + (location - target.location).resizedTo(3.0)), speed.toDouble())
