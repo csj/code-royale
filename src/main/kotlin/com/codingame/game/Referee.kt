@@ -4,7 +4,10 @@ import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.OBSTACLE_GAP
 import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
-import com.codingame.game.Constants.OBSTACLE_MINERAL_RATE_RANGE
+import com.codingame.game.Constants.OBSTACLE_MINERAL_BASERATE_RANGE
+import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE
+import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_1
+import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_2
 import com.codingame.game.Constants.OBSTACLE_PAIRS
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
@@ -34,6 +37,7 @@ class Referee : AbstractReferee() {
 
     theEntityManager = entityManager
     theTooltipModule = tooltipModule
+    theGameManager = gameManager
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
@@ -43,7 +47,7 @@ class Referee : AbstractReferee() {
       nextObstacleId = 0
 
       val obstaclePairs = (1 until OBSTACLE_PAIRS).map {
-        val rate = OBSTACLE_MINERAL_RATE_RANGE.sample()
+        val rate = OBSTACLE_MINERAL_BASERATE_RANGE.sample()
         val resources = OBSTACLE_MINERAL_RANGE.sample()
         Pair(Obstacle(rate, resources), Obstacle(rate, resources))
       }
@@ -62,7 +66,12 @@ class Referee : AbstractReferee() {
       System.err.println("abandoning")
     } while (true)
 
-    obstacles.forEach { it.updateEntities() }
+    val mapCenter = Vector2(viewportX.length / 2, viewportY.length / 2)
+    obstacles.forEach {
+      if (it.location.distanceTo(mapCenter) < OBSTACLE_MINERAL_INCREASE_DISTANCE_1) { it.maxMineralRate++; it.minerals += OBSTACLE_MINERAL_INCREASE }
+      if (it.location.distanceTo(mapCenter) < OBSTACLE_MINERAL_INCREASE_DISTANCE_2) { it.maxMineralRate++; it.minerals += OBSTACLE_MINERAL_INCREASE }
+      it.updateEntities()
+    }
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
       val spawnDistance = 200
@@ -328,7 +337,7 @@ class Referee : AbstractReferee() {
     // Process structures
     obstacles.forEach { it.act() }
 
-    // 5. Check end game
+    // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }
     if (gameManager.activePlayers.size < 2) gameManager.endGame()
   }

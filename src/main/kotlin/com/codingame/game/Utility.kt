@@ -36,6 +36,5 @@ fun <S,T> PropertyDelegate<S,T>.andAlso(cont: (T) -> Unit): PropertyDelegate<S,T
   }
 }
 
-fun IntRange.sample(): Int {
-  return theRandom.nextInt(last-first) + first
-}
+fun IntRange.sample(): Int = theRandom.nextInt(last-first+1) + first
+val IntRange.length: Int; get() = last - first
