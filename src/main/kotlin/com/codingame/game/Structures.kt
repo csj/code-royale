@@ -4,6 +4,7 @@ import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE
 import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Curve
+import kotlin.math.min
 
 var nextObstacleId = 0
 class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
@@ -42,7 +43,7 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
     set(value) {
       structure?.hideEntities()
       field = value
-//      structure?.updateEntities()
+      value?.updateEntities()
     }
 
   fun updateEntities() {
@@ -136,6 +137,7 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     pickaxeSprite.isVisible = false
     mineralBarOutline.isVisible = false
     mineralBarFill.isVisible = false
+    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineralBarOutline, mineralBarFill)
   }
 
   override fun updateEntities() {
@@ -144,12 +146,15 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     mineralBarOutline.isVisible = true
     mineralBarFill.isVisible = true
     mineralBarFill.width = 80 * obstacle.minerals / (OBSTACLE_MINERAL_RANGE.last + 2 * OBSTACLE_MINERAL_INCREASE)
+    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineralBarOutline, mineralBarFill)
   }
 
   override fun act(): Boolean {
-    owner.resourcesPerTurn += incomeRate
-    owner.resources += incomeRate
-    obstacle.minerals -= incomeRate
+    val cash = min(incomeRate, obstacle.minerals)
+
+    owner.resourcesPerTurn += cash
+    owner.resources += cash
+    obstacle.minerals -= cash
     if (obstacle.minerals <= 0) {
       hideEntities()
       return true
@@ -171,6 +176,8 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     .setLineWidth(0)
     .setZIndex(10)
     .also { it.location = obstacle.location }
+    .setRadius(obstacle.radius)
+    .also { theEntityManager.commitEntityState(0.0, it) }
 
   private val sprite = theEntityManager.createSprite()
     .setImage("tower.png")
@@ -195,6 +202,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
   var attackTarget: MyEntity? = null
 
   override fun hideEntities() {
+    towerRangeCircle.radius = obstacle.radius
     towerRangeCircle.isVisible = false
     sprite.isVisible = false
     fillSprite.isVisible = false
@@ -204,10 +212,12 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
   {
     towerRangeCircle.isVisible = true
     towerRangeCircle.fillColor = owner.colorToken
-    towerRangeCircle.radius = attackRadius
     sprite.isVisible = true
     fillSprite.isVisible = true
     fillSprite.tint = owner.colorToken
+    theEntityManager.commitEntityState(0.0, towerRangeCircle, sprite, fillSprite)
+    towerRangeCircle.radius = attackRadius
+    theEntityManager.commitEntityState(1.0, towerRangeCircle)
 
     val localAttackTarget = attackTarget
     if (localAttackTarget != null) {
