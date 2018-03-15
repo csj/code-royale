@@ -234,22 +234,24 @@
                 <p><strong>Turn sequence</strong><br></p>
                 <ol>
                     <li>Game state sent to players</li>
-                    <li>Player inputs received and processed:</li>
-                    <ul>
-                        <li>New trainees started</li>
-                        <li>Queens move</li>
-                        <li>New structures built</li>
-                    </ul>
+                    <li>Player inputs received and processed:
+                        <ul>
+                            <li>New trainees started</li>
+                            <li>Queens move</li>
+                            <li>New structures built</li>
+                        </ul>
+                    </li>
                     <li>Existing creeps age (dead creeps removed)</li>
                     <li>Remaining creeps move, collisions resolved</li>
                     <li>Creeps attack and destroy enemy mines</li>
                     <li>Queens destroy enemy mines and barracks</li>
-                    <li>Remaining structures act (including ones built this turn):</li>
-                    <ul>
-                        <li>Towers shoot, dead creeps removed</li>
-                        <li>Barracks that are in progress advance; new creeps spawned</li>
-                        <li>Mines collect resources for Queens</li>
-                    </ul>
+                    <li>Remaining structures act (including ones built this turn):
+                        <ul>
+                            <li>Towers shoot, dead creeps removed</li>
+                            <li>Barracks that are in progress advance; new creeps spawned</li>
+                            <li>Mines collect resources for Queens</li>
+                        </ul>
+                    </li>
                 </ol>
 
                 <p><strong>Collisions</strong><br>
@@ -373,9 +375,9 @@
                     </ul>
                     <br>
                     <span class="statement-lineno">Next Line:</span> <var>numMyCreeps</var>: Number of active creeps owned by you<br>
-                    <span class="statement-lineno">Next <var>numMyCreeps</var> lines: 4 integers <var>creepX</var> <var>creepY</var> <var>creepHealth</var> <var>creepType</var></span>
+                    <span class="statement-lineno">Next <var>numMyCreeps</var> lines: 4 integers <var>creepX</var> <var>creepY</var> <var>creepHealth</var> <var>creepType</var></span><br>
                     <span class="statement-lineno">Next Line:</span> <var>numEnemyCreeps</var>: Number of active creeps owned by the opponent<br>
-                    <span class="statement-lineno">Next <var>numMyCreeps</var> lines: 4 integers <var>creepX</var> <var>creepY</var> <var>creepHealth</var> <var>creepType</var></span>
+                    <span class="statement-lineno">Next <var>numEnemyCreeps</var> lines: 4 integers <var>creepX</var> <var>creepY</var> <var>creepHealth</var> <var>creepType</var></span><br>
                     <ul>
                         <li><var>creepX</var> <var>creepY</var>: Coordinates of the creep</li>
                         <li><var>creepHealth</var>: Current HP of the creep</li>
@@ -391,13 +393,11 @@
                     <ul>
                         <li><action>WAIT</action> Do nothing</li>
                         <li><action>MOVE x y</action> Will attempt to move towards the provided coordinates (x,y given as integers)</li>
-                        <li><action>MOVETOOBSTACLE obstacleId</action> Will attempt to move towards the obstacle indicated</li>
-                        <li><action>BUILD MINE</action> Will attempt to build a resource mine at the obstacle touched by the Queen</li>
-                        <li><action>BUILD TOWER</action> Will attempt to build or repair a tower at the obstacle touched by the Queen</li>
-                        <li><action>BUILD BARRACKS type</action> Will attempt to build a barracks at the obstacle touched by the Queen. The type must be given as either <action>MELEE</action>, <action>RANGED</action>, or <action>GIANT</action>.</li>
-                        <li><action>BUILDONOBSTACLE obstacleId type</action> Will attempt to build a barracks at the specified obstacle of the specified type. If not in range, the Queen will instead move towards the obstacle automatically.</li>
+                        <li><action>BUILD {obstacleId} MINE</action> Will attempt to build a resource mine at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle.</li>
+                        <li><action>BUILD {obstacleId} TOWER</action> Will attempt to build or repair a tower at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle.</li>
+                        <li><action>BUILD {obstacleId} BARRACKS-{type}</action> Will attempt to build a barracks at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle. The type must be given as either <action>MELEE</action>, <action>RANGED</action>, or <action>GIANT</action>.</li>
                     </ul>
-                    <strong>Second line:</strong> <action>TRAIN</action> followed by a list of <const>obstacleId</const>s to start training at
+                    <strong>Second line:</strong> <action>TRAIN</action> followed by a list of <const>obstacleId</const>s to start training at.
                 </div>
             </div>
 
