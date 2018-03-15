@@ -82,8 +82,7 @@
 
             <p><strong>Mining</strong><br>
                 <br>
-                Players will need mineral resources to win.<br>
-                A Queen can establish a resource mine on an obstacle by issuing the command BUILD MINE while touching an obstacle, or using the command BUILDONOBSTACLE {id} MINE to move toward an obstacle and build a mine when touching that obstacle.<br>
+                Players will need mineral resources to win, and for that, a Queen must build a mine on an obstacle.<br>
                 <br>
                 Each obstacle has a different rate at which resources can be collected, ranging from +1/turn to +5/turn.<br>
                 When a mine is first built, it has an income rate of +1. This can be increased by issuing repeated commands to build a mine on the same obstacle, up to its maximum capacity.<br>
@@ -153,17 +152,15 @@
                 GIANT units do not attack the enemy Queen or enemy creeps, but instead attack nearby enemy towers and break them down over time.<br>
                 <br>
                 A player needs to build a BARRACKS with his Queen in order to create creeps.<br>
-                A Queen can establish a barracks on an obstacle by issuing the command BUILD BARRACKS {type} while touching an obstacle, for example: BUILD BARRACKS RANGED, or using the command BUILDONOBSTACLE {id} BARRACKS {type}  to move toward an obstacle and build a barracks when touching that obstacle.<br>
                 A barracks can be destroyed if it is touched by the enemy Queen.<br>
                 Training creeps is explained in a section below.<br><br>
             </p>
 
             <p><strong>Towers</strong><br>
                 <br>
-                With enemy creeps hunting down the Queen, a player will be well-advised to create some static defense in the form of towers.<br>
-                A Queen can establish a tower on an obstacle by issuing the command BUILD TOWER while touching an obstacle, or using the command BUILDONOBSTACLE {id} TOWER to move toward an obstacle and build a tower when touching that obstacle.<br>
+                With enemy creeps hunting down the Queen, a player will be well-advised to create some static defense in the form of towers. These are also built by the Queen.<br>
                 <br>
-                The first such command will establish a small tower with a small firing radius.<br>
+                When a tower is first built, is has a small firing radius.<br>
                 A player can grow an existing tower by having the Queen stand next to it and issuing the same order again; this will increase the tower’s firing radius over several turns.<br>
                 Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.<br>
                 This can be delayed by regular visits by the Queen, and issuing the BUILD TOWER command again.<br>
@@ -291,6 +288,7 @@
                     This is so that PI * attackRadius^2 = hp * 1000 + obstacleArea.<br>
                     When a tower is first built, it receives 200HP. This corresponds to a variable attack range: longer attack range for a smaller radius obstacle.<br>
                     When an existing tower is grown, it receives 100 additional HP.<br>
+                    The maximum amount of HP for towers is 800.<br>
                     Every tower loses 4 HP per turn due to exposure to the elements.<br>
                     Each GIANT that ends its turn next to a tower reduces its HP by 80. Hence a Queen can slightly outpace a single GIANT by building at the same time.<br>
                 </p>

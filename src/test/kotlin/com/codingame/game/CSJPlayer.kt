@@ -35,7 +35,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         val growingTower = obstacles
           .filter { it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrCooldown < 400 }
           .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - Constants.QUEEN_RADIUS < 5 }
-        if (growingTower != null) return "BUILD TOWER"
+        if (growingTower != null) return "BUILD ${growingTower.obstacleId} TOWER"
 
         // if touching a mine that isn't at max capacity, keep growing it
         val growingMine = obstacles
@@ -43,7 +43,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
             .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - Constants.QUEEN_RADIUS < 5 }
         if (growingMine != null) {
           stderr.println("Max: ${growingMine.maxResourceRate}")
-          return "BUILD MINE"
+          return "BUILD ${growingMine.obstacleId} MINE"
         }
 
         val queenTarget = obstacles
@@ -59,16 +59,16 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
             .filter { it.owner == 0 && it.structureType == 1 }
             .minBy { it.location.distanceTo(queenLoc) - it.radius }
 
-          return closestTower?.let { "MOVETOOBSTACLE ${it.obstacleId}" } ?: "WAIT"
+          return closestTower?.let { "BUILD ${it.obstacleId} TOWER" } ?: "WAIT"
         }
 
         val dist = queenTarget.location.distanceTo(queenLoc) - Constants.QUEEN_RADIUS - queenTarget.radius
 
         if (dist < 5) {
           // Touching an obstacle; do something here
-          if (danger) return "BUILD TOWER"
+          if (danger) return "BUILD ${queenTarget.obstacleId} TOWER"
           if (totalIncome * 1.5 <= totalProduction)
-            return if (queenTarget.minerals > 0) "BUILD MINE" else "BUILD TOWER"
+            return if (queenTarget.minerals > 0) "BUILD ${queenTarget.obstacleId} MINE" else "BUILD ${queenTarget.obstacleId} TOWER"
 
           // count enemy towers; make sure we have a giant if they have more than 3
           val ourMelees = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }
@@ -81,10 +81,10 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
             ourMelees > ourRanged -> CreepType.RANGED
             else -> CreepType.MELEE
           }
-          return "BUILD BARRACKS $barracksType"
+          return "BUILD ${queenTarget.obstacleId} BARRACKS-$barracksType"
         }
 
-        return queenTarget.let { "MOVETOOBSTACLE ${it.obstacleId}"}
+        return queenTarget.let { "BUILD ${it.obstacleId} TOWER"}
       }
 
       fun getTrainOrders(): List<ObstacleInput> {

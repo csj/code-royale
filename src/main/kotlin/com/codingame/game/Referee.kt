@@ -158,19 +158,22 @@ class Referee : AbstractReferee() {
 
   private fun processPlayerActions() {
     val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
-    val scheduledBuildings = mutableListOf<()->Unit>()
+    val scheduledBuildings = mutableListOf<Pair<Player, ()->Unit>>()
     class PlayerInputException(message: String): Exception(message)
     class PlayerInputWarning(message: String): Exception(message)
 
-    fun scheduleBuilding(player: Player, obs: Obstacle, toks: Iterator<String>) {
+    fun scheduleBuilding(player: Player, obs: Obstacle, strucType: String) {
       val struc = obs.structure
       if (struc?.owner == player.enemyPlayer) throw PlayerInputWarning("Cannot build: owned by enemy player")
       if (struc is Barracks && struc.owner == player && struc.progress > 0)
         throw PlayerInputWarning("Cannot rebuild: training is in progress")
 
       obstaclesAttemptedToBuildUpon += obs
-      scheduledBuildings += {
-        when (toks.next()) {
+      val toks = strucType.split('-').iterator()
+
+      scheduledBuildings += player to {
+        val firstToken = toks.next()
+        when (firstToken) {
           "MINE" ->
             if (struc is Mine) {
               struc.incomeRate++
@@ -187,9 +190,15 @@ class Referee : AbstractReferee() {
             }
           }
           "BARRACKS" -> {
-            val creepType = CreepType.valueOf(toks.next())
+            val creepInputType = toks.next()
+            val creepType = try {
+              CreepType.valueOf(creepInputType)
+            } catch (e:Exception) {
+              throw PlayerInputException("Invalid BARRACKS type: $creepInputType")
+            }
             obs.setBarracks(player, creepType)
           }
+          else -> throw PlayerInputException("Invalid structure type: $firstToken")
         }
       }
     }
@@ -250,30 +259,24 @@ class Referee : AbstractReferee() {
             "WAIT" -> {
             }
             "MOVE" -> {
-              val x = toks.next().toInt()
-              val y = toks.next().toInt()
-              queen.moveTowards(Vector2(x, y))
-            }
-            "MOVETOOBSTACLE" -> {
-              val obsId = toks.next().toInt()
-              val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
-              queen.moveTowards(obs.location)
+              try {
+                val x = toks.next().toInt()
+                val y = toks.next().toInt()
+                queen.moveTowards(Vector2(x, y))
+              } catch (e: Exception) {
+                throw PlayerInputException("In MOVE command, x and y must be integers")
+              }
             }
             "BUILD" -> {
-              val obs = obstacles.minBy { it.location.distanceTo(queen.location) - it.radius }!!
-              val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
-              if (dist > 10) throw PlayerInputException("Cannot build: too far away ($dist)")
-              scheduleBuilding(player, obs, toks)
-            }
-            "BUILDONOBSTACLE" -> {
-              val obsId = toks.next().toInt()
+              val obsId = try { toks.next().toInt() } catch (e:Exception) { throw PlayerInputException("Could not parse obstacleId")}
               val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
+              val strucType = toks.next()
 
               val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
               if (dist > 10) {
                 queen.moveTowards(obs.location)
               } else {
-                scheduleBuilding(player, obs, toks)
+                scheduleBuilding(player, obs, strucType)
               }
             }
             else -> throw PlayerInputException("Didn't understand command: $command")
@@ -285,6 +288,7 @@ class Referee : AbstractReferee() {
         e.printStackTrace()
         player.deactivate("Timeout!")
       } catch (e: PlayerInputException) {
+        System.err.println("WARNING: Terminating ${player.nicknameToken}, because of:")
         e.printStackTrace()
         player.deactivate("${e.message}")
       }
@@ -295,7 +299,13 @@ class Referee : AbstractReferee() {
       scheduledBuildings.clear()
 
     // Execute builds that remain
-    scheduledBuildings.forEach { it.invoke() }
+    scheduledBuildings.forEach { (player: Player, callback: () -> Unit) ->
+      try { callback.invoke() }
+      catch (e: PlayerInputException) {
+        e.printStackTrace()
+        player.deactivate("${e.message}")
+      }
+    }
   }
 
   private fun processCreeps() {
