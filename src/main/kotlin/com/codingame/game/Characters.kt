@@ -355,5 +355,6 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
       0 -> "${player.resources}"
       else -> "${player.resources} (+${player.resourcesPerTurn})"
     }
+    theEntityManager.commitEntityState(0.0, moneyText)
   }
 }

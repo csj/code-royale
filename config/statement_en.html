@@ -77,7 +77,7 @@
                 If an enemy structure is already in place on an obstacle, a Queen cannot replace it.<br>
                 If both Queens try simultaneously to build a structure on the same obstacle, neither structure will be built.<br>
                 <br>
-                Structures can be built at no cost, and are available for use on the turn immediately following their construction.<br>
+                Structures can be built at no cost. Towers and mines begin working the turn they are built, and can be grown over time. Barracks are available for use on the turn immediately following their construction.<br>
             </p>
 
             <p><strong>Mining</strong><br>
@@ -233,6 +233,27 @@
                 <span>Expert Rules</span>
             </h1>
             <div class="statement-expert-rules-content">
+
+                <p><strong>Turn sequence</strong><br></p>
+                <ol>
+                    <li>Game state sent to players</li>
+                    <li>Player inputs received and processed:</li>
+                    <ul>
+                        <li>New trainees started</li>
+                        <li>Queens move</li>
+                        <li>New structures built</li>
+                    </ul>
+                    <li>Existing creeps age (dead creeps removed)</li>
+                    <li>Remaining creeps move, collisions resolved</li>
+                    <li>Creeps attack and destroy enemy mines</li>
+                    <li>Queens destroy enemy mines and barracks</li>
+                    <li>Remaining structures act (including ones built this turn):</li>
+                    <ul>
+                        <li>Towers shoot, dead creeps removed</li>
+                        <li>Barracks that are in progress advance; new creeps spawned</li>
+                        <li>Mines collect resources for Queens</li>
+                    </ul>
+                </ol>
 
                 <p><strong>Collisions</strong><br>
                     <br>
