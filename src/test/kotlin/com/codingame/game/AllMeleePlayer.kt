@@ -27,7 +27,7 @@ class AllMeleePlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStrea
 
         if (growingMine != null) {
           stderr.println("Max: ${growingMine.maxResourceRate}")
-          return "BUILD MINE"
+          return "BUILD ${growingMine.obstacleId} MINE"
         }
 
         val queenTarget = obstacles
@@ -41,7 +41,7 @@ class AllMeleePlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStrea
         val maxUnitSpend = (myBarracks().size + 0.5) * 16 //  = 80/5
         val needsBarracks = income >= maxUnitSpend
 
-        return "BUILDONOBSTACLE ${queenTarget.obstacleId} ${if(needsBarracks) "BARRACKS MELEE" else "MINE"}"
+        return "BUILD ${queenTarget.obstacleId} ${if(needsBarracks) "BARRACKS-MELEE" else "MINE"}"
       }
 
       try {
