@@ -295,11 +295,11 @@ class Referee : AbstractReferee() {
         }
       } catch (e: AbstractPlayer.TimeoutException) {
         e.printStackTrace()
-        player.deactivate("Timeout!")
+        player.kill("Timeout!")
       } catch (e: PlayerInputException) {
         System.err.println("WARNING: Terminating ${player.nicknameToken}, because of:")
         e.printStackTrace()
-        player.deactivate("${e.message}")
+        player.kill("${e.message}")
       }
     }
 
@@ -313,7 +313,7 @@ class Referee : AbstractReferee() {
       catch (e: PlayerInputException) {
         System.err.println("WARNING: Deactivating ${player.nicknameToken} because of:")
         e.printStackTrace()
-        player.deactivate("${e.message}")
+        player.kill("${e.message}")
       }
     }
   }

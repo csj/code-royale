@@ -49,4 +49,9 @@ class Player : AbstractPlayer() {
   }
 
   val hud by lazy { PlayerHUD(this, isSecondPlayer) }
+
+  fun kill(reason: String) {
+    score = -1
+    deactivate(reason)
+  }
 }
