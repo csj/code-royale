@@ -1,4 +1,3 @@
-import com.codingame.game.WaitBot;
 import com.codingame.gameengine.runner.GameRunner;
 
 public class Main {

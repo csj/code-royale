@@ -327,14 +327,8 @@
             <div class="blk">
                 <div class="title">Input for one game turn</div>
                 <div class="text">
-                    <span class="statement-lineno">Line 1:</span> Four integers <var>queenX</var> <var>queenY</var> <var>health</var> <var>resources</var><br>
-                    <span class="statement-lineno">Line 2:</span> Three integers <var>enemyQueenX</var> <var>enemyQueenY</var> <var>enemyHealth</var><br>
-                    <ul>
-                        <li><var>queenX</var> <var>queenY</var>: The coordinates of the Queen</li>
-                        <li><var>health</var>: The current health of the Queen</li>
-                        <li><var>resources</var>: The resources available for your Queen to spend on creeps (enemy resource total not given)</li>
-                    </ul>
-                    <br>
+
+                    <span class="statement-lineno">Line 1:</span>A single integer <var>resources</var>: the current amount of resources available to be spent<br>
                     <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers <var>obstacleId</var> <var>resources</var>
                         <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                     <ul>
@@ -359,7 +353,7 @@
                         <li><var>param1</var>:
                             <ul>
                                 <li>When no structure: <const>-1</const></li>
-                                <li>When resource mine: the income rate ranging from <const>1</const> to <const>5</const></li>
+                                <li>When resource mine: the income rate ranging from <const>1</const> to <const>5</const>(or <const>-1</const> if enemy)</li>
                                 <li>When tower: the remaining HP</li>
                                 <li>When barracks, the current progress of a set of creeps being trained or <const>0</const> if nothing is being trained</li>
                             </ul>
@@ -374,14 +368,12 @@
                         </li>
                     </ul>
                     <br>
-                    <span class="statement-lineno">Next Line:</span> <var>numMyCreeps</var>: Number of active creeps owned by you<br>
-                    <span class="statement-lineno">Next <var>numMyCreeps</var> lines: 4 integers <var>creepX</var> <var>creepY</var> <var>creepHealth</var> <var>creepType</var></span><br>
-                    <span class="statement-lineno">Next Line:</span> <var>numEnemyCreeps</var>: Number of active creeps owned by the opponent<br>
-                    <span class="statement-lineno">Next <var>numEnemyCreeps</var> lines: 4 integers <var>creepX</var> <var>creepY</var> <var>creepHealth</var> <var>creepType</var></span><br>
+                    <span class="statement-lineno">Next Line:</span> <var>numUnits</var>: Number of total active units, including Queens<br>
+                    <span class="statement-lineno">Next <var>numUnits</var> lines: 5 integers <var>x</var> <var>y</var> <var>owner</var> <var>type</var> <var>health</var> </span><br>
                     <ul>
-                        <li><var>creepX</var> <var>creepY</var>: Coordinates of the creep</li>
-                        <li><var>creepHealth</var>: Current HP of the creep</li>
-                        <li><var>creepType</var>: The creep type: <const>0</const> for MELEE, <const>1</const> for RANGED, <const>2</const> for GIANT</li>
+                        <li><var>x</var> <var>y</var>: Coordinates of the unit</li>
+                        <li><var>health</var>: Current HP of the unit</li>
+                        <li><var>type</var>: The unit type: <const>-1</const> for Queen, <const>0</const> for MELEE, <const>1</const> for RANGED, <const>2</const> for GIANT</li>
                     </ul>
                 </div>
             </div>

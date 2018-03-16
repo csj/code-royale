@@ -1,10 +1,11 @@
 package com.codingame.game
 
 fun<T> List<T>.sample() = this[theRandom.nextInt(size)]
-data class CreepInput(
+data class UnitInput(
   val location: Vector2,
-  val health: Int,
-  val creepType: CreepType
+  val isFriendly: Boolean,
+  val creepType: CreepType?,
+  val health: Int
 )
 
 data class ObstaclePerTurnInput(
@@ -45,6 +46,6 @@ data class AllInputs(
   val enemyQueenLoc: Vector2,
   val enemyHealth: Int,
   val obstacles: List<ObstacleInput>,
-  val friendlyCreeps: List<CreepInput>,
-  val enemyCreeps: List<CreepInput>
+  val friendlyCreeps: List<UnitInput>,
+  val enemyCreeps: List<UnitInput>
 )

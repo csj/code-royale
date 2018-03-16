@@ -38,6 +38,7 @@ class Referee : AbstractReferee() {
     theEntityManager = entityManager
     theTooltipModule = tooltipModule
     theGameManager = gameManager
+    theGameManager.maxTurns = 250
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
@@ -142,15 +143,21 @@ class Referee : AbstractReferee() {
 
   private fun sendGameStates() {
     for (activePlayer in gameManager.activePlayers) {
-      activePlayer.sendInputLine("${activePlayer.queenUnit.location.x.toInt()} ${activePlayer.queenUnit.location.y.toInt()} ${activePlayer.health} ${activePlayer.resources}")
-      activePlayer.sendInputLine("${activePlayer.enemyPlayer.queenUnit.location.x.toInt()} ${activePlayer.enemyPlayer.queenUnit.location.y.toInt()} ${activePlayer.enemyPlayer.health}")
+      activePlayer.sendInputLine("${activePlayer.resources}")
       obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
-      for (player in listOf(activePlayer, activePlayer.enemyPlayer)) {
-        activePlayer.sendInputLine(player.activeCreeps.size.toString())
-        player.activeCreeps.forEach {
-          activePlayer.sendInputLine("${it.location.x.toInt()} ${it.location.y.toInt()} ${it.health} ${it.creepType.ordinal}")
-        }
+      val units = gameManager.activePlayers.flatMap { it.activeCreeps + it.queenUnit }
+      activePlayer.sendInputLine(units.size.toString())
+      units.forEach {
+        val toks = listOf(it.location.x.toInt(), it.location.y.toInt(),
+          if (it.owner == activePlayer) 0 else 1) +
+          when(it) {
+            is Queen -> listOf(-1, it.owner.health)
+            is Creep -> listOf(it.creepType.ordinal, it.health)
+            else -> listOf()
+         }
+
+        activePlayer.sendInputLine(toks.joinToString(" "))
       }
       activePlayer.execute()
     }

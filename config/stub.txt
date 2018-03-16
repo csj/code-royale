@@ -1,13 +1,10 @@
 read numObstacles:int
 loop numObstacles read obstacleId:int x:int y:int radius:int
 gameloop
-read queenX:int queenY:int health:int gold:int
-read enemyQueenX:int enemyQueenY:int enemyHealth:int
+read gold:int
 loop numObstacles read obstacleId:int goldRemaining:int maxMineSize:int structureType:int owner:int param1:int param2:int
-read numMyCreeps:int
-loop numMyCreeps read x:int y:int creepHealth:int creepType:int
-read numEnemyCreeps:int
-loop numEnemyCreeps read x:int y:int creepHealth:int creepType:int
+read numUnits:int
+loop numUnits read x:int y:int owner:int type:int health:int
 write WAIT
 TRAIN
 
