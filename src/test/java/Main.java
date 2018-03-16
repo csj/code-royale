@@ -1,3 +1,4 @@
+import com.codingame.game.WaitBot;
 import com.codingame.gameengine.runner.GameRunner;
 
 public class Main {
@@ -7,7 +8,7 @@ public class Main {
 
         // Adds as many player as you need to test your game
         gameRunner.addAgent(CSJPlayer.class);
-        gameRunner.addAgent(CSJPlayer.class);
+        gameRunner.addAgent(WaitBot.class);
 
         // gameRunner.addCommandLinePlayer("python3 /home/user/player.py");
 

@@ -172,6 +172,7 @@ class Referee : AbstractReferee() {
       val toks = strucType.split('-').iterator()
 
       scheduledBuildings += player to {
+        if (!toks.hasNext()) throw PlayerInputException("Structure type must be specified")
         val firstToken = toks.next()
         when (firstToken) {
           "MINE" ->
@@ -190,6 +191,7 @@ class Referee : AbstractReferee() {
             }
           }
           "BARRACKS" -> {
+            if (!toks.hasNext()) throw PlayerInputException("BARRACKS type must be specified")
             val creepInputType = toks.next()
             val creepType = try {
               CreepType.valueOf(creepInputType)
@@ -302,6 +304,7 @@ class Referee : AbstractReferee() {
     scheduledBuildings.forEach { (player: Player, callback: () -> Unit) ->
       try { callback.invoke() }
       catch (e: PlayerInputException) {
+        System.err.println("WARNING: Deactivating ${player.nicknameToken} because of:")
         e.printStackTrace()
         player.deactivate("${e.message}")
       }
