@@ -174,11 +174,11 @@ class TowerBustingCreep(
         val struc = it.structure
         struc is Tower
           && struc.owner == owner.enemyPlayer
-          && it.location.distanceTo(location) - radius - it.radius < 10
+          && it.location.distanceTo(location) - radius - it.radius < 5
       }?.let { (it.structure as Tower).health -= GIANT_BUST_RATE }
 
     val enemyQueen = owner.enemyPlayer.queenUnit
-    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 10) {
+    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 5) {
       owner.enemyPlayer.health -= 1
     }
   }
@@ -212,7 +212,7 @@ class QueenChasingCreep(owner: Player, creepType: CreepType)
 
   override fun dealDamage() {
     val enemyQueen = owner.enemyPlayer.queenUnit
-    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 10) {
+    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 5) {
       owner.enemyPlayer.health -= 1
     }
   }
@@ -274,7 +274,7 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   override fun dealDamage() {
     attackTarget = null
     val target = findTarget() ?: return
-    if (location.distanceTo(target.location) < radius + target.radius + attackRange + 10) {
+    if (location.distanceTo(target.location) < radius + target.radius + attackRange + 5) {
       target.damage(CREEP_DAMAGE)
       attackTarget = target
     }

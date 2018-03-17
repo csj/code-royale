@@ -282,7 +282,7 @@ class Referee : AbstractReferee() {
               val strucType = toks.next()
 
               val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
-              if (dist > 10) {
+              if (dist > 5) {
                 queen.moveTowards(obs.location)
               } else {
                 scheduleBuilding(player, obs, strucType)

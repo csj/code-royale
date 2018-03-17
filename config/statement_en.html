@@ -66,7 +66,7 @@
 
             The Queen is modeled as a circle with radius 20 units, and moves up to 60 units every turn.<br>
             Each Queen starts with 200 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
-            If both Queens are destroyed in the same turn, the game will end in a draw.<br>
+            If both Queens are destroyed on the same turn, the game will end in a draw.<br>
 
             <p><strong>Structures</strong></p>
 
@@ -106,43 +106,62 @@
                 <br>
                 There are three different creep types that can be built.<br>
 
-                <table>
-                    <tr>
-                        <th>Type</th>
-                        <th>Cost</th>
-                        <th>Number</th>
-                        <th>Speed</th>
-                        <th>Range</th>
-                        <th>HP</th>
-                        <th>Training Time (turns)</th>
-                    </tr>
-                    <tr>
-                        <td>MELEE</td>
-                        <td>80</td>
-                        <td>4</td>
-                        <td>100</td>
-                        <td>0</td>
-                        <td>30</td>
-                        <td>5</td>
-                    </tr>
-                    <tr>
-                        <td>RANGED</td>
-                        <td>120</td>
-                        <td>2</td>
-                        <td>75</td>
-                        <td>200</td>
-                        <td>45</td>
-                        <td>8</td>
-                    </tr>
-                    <tr>
-                        <td>GIANT</td>
-                        <td>140</td>
-                        <td>1</td>
-                        <td>50</td>
-                        <td>0</td>
-                        <td>200</td>
-                        <td>10</td>
-                    </tr>
+                <table style="border-spacing: 10px; border-collapse: separate;">
+            <tr>
+                <th>Type</th>
+                <td>MELEE</td>
+                <td>RANGED</td>
+                <td>GIANT</td>
+
+            </tr>
+            <tr>
+                <th>Cost</th>
+                <td>80</td>
+                <td>120</td>
+                <td>140</td>
+            </tr>
+            <tr>
+                <th>Number</th>
+                <td>4</td>
+                <td>2</td>
+                <td>1</td>
+
+            </tr>
+            <tr>
+                <th>Speed</th>
+                <td>100</td>
+                <td>75</td>
+                <td>50</td>
+
+            </tr>
+            <tr>
+                <th>Range</th>
+                <td>0</td>
+                <td>200</td>
+                <td>0</td>
+
+            </tr>
+            <tr>
+                <th>HP</th>
+                <td>30</td>
+                <td>45</td>
+                <td>200</td>
+
+            </tr>
+            <tr>
+                <th>Training Time (turns)</th>
+                <td>5</td>
+                <td>8</td>
+                <td>10</td>
+
+            </tr>
+            <tr>
+                <th>Radius</th>
+                <td>10</td>
+                <td>15</td>
+                <td>25</td>
+
+            </tr>
                 </table>
 
                 <br>
@@ -167,8 +186,6 @@
                 <br>
                 Every turn, towers automatically fire upon the nearest enemy creep inside their firing radius, dealing at most 10 damage. This damage decreases with range.<br>
                 If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her instead, dealing 1 damage.<br>
-                <br>
-                If the enemy player is investing a lot of effort into towers, a player may wish to train GIANT creeps to knock them down.<br>
             </p>
 
             <p><strong>Training Creeps</strong><br>
@@ -200,7 +217,7 @@
                     <div class="text">
                         <ul>
                             <li>Destroy the enemy Queen.</li>
-                            <li>After 400 turns, your Queen has more HP than the enemy Queen.</li>
+                            <li>After 250 turns, your Queen has more HP than the enemy Queen.</li>
                         </ul>
                     </div>
                 </div>
@@ -297,7 +314,7 @@
 
                 <p><strong>Draws</strong><br>
                     <br>
-                    The game will end in a draw if after 400 turns both Queens have the same HP.<br>
+                    The game will end in a draw if after 250 turns both Queens have the same HP.<br>
                 </p>
 
             </div>
