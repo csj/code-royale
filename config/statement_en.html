@@ -275,9 +275,11 @@
                 <p><strong>Collisions</strong><br>
                     <br>
                     Units cannot share space. All obstacles, Queens and creeps are modeled as circles.<br>
+                    <br>
                     Unit movement is done by simply moving toward the desired target. However, at the end of every turn, a series of collision
                     checks are performed. While there are any collisions, the offending units are simply translated away from each other (except for
                     obstacles, they stay put.) Hence it is possible for a Queen to be "shoved" out of her way by a swarm of creeps.<br>
+                    <br>
                     For this purpose, units are assigned a weight as follows:<br>
                 </p>
                 <ul>
@@ -287,7 +289,18 @@
                     <li>Ranged: 9</li>
                     <li>Melee: 4</li>
                 </ul>
-                <p>In case of collisions, a lower-weight unit will be displaced more than a higher-weight unit.</p>
+                <p>
+                    In case of collisions, a lower-weight unit will be displaced more than a higher-weight unit.<br>
+                    <br>
+                    Two entities are considered "touching" by comparing the distance between their centers, thus: <br>
+                    isTouching = distance - radius1 - radius2 < 3. This applies to:
+                </p>
+                <ul>
+                    <li>MELEE - Queen (damage)</li>
+                    <li>Queen - Obstacle (construction, and tearing down enemy structures)</li>
+                    <li>Creep - Mine</li>
+                    <li>GIANT - Tower</li>
+                </ul>
 
                 <p><strong>Obstacle resources</strong></p>
 
