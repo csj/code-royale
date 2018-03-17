@@ -9,6 +9,7 @@ import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE
 import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_1
 import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_2
 import com.codingame.game.Constants.OBSTACLE_PAIRS
+import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
@@ -39,6 +40,8 @@ class Referee : AbstractReferee() {
     theTooltipModule = tooltipModule
     theGameManager = gameManager
     theGameManager.maxTurns = 250
+
+    gameManager.frameDuration = 750
 
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
@@ -282,7 +285,7 @@ class Referee : AbstractReferee() {
               val strucType = toks.next()
 
               val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
-              if (dist > 5) {
+              if (dist > TOUCHING_DELTA) {
                 queen.moveTowards(obs.location)
               } else {
                 scheduleBuilding(player, obs, strucType)
@@ -330,7 +333,7 @@ class Referee : AbstractReferee() {
     // Tear down enemy mines
     allCreeps.forEach { creep ->
       val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
-      if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius > 5) return@forEach
+      if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius > TOUCHING_DELTA) return@forEach
       val struc = closestObstacle.structure
       if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
     }
@@ -341,7 +344,7 @@ class Referee : AbstractReferee() {
     gameManager.activePlayers.forEach {
       val queen = it.queenUnit
       val closestObstacle = obstacles.minBy { it.location.distanceTo(queen.location) }!!
-      if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius > 5) return@forEach
+      if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius > TOUCHING_DELTA) return@forEach
       val struc = closestObstacle.structure
       if ((struc is Mine || struc is Barracks) && struc.owner != queen.owner) closestObstacle.structure = null
     }

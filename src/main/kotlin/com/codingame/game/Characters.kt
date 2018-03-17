@@ -5,6 +5,7 @@ import com.codingame.game.Constants.GIANT_BUST_RATE
 import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.game.Constants.QUEEN_MASS
 import com.codingame.game.Constants.QUEEN_RADIUS
+import com.codingame.game.Constants.QUEEN_SPEED
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
@@ -71,7 +72,7 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
   }
 
   fun moveTowards(target: Vector2) {
-    location = location.towards(target, Constants.QUEEN_SPEED.toDouble())
+    location = location.towards(target, QUEEN_SPEED.toDouble())
   }
 
   override var location: Vector2
@@ -176,11 +177,6 @@ class TowerBustingCreep(
           && struc.owner == owner.enemyPlayer
           && it.location.distanceTo(location) - radius - it.radius < 5
       }?.let { (it.structure as Tower).health -= GIANT_BUST_RATE }
-
-    val enemyQueen = owner.enemyPlayer.queenUnit
-    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 5) {
-      owner.enemyPlayer.health -= 1
-    }
   }
 }
 

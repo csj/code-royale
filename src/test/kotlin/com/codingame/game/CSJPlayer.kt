@@ -1,5 +1,6 @@
 import com.codingame.game.*
 import com.codingame.game.BasePlayer
+import com.codingame.game.Constants.QUEEN_RADIUS
 import java.io.InputStream
 import java.io.PrintStream
 
@@ -34,13 +35,13 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         // if touching a tower that isn't at max health, keep growing it
         val growingTower = obstacles
           .filter { it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrCooldown < 400 }
-          .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - Constants.QUEEN_RADIUS < 5 }
+          .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - QUEEN_RADIUS < 5 }
         if (growingTower != null) return "BUILD ${growingTower.obstacleId} TOWER"
 
         // if touching a mine that isn't at max capacity, keep growing it
         val growingMine = obstacles
             .filter { it.owner == 0 && it.structureType == 0 && it.incomeRateOrHealthOrCooldown < it.maxResourceRate }
-            .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - Constants.QUEEN_RADIUS < 5 }
+            .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - QUEEN_RADIUS < 5 }
         if (growingMine != null) {
           stderr.println("Max: ${growingMine.maxResourceRate}")
           return "BUILD ${growingMine.obstacleId} MINE"
@@ -62,7 +63,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           return closestTower?.let { "BUILD ${it.obstacleId} TOWER" } ?: "WAIT"
         }
 
-        val dist = queenTarget.location.distanceTo(queenLoc) - Constants.QUEEN_RADIUS - queenTarget.radius
+        val dist = queenTarget.location.distanceTo(queenLoc) - QUEEN_RADIUS - queenTarget.radius
 
         if (dist < 5) {
           // Touching an obstacle; do something here

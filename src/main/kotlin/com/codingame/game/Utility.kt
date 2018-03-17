@@ -31,7 +31,7 @@ fun <S,T> PropertyDelegate<S,T>.andAlso(cont: (T) -> Unit): PropertyDelegate<S,T
     }
     override fun setValue(source: S, property: KProperty<*>, value: T) {
       that.setValue(source, property, value)
-      cont(value)
+      cont(getValue(source, property))
     }
   }
 }

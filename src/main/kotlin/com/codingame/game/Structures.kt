@@ -2,6 +2,14 @@ package com.codingame.game
 
 import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE
 import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
+import com.codingame.game.Constants.OBSTACLE_RADIUS_RANGE
+import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
+import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_DROP_DISTANCE
+import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_MAX
+import com.codingame.game.Constants.TOWER_MELT_RATE
+import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE
+import com.codingame.game.Constants.WORLD_HEIGHT
+import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Curve
 import kotlin.math.min
@@ -32,7 +40,7 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
     }
 
   init {
-    radius = Constants.OBSTACLE_RADIUS_RANGE.sample()
+    radius = OBSTACLE_RADIUS_RANGE.sample()
     val params = hashMapOf("id" to obstacleId, "type" to "Obstacle")
     theTooltipModule.registerEntity(outline, params as Map<String, Any>?)
   }
@@ -66,7 +74,7 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
   }
 
   init {
-    location = Vector2.random(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT)
+    location = Vector2.random(WORLD_WIDTH, WORLD_HEIGHT)
   }
 
   fun setMine(owner: Player) {
@@ -239,15 +247,15 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
 
     attackTarget = if (closestEnemy != null && closestEnemy.location.distanceTo(obstacle.location) < attackRadius) {
       val shotDistance = closestEnemy.location.distanceTo(obstacle.location) - obstacle.radius  // should be maximum right at the foot
-      closestEnemy.also { it.damage((Constants.TOWER_CREEP_DAMAGE_MAX - shotDistance / Constants.TOWER_CREEP_DAMAGE_DROP_DISTANCE).toInt()) }
+      closestEnemy.also { it.damage((TOWER_CREEP_DAMAGE_MAX - shotDistance / TOWER_CREEP_DAMAGE_DROP_DISTANCE).toInt()) }
     } else if (enemyQueen.location.distanceTo(obstacle.location) < attackRadius) {
-      enemyQueen.also { it.damage(Constants.TOWER_QUEEN_DAMAGE) }
+      enemyQueen.also { it.damage(TOWER_QUEEN_DAMAGE) }
     } else {
       null
     }
 
-    health -= Constants.TOWER_MELT_RATE
-    attackRadius = Math.sqrt((health * Constants.TOWER_COVERAGE_PER_HP + obstacle.area) / Math.PI).toInt()
+    health -= TOWER_MELT_RATE
+    attackRadius = Math.sqrt((health * TOWER_COVERAGE_PER_HP + obstacle.area) / Math.PI).toInt()
 
     if (health <= 0) {
       hideEntities()

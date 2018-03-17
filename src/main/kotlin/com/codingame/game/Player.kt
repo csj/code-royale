@@ -1,6 +1,7 @@
 package com.codingame.game
 
 import com.codingame.game.Constants.QUEEN_HP
+import com.codingame.game.Constants.QUEEN_VISION
 import com.codingame.gameengine.core.AbstractPlayer
 
 class Player : AbstractPlayer() {
@@ -19,7 +20,7 @@ class Player : AbstractPlayer() {
 
   fun printObstaclePerTurn(obstacle: Obstacle) {
     val struc = obstacle.structure
-    val visible = (struc != null && struc.owner == this) || obstacle.location.distanceTo(queenUnit.location) < Constants.QUEEN_VISION
+    val visible = (struc != null && struc.owner == this) || obstacle.location.distanceTo(queenUnit.location) < QUEEN_VISION
 
     val toks = listOf(
         obstacle.obstacleId,
