@@ -17,7 +17,7 @@ lateinit var theTooltipModule: TooltipModule
 lateinit var theGameManager: GameManager<Player>
 
 val viewportX = 0..1920
-val viewportY = 110..1080
+val viewportY = 180..1080
 
 var <T : Entity<*>?> Entity<T>.location: Vector2
   get() = Vector2(x - viewportX.first, y - viewportY.first)
@@ -282,75 +282,3 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   }
 }
 
-class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
-  private val left = if (isSecondPlayer) 1920/2 else 0
-  private val right = if (isSecondPlayer) 1920 else 1920/2
-  private val top = 0 //viewportY.last
-  private val bottom = viewportY.first //1080
-
-  private val healthBarWidth = 400
-  private val healthBarPadding = 15
-
-  private val background = theEntityManager.createRectangle()!!
-    .setX(left).setY(top)
-    .setWidth(right-left).setHeight(bottom-top)
-    .setFillColor(player.colorToken)
-    .setLineAlpha(0.0)
-    .setZIndex(4000)
-
-  private val avatar = theEntityManager.createSprite()
-    .setImage(player.avatarToken)
-    .setX(left + 10).setY(top + 10)
-    .setBaseWidth(bottom - top - 10 - 10)
-    .setBaseHeight(bottom - top - 10 - 10)
-    .setZIndex(4003)!!
-
-  private val heartSprite = theEntityManager.createSprite()
-    .setX(left + 155).setY((top + bottom)/2)
-    .setScale(2.0)
-    .setImage("heart.png")
-    .setAnchor(0.5)
-    .setZIndex(4002)!!
-
-  private val healthBarBackground = theEntityManager.createRectangle()!!
-    .setX(left + 200 - healthBarPadding).setY(top + 25 - healthBarPadding)
-    .setWidth(healthBarWidth + 2*healthBarPadding).setHeight(bottom-top-25-25+2*healthBarPadding)
-    .setLineAlpha(0.0)
-    .setFillColor(0).setFillAlpha(0.4)
-    .setZIndex(4001)
-
-  private val healthBarFill = theEntityManager.createRectangle()!!
-    .setLineAlpha(0.0)
-    .setX(left + 200).setY(top + 25)
-    .setWidth(healthBarWidth).setHeight(bottom-top-25-25)
-    .setFillColor(0x55ff55)
-    .setLineAlpha(0.0)
-    .setZIndex(4002)
-
-  private val playerName = theEntityManager.createText(player.nicknameToken)!!
-    .setX(left + 200 + 5).setY(top + 25 - 2)
-    .setFillColor(0)
-    .setScale(2.0)
-    .setZIndex(4003)
-
-  private val moneySprite = theEntityManager.createSprite()
-    .setX(healthBarBackground.x + healthBarBackground.width + 50).setY((top + bottom)/2)
-    .setImage("money.png")
-    .setScale(2.0)
-    .setAnchor(0.5)
-    .setZIndex(4002)!!
-
-  private val moneyText = theEntityManager.createText("0")
-    .setX(moneySprite.x + 50).setY(top + 20)
-    .setScale(2.0)
-    .setZIndex(4002)!!
-
-  fun update() {
-    healthBarFill.width = healthBarWidth * player.health / QUEEN_HP
-    moneyText.text = when (player.resourcesPerTurn) {
-      0 -> "${player.resources}"
-      else -> "${player.resources} (+${player.resourcesPerTurn})"
-    }
-    theEntityManager.commitEntityState(0.0, moneyText)
-  }
-}

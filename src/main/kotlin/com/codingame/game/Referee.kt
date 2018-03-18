@@ -34,11 +34,13 @@ class Referee : AbstractReferee() {
   private fun allUnits(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
   override fun init(params: Properties): Properties {
+
     theRandom = (params["seed"] as? Long)?.let { Random(it) } ?: Random()
 
     theEntityManager = entityManager
     theTooltipModule = tooltipModule
     theGameManager = gameManager
+    gameManager.addToGameSummary("Using game properties: $params")
     theGameManager.maxTurns = 250
 
     gameManager.frameDuration = 750
@@ -76,6 +78,7 @@ class Referee : AbstractReferee() {
       if (it.location.distanceTo(mapCenter) < OBSTACLE_MINERAL_INCREASE_DISTANCE_2) { it.maxMineralRate++; it.minerals += OBSTACLE_MINERAL_INCREASE }
       it.updateEntities()
     }
+    PlayerHUD.obstacles = obstacles
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
       val spawnDistance = 200

@@ -303,24 +303,27 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
   private val creepSprite = theEntityManager.createSprite()
     .setAnchor(0.5)
     .setZIndex(40)
-    .also { it.location = obstacle.location + Vector2(0, -20) }
+    .also { it.location = obstacle.location }
     .setScale(2.0)!!
 
   private val creepFillSprite = theEntityManager.createSprite()
     .setTint(owner.colorToken)
     .setAnchor(0.5)
     .setZIndex(30)
-    .also { it.location = obstacle.location + Vector2(0, -20) }
+    .also { it.location = obstacle.location }
     .setTint(owner.colorToken)
     .setScale(2.0)!!
 
   override fun updateEntities() {
     creepSprite.isVisible = true
     creepSprite.image = creepType.assetName
-    creepSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
-    creepFillSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
     creepFillSprite.isVisible = true
     creepFillSprite.image = creepType.fillAssetName
+    theEntityManager.commitEntityState(0.0, creepSprite, creepFillSprite)
+
+    creepFillSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
+    creepSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
+    theEntityManager.commitEntityState(0.3, creepSprite, creepFillSprite)
 
     progressOutline.isVisible = isTraining
     progressFill.isVisible = isTraining

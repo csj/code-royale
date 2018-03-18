@@ -51,7 +51,7 @@
             <p><strong>Field</strong></p>
 
             <p>
-                The game is played by two players on a semi-open two-dimensional field <const>1920</const> units wide and <const>970</const>
+                The game is played by two players on a semi-open two-dimensional field <const>1920</const> units wide and <const>900</const>
                 units high, littered with circular obstacles of varying radius. The top-left corner is 0,0.<br>
                 The field is generated randomly every game, with the obstacles being symmetrically laid out (rotationally around the map's center).
             </p>
@@ -293,7 +293,7 @@
                     In case of collisions, a lower-weight unit will be displaced more than a higher-weight unit.<br>
                     <br>
                     Two entities are considered "touching" by comparing the distance between their centers, thus: <br>
-                    isTouching = distance - radius1 - radius2 < 3. This applies to:
+                    isTouching = distance - radius1 - radius2 < 5. This applies to:
                 </p>
                 <ul>
                     <li>MELEE - Queen (damage)</li>

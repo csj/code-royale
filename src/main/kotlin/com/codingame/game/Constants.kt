@@ -32,7 +32,7 @@ object Constants {
   val WORLD_WIDTH = viewportX.last - viewportX.first
   val WORLD_HEIGHT = viewportY.last - viewportY.first
 
-  val TOUCHING_DELTA = 3
+  val TOUCHING_DELTA = 5
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
