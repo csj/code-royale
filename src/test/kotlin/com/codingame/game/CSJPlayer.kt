@@ -43,7 +43,6 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
             .filter { it.owner == 0 && it.structureType == 0 && it.incomeRateOrHealthOrCooldown < it.maxResourceRate }
             .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - QUEEN_RADIUS < 5 }
         if (growingMine != null) {
-          stderr.println("Max: ${growingMine.maxResourceRate}")
           return "BUILD ${growingMine.obstacleId} MINE"
         }
 

@@ -6,6 +6,7 @@ import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.game.Constants.QUEEN_MASS
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.QUEEN_SPEED
+import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
@@ -270,7 +271,7 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
   override fun dealDamage() {
     attackTarget = null
     val target = findTarget() ?: return
-    if (location.distanceTo(target.location) < radius + target.radius + attackRange + 5) {
+    if (location.distanceTo(target.location) < radius + target.radius + attackRange + TOUCHING_DELTA) {
       target.damage(CREEP_DAMAGE)
       attackTarget = target
     }

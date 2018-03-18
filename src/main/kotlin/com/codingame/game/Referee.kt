@@ -35,7 +35,7 @@ class Referee : AbstractReferee() {
 
   override fun init(params: Properties): Properties {
 
-    theRandom = (params["seed"] as? Long)?.let { Random(it) } ?: Random()
+    theRandom = (params["seed"] as? String)?.let { Random(it.toLong()) } ?: Random()
 
     theEntityManager = entityManager
     theTooltipModule = tooltipModule
