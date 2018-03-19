@@ -1,10 +1,9 @@
 package com.codingame.game
 
 import java.lang.IllegalArgumentException
-import java.lang.Math.cos
-import java.lang.Math.sin
+import java.util.*
 
-@Suppress("MemberVisibilityCanPrivate", "unused")  // It's a utility, ok
+@Suppress("MemberVisibilityCanBePrivate", "unused")  // It's a utility, ok
 data class Vector2(val x: Double, val y: Double) {
   private val lengthSquared by lazy { x*x + y*y }
   val length by lazy { Math.sqrt(lengthSquared) }
@@ -12,10 +11,7 @@ data class Vector2(val x: Double, val y: Double) {
   val normalized: Vector2 by lazy {
     val len = length
     when(len) {
-      0.0 -> {
-        val ang = theRandom.nextDouble() * 2 * Math.PI
-        Vector2(cos(ang), sin(ang))
-      }
+      0.0 -> Vector2(1,0)
       else -> Vector2(x / len, y / len)
     }
   }
@@ -49,6 +45,6 @@ data class Vector2(val x: Double, val y: Double) {
 
   companion object {
     val Zero = Vector2(0, 0)
-    fun random(maxX: Int, maxY: Int) = Vector2(theRandom.nextInt(maxX), theRandom.nextInt(maxY))
+    fun random(theRandom: Random, maxX: Int, maxY: Int) = Vector2(theRandom.nextInt(maxX), theRandom.nextInt(maxY))
   }
 }

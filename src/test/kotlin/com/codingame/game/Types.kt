@@ -1,6 +1,5 @@
 package com.codingame.game
 
-fun<T> List<T>.sample() = this[theRandom.nextInt(size)]
 data class UnitInput(
   val location: Vector2,
   val isFriendly: Boolean,

@@ -15,7 +15,7 @@ import com.codingame.gameengine.module.entities.Curve
 import kotlin.math.min
 
 var nextObstacleId = 0
-class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
+class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, initialLocation: Vector2): MyEntity() {
   val obstacleId = nextObstacleId++
   override val mass = 0
   var minerals by nonNegative(initialAmount)
@@ -40,7 +40,8 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
     }
 
   init {
-    radius = OBSTACLE_RADIUS_RANGE.sample()
+    radius = initialRadius
+    location = initialLocation
     val params = hashMapOf("id" to obstacleId, "type" to "Obstacle")
     theTooltipModule.registerEntity(outline, params as Map<String, Any>?)
   }
@@ -71,10 +72,6 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int): MyEntity() {
   fun act() {
     structure?.also { if (it.act()) structure = null }
     updateEntities()
-  }
-
-  init {
-    location = Vector2.random(WORLD_WIDTH, WORLD_HEIGHT)
   }
 
   fun setMine(owner: Player) {
