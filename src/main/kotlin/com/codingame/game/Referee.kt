@@ -171,10 +171,12 @@ class Referee : AbstractReferee() {
                   }.also {
                     it.location = barracks.obstacle.location
                     it.finalizeFrame()
-                    it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 20.0)
+                    it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 30.0)
                     it.finalizeFrame()
+                    it.commitState(0.0)
                   }
                 }
+                fixCollisions(allEntities())
               }
             }
           }

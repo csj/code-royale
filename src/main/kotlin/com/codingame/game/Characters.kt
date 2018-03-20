@@ -151,6 +151,10 @@ abstract class Creep(
   abstract fun dealDamage()
   abstract fun move(frames: Double)
 
+  fun commitState(time: Double) {
+    theEntityManager.commitEntityState(time, sprite, fillSprite)
+  }
+
   init {
     theTooltipModule.registerEntity(sprite, mapOf("id" to sprite.id, "type" to creepType.toString()))
   }
