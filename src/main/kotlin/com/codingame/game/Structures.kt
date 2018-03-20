@@ -58,7 +58,7 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
     if (struc != null) {
       theTooltipModule.updateExtraTooltipText(outline, *struc.extraTooltipLines().toTypedArray())
     } else {
-      theTooltipModule.updateExtraTooltipText(outline, "Remaining resources: $minerals")
+      theTooltipModule.updateExtraTooltipText(outline, "Radius: $radius", "Remaining resources: $minerals")
     }
   }
 
