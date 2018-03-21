@@ -13,6 +13,7 @@ import com.codingame.gameengine.module.entities.GraphicEntityModule
 import tooltipModule.TooltipModule
 import com.google.inject.Inject
 import java.util.*
+import kotlin.math.roundToInt
 
 @Suppress("unused")  // injected by magic
 class Referee : AbstractReferee() {
@@ -73,12 +74,12 @@ class Referee : AbstractReferee() {
         val units = gameManager.activePlayers.flatMap { it.activeCreeps + it.queenUnit }
         activePlayer.sendInputLine(units.size.toString())
         units.forEach {
-          val toks = listOf(it.location.x.toInt(), it.location.y.toInt(),
+          val toks = listOf(it.location.x.roundToInt(), it.location.y.roundToInt(),
             if (it.owner == activePlayer) 0 else 1) +
             when(it) {
               is Queen -> listOf(-1, it.owner.health)
               is Creep -> listOf(it.creepType.ordinal, it.health)
-              else -> listOf()
+              else -> throw IllegalArgumentException("Unrecognized entity type: $it")
             }
 
           activePlayer.sendInputLine(toks.joinToString(" "))

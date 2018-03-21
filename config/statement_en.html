@@ -64,8 +64,8 @@
             <p>Each player controls a single Queen character, who can establish different structures on those obstacles.
             The Queen is the player’s only way to directly interact with the field.
 
-            The Queen is modeled as a circle with radius 20 units, and moves up to 60 units every turn.<br>
-            Each Queen starts with 200 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
+            The Queen is modeled as a circle with radius <const>20</const> units, and moves up to <const>60</const> units every turn.<br>
+            Each Queen starts with <const>200</const> HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
             If both Queens are destroyed on the same turn, the game will end in a draw.<br>
 
             <p><strong>Structures</strong></p>
@@ -84,12 +84,12 @@
                 <br>
                 Players will need mineral resources to win, and for that, a Queen must build a mine on an obstacle.<br>
                 <br>
-                Each obstacle has a different rate at which resources can be collected, ranging from +1/turn to +5/turn.<br>
+                Each obstacle has a different rate at which resources can be collected, ranging from <const>+1</const>/turn to <const>+5</const>/turn.<br>
                 When a mine is first built, it has an income rate of +1. This can be increased by issuing repeated commands to build a mine on the same obstacle, up to its maximum capacity.<br>
                 Resources will accumulate in the player’s bank over several turns automatically. However, the obstacle will be exhausted of resources over time.<br>
                 Obstacles begin with different, random amounts of resources every game. Obstacles near the middle of the field have higher resources available, and higher maximum mining rates.<br>
                 Resource totals and mining rates are not given for all obstacles, they must be discovered by the Queen. These numbers will be available for any
-                obstacle whose center is within 300 units from the Queen.<br>
+                obstacle whose center is within <const>300</const> units from the Queen.<br>
                 <br>
                 A mine will be destroyed if:
                 <ul>
@@ -102,7 +102,7 @@
                 <br>
                 In order to destroy the enemy Queen, a player will need to build creeps.<br>
                 Once built, creeps follow very simple behaviours (see below), and cannot be controlled by the player.<br>
-                Creeps will eventually age and die on their own, losing 1HP every turn.<br>
+                Creeps will eventually age and die on their own, losing <const>1</const> HP every turn.<br>
                 <br>
                 There are three different creep types that can be built.<br>
 
@@ -165,9 +165,9 @@
                 </table>
 
                 <br>
-                MELEE units are light, fast units which attack the enemy Queen, dealing 1 damage every turn they end in contact with the enemy Queen.<br>
+                MELEE units are light, fast units which attack the enemy Queen, dealing <const>1</const> damage every turn they end in contact with the enemy Queen.<br>
                 RANGED units are slower, ranged units which move toward and attack nearby enemy creeps from a short distance.<br>
-                They deal 1 damage to the their nearest enemy creep every turn they end within range of that creep. (Note: they can shoot past obstacles).<br>
+                They deal <const>1</const> damage to the their nearest enemy creep every turn they end within range of that creep. (Note: they can shoot past obstacles).<br>
                 GIANT units do not attack the enemy Queen or enemy creeps, but instead attack nearby enemy towers and break them down over time.<br>
                 <br>
                 A player needs to build a BARRACKS with his Queen in order to create creeps.<br>
@@ -184,13 +184,13 @@
                 Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.<br>
                 This can be delayed by regular visits by the Queen, and issuing the BUILD TOWER command again.<br>
                 <br>
-                Every turn, towers automatically fire upon the nearest enemy creep inside their firing radius. They deal 10 damage, minus one damage for every 50 units measured from the edge of the obstacle.<br>
-                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her instead, dealing 1 damage.<br>
+                Every turn, towers automatically fire upon the nearest enemy creep inside their firing radius. They deal <const>10</const> damage, minus one damage for every <const>50</const> units measured from the edge of the obstacle.<br>
+                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her instead, dealing <const>1</const> damage.<br>
             </p>
 
             <p><strong>Training Creeps</strong><br>
                 <br>
-                Every obstacle is numbered, starting from 0.<br>
+                Every obstacle is numbered, starting from <const>0</const>.<br>
                 A player trains creeps by indicating which numbered obstacles containing a barracks he wishes to train creeps at.<br>
                 Examples:<br>
                 <ul>
@@ -217,7 +217,7 @@
                     <div class="text">
                         <ul>
                             <li>Destroy the enemy Queen.</li>
-                            <li>After 250 turns, your Queen has more HP than the enemy Queen.</li>
+                            <li>After <const>250</const> turns, your Queen has more HP than the enemy Queen.</li>
                         </ul>
                     </div>
                 </div>
@@ -293,7 +293,7 @@
                     In case of collisions, a lower-weight unit will be displaced more than a higher-weight unit.<br>
                     <br>
                     Two entities are considered "touching" by comparing the distance between their centers, thus: <br>
-                    isTouching = distance - radius1 - radius2 < 5. This applies to:
+                    isTouching = distance - radius1 - radius2 < <const>5</const>. This applies to:
                 </p>
                 <ul>
                     <li>MELEE - Queen (damage)</li>
@@ -306,29 +306,29 @@
 
                 <p>
                     All obstacles are randomized in pairs: attributes that apply to mirroring obstacles are always the same at the game's start.<br>
-                    Each obstacle-pair gets assigned a random resource pool amount between 200 and 250, a maximum mining rate between +1 and +3, and a radius between 60 and 110 units.<br>
-                    Obstacles whose center is located within 500 units of the map's center are given a bonus of 50 resources, and +1 to maximum mining rate.<br>
-                    Obstacles whose center is located within 200 units of the map's center are given a further bonus of 50 resources, and +1 to maximum mining rate.<br>
+                    Each obstacle-pair gets assigned a random resource pool amount between <const>200</const> and <const>250</const>, a maximum mining rate between <const>+1</const> and <const>+3</const>, and a radius between <const>60</const> and <const>110</const> units.<br>
+                    Obstacles whose center is located within <const>500</const> units of the map's center are given a bonus of <const>50</const> resources, and <const>+1</const> to maximum mining rate.<br>
+                    Obstacles whose center is located within <const>200</const> units of the map's center are given a further bonus of <const>50</const> resources, and <const>+1</const> to maximum mining rate.<br>
                 </p>
 
                 <p><strong>Tower HP</strong></p>
 
                 <p>
                     Each tower has a number of HP (param1) that determines its effective attack radius (param2).<br>
-                    Each 1HP allows the tower to cover 1000 square-units (a square unit is not very much!), not including the area of the obstacle on which it sits.<br>
+                    Each HP allows the tower to cover <const>1000</const> square-units (a square unit is not very much!), not including the area of the obstacle on which it sits.<br>
                     The attack radius is calculated every turn according to the tower's HP according to the formula: <br>
                     attackRadius = sqrt((hp * 1000 + obstacleArea) / PI) -- this is measured from the obstacle's center.<br>
                     This is so that PI * attackRadius^2 = hp * 1000 + obstacleArea.<br>
-                    When a tower is first built, it receives 200HP. This corresponds to a variable attack range: longer attack range for a smaller radius obstacle.<br>
-                    When an existing tower is grown, it receives 100 additional HP.<br>
-                    The maximum amount of HP for towers is 800.<br>
-                    Every tower loses 4 HP per turn due to exposure to the elements.<br>
-                    Each GIANT that ends its turn next to a tower reduces its HP by 80. Hence a Queen can slightly outpace a single GIANT by building at the same time.<br>
+                    When a tower is first built, it receives <const>200</const> HP. This corresponds to a variable attack range: longer attack range for a smaller radius obstacle.<br>
+                    When an existing tower is grown, it receives <const>100</const> additional HP.<br>
+                    The maximum amount of HP for towers is <const>800</const>.<br>
+                    Every tower loses <const>4</const> HP per turn due to exposure to the elements.<br>
+                    Each GIANT that ends its turn next to a tower reduces its HP by <const>80</const>. Hence a Queen can slightly outpace a single GIANT by building at the same time.<br>
                 </p>
 
                 <p><strong>Draws</strong><br>
                     <br>
-                    The game will end in a draw if after 250 turns both Queens have the same HP.<br>
+                    The game will end in a draw if after <const>250</const> turns both Queens have the same HP.<br>
                 </p>
 
             </div>

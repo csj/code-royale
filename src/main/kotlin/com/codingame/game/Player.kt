@@ -3,6 +3,7 @@ package com.codingame.game
 import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.game.Constants.QUEEN_VISION
 import com.codingame.gameengine.core.AbstractPlayer
+import kotlin.math.roundToInt
 
 class Player : AbstractPlayer() {
   override fun getExpectedOutputLines(): Int = 2
@@ -14,7 +15,7 @@ class Player : AbstractPlayer() {
 
   fun printObstacleInit(obstacle: Obstacle) {
     val (x,y) = obstacle.location
-    val toks = listOf(obstacle.obstacleId, x.toInt(), y.toInt(), obstacle.radius)
+    val toks = listOf(obstacle.obstacleId, x.roundToInt(), y.roundToInt(), obstacle.radius)
     sendInputLine(toks.joinToString(" "))
   }
 
