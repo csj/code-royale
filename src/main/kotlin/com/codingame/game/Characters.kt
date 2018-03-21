@@ -29,63 +29,70 @@ var <T : Entity<*>?> Entity<T>.location: Vector2
   }
 
 abstract class MyEntity {
-  open var location = Vector2.Zero
-  open var radius = 0
-
+  abstract var location: Vector2
+  abstract var radius: Int
   abstract val mass: Int   // 0 := immovable
 }
 
 abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
   abstract fun damage(damageAmount: Int)
+
+  protected val tokenCircle = theEntityManager.createCircle()
+    .setLineColor(0xffffff)
+    .setFillColor(owner.colorToken)
+    .setFillAlpha(1.0)
+    .setZIndex(40)!!   // TODO: set to some kind of increasing ID
+
+  protected val characterSprite = theEntityManager.createSprite()
+    .setZIndex(41)
+    .setAnchor(0.5)!!
+
+  override var location: Vector2 = Vector2.Zero
+    set(value) {
+      if (value == Vector2.Zero) return
+      field = value
+
+      tokenCircle.location = value
+      characterSprite.location = value
+    }
+
+  abstract val maxHealth:Int
+  open var health:Int = 0
+    set(value) {
+      field = value
+      if (value < 0) field = 0
+      tokenCircle.fillAlpha = when {
+        health <= 0 -> 0.0
+        else -> 0.8 * health / maxHealth + 0.2
+      }
+      theTooltipModule.updateExtraTooltipText(tokenCircle, "Health: $health")
+    }
+
+  fun commitState(time: Double) {
+    theEntityManager.commitEntityState(time, tokenCircle, characterSprite)
+  }
 }
 
 class Queen(owner: Player) : MyOwnedEntity(owner) {
   override val mass = QUEEN_MASS
   override var radius = QUEEN_RADIUS
-
-  private val queenOutline = theEntityManager.createCircle()
-    .setRadius(QUEEN_RADIUS)
-    .setLineColor(owner.colorToken)
-    .setLineWidth(2)!!
-    .setFillAlpha(0.0)
-
-  private val queenSprite = theEntityManager.createSprite()
-    .setImage("queen.png")
-    .setZIndex(40)
-    .setAnchor(0.5)!!
-
-  private val queenFillSprite = theEntityManager.createSprite()
-    .setImage("queen-fill.png")
-    .setTint(owner.colorToken)
-    .setAnchor(0.5)
-    .setZIndex(30)!!
-
-  fun setHealth(health: Int) {
-    when {
-      health <= 0 -> queenFillSprite.alpha = 0.0
-      else -> queenFillSprite.alpha = 0.8 * health / QUEEN_HP + 0.2
-    }
-    theTooltipModule.updateExtraTooltipText(queenSprite, "Health: $health")
-  }
+  override val maxHealth = QUEEN_HP
 
   init {
-    theTooltipModule.registerEntity(queenSprite, mapOf("id" to queenSprite.id, "type" to "Queen"))
+    characterSprite.image = "queen.png"
+    theTooltipModule.registerEntity(tokenCircle, mapOf("id" to tokenCircle.id, "type" to "Queen"))
+    tokenCircle.radius = radius
+    tokenCircle.lineWidth = 2
+    characterSprite.baseWidth = radius*2
+    characterSprite.baseHeight = radius*2
   }
 
   fun moveTowards(target: Vector2) {
     location = location.towards(target, QUEEN_SPEED.toDouble())
   }
 
-  override var location: Vector2
-    get() = super.location
-    set(value) {
-      super.location = value
-      queenSprite.location = location
-      queenFillSprite.location = location
-      queenOutline.location = location
-    }
-
   override fun damage(damageAmount: Int) {
+    if (damageAmount <= 0) return
     owner.health -= damageAmount
   }
 }
@@ -98,45 +105,10 @@ abstract class Creep(
   protected val speed: Int = creepType.speed
   val attackRange: Int = creepType.range
   override val mass: Int = creepType.mass
-
-  var health: Int = creepType.hp
-    set(value) {
-      field = value
-
-      if (field <= 0) {
-        field = 0
-        sprite.alpha = 0.0
-        fillSprite.alpha = 0.0
-      } else {
-        fillSprite.alpha = health.toDouble() / maxHealth * 0.8 + 0.2
-      }
-    }
-
-  private val maxHealth = health
-
-  protected val sprite = theEntityManager.createSprite()
-    .setImage(creepType.assetName)
-    .setAnchor(0.5)
-    .setZIndex(40)!!
-
-  protected val fillSprite = theEntityManager.createSprite()
-    .setImage(creepType.fillAssetName)
-    .setTint(owner.colorToken)
-    .setAnchor(0.5)
-    .setZIndex(30)!!
-
-  override var location: Vector2 = Vector2.Zero
-    set(value) {
-      field = value
-      if (value == Vector2.Zero) return
-
-      sprite.location = value
-      fillSprite.location = value
-    }
+  override val maxHealth = creepType.hp
+  final override var radius = creepType.radius
 
   open fun finalizeFrame() { }
-
-  override var radius = creepType.radius
 
   override fun damage(damageAmount: Int) {
     if (damageAmount <= 0) return   // no accidental healing!
@@ -145,18 +117,31 @@ abstract class Creep(
     if (health <= 0) {
       owner.activeCreeps.remove(this)
     }
-    theTooltipModule.updateExtraTooltipText(sprite, "Health: $health")
   }
 
   abstract fun dealDamage()
   abstract fun move(frames: Double)
 
-  fun commitState(time: Double) {
-    theEntityManager.commitEntityState(time, sprite, fillSprite)
-  }
+  final override var health: Int
+    get() { return super.health }
+    set(value) {
+      super.health = value
+      if (super.health == 0) {
+        characterSprite.alpha = 0.0
+        tokenCircle.alpha = 0.0
+      }
+    }
 
   init {
-    theTooltipModule.registerEntity(sprite, mapOf("id" to sprite.id, "type" to creepType.toString()))
+    health = creepType.hp
+
+    tokenCircle.radius = radius
+    tokenCircle.lineWidth = 1
+    characterSprite.image = creepType.assetName
+    characterSprite.baseWidth = radius*2
+    characterSprite.baseHeight = radius*2
+
+    theTooltipModule.registerEntity(tokenCircle, mapOf("id" to tokenCircle.id, "type" to creepType.toString()))
   }
 }
 
@@ -197,8 +182,7 @@ class QueenChasingCreep(owner: Player, creepType: CreepType)
         last.distanceTo(location) > 30 -> location - last
         else -> owner.enemyPlayer.queenUnit.location - location
       }
-      sprite.rotation = Math.atan2(movementVector.y, movementVector.x)
-      fillSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+      characterSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
     }
 
     lastLocation = location
@@ -245,8 +229,7 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
         last.distanceTo(location) > 30 -> location - last
         else -> target.location - location
       }
-      sprite.rotation = Math.atan2(movementVector.y, movementVector.x)
-      fillSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+      characterSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
     }
 
     lastLocation = location

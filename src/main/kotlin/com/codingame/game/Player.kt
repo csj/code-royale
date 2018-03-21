@@ -45,7 +45,7 @@ class Player : AbstractPlayer() {
   var resourcesPerTurn = 0
 
   fun checkQueenHealth() {
-    queenUnit.setHealth(health)
+    queenUnit.health = health
     if (health == 0) deactivate("Dead queen")
     hud.update()
   }

@@ -29,10 +29,9 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
       outline.radius = value
     }
 
-  override var location: Vector2
-    get() = super.location
+  override var location: Vector2 = initialLocation
     set(value) {
-      super.location = value
+      field = value
       outline.location = location
     }
 
