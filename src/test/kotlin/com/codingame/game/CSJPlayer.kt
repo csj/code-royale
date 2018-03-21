@@ -47,7 +47,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         }
 
         val queenTarget = obstacles
-          .filter { it.owner == -1 }
+          .filter { it.owner == -1 || (it.owner == 1 && it.structureType != 1) }
           .filter { target -> !obstacles.any {
             it.owner == 1 && it.structureType == 1 &&
               it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < -30 }}
