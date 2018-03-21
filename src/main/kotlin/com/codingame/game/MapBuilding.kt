@@ -36,6 +36,7 @@ fun buildMap(theRandom: Random): List<Obstacle> {
 
   val mapCenter = Vector2(viewportX.length / 2, viewportY.length / 2)
   obstacles.forEach {
+    it.location = it.location.snapToIntegers()
     if (it.location.distanceTo(mapCenter) < Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_1) { it.maxMineralRate++; it.minerals += Constants.OBSTACLE_MINERAL_INCREASE }
     if (it.location.distanceTo(mapCenter) < Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_2) { it.maxMineralRate++; it.minerals += Constants.OBSTACLE_MINERAL_INCREASE }
     it.updateEntities()

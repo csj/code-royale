@@ -286,6 +286,9 @@ class Referee : AbstractReferee() {
     // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }
     if (gameManager.activePlayers.size < 2) gameManager.endGame()
+
+    // Snap entities to integer coordinates
+    allEntities().forEach { it.location = it.location.snapToIntegers() }
   }
 }
 

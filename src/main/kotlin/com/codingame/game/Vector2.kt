@@ -2,6 +2,7 @@ package com.codingame.game
 
 import java.lang.IllegalArgumentException
 import java.util.*
+import kotlin.math.roundToInt
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // It's a utility, ok
 data class Vector2(val x: Double, val y: Double) {
@@ -42,6 +43,7 @@ data class Vector2(val x: Double, val y: Double) {
     return Vector2(nx, ny)
   }
   override fun toString(): String = "(${Math.round(x)}, ${Math.round(y)})"
+  fun snapToIntegers(): Vector2 = Vector2(x.roundToInt(), y.roundToInt())
 
   companion object {
     val Zero = Vector2(0, 0)
