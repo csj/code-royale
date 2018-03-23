@@ -3,16 +3,18 @@ import com.codingame.game.BasePlayer
 import com.codingame.game.Constants.QUEEN_RADIUS
 import java.io.InputStream
 import java.io.PrintStream
+import java.util.*
 
 class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
   var turn = 0
+  val theRandom = Random()
 
   init {
 
     while (true) {
       turn++
 
-      val (queenLoc, _, resources, _, _, obstacles, _, enemyCreeps) = readInputs()
+      val (queenLoc, _, resources, enemyQueenLoc, _, obstacles, _, enemyCreeps) = readInputs()
 
       // strategy:
       // build mines
@@ -51,7 +53,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           .filter { target -> !obstacles.any {
             it.owner == 1 && it.structureType == 1 &&
               it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < -30 }}
-          .minBy { it.location.distanceTo(queenLoc) - it.radius }
+          .minBy { it.location.distanceTo(enemyQueenLoc + Vector2.random(theRandom, 40, 40)) - it.radius }
 
         if (queenTarget == null) {
           // bear toward closest friendly tower

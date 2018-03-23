@@ -88,6 +88,10 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
   override fun damage(damageAmount: Int) {
     owner.health -= damageAmount
   }
+
+  fun commitState(time: Double) {
+    theEntityManager.commitEntityState(time, queenSprite, queenFillSprite, queenOutline)
+  }
 }
 
 abstract class Creep(

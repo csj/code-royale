@@ -6,6 +6,7 @@ import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
+import com.codingame.game.Constants.TOWER_PROPEL_BOTH_BUILDERS
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
@@ -209,10 +210,10 @@ class Referee : AbstractReferee() {
                 val strucType = toks.next()
 
                 val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
-                if (dist > TOUCHING_DELTA) {
-                  queen.moveTowards(obs.location)
-                } else {
+                if (dist < TOUCHING_DELTA) {
                   scheduleBuilding(player, obs, strucType)
+                } else {
+                  queen.moveTowards(obs.location)
                 }
               }
               else -> throw PlayerInputException("Didn't understand command: $command")
@@ -230,9 +231,15 @@ class Referee : AbstractReferee() {
         }
       }
 
-      // If they're both building onto the same one, then actually build neither
-      if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1])
+      // If they're both building onto the same one, then actually build neither, and propel both queens away
+      if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1]) {
         scheduledBuildings.clear()
+        gameManager.players.forEach {
+          it.queenUnit.location += (it.queenUnit.location - obstaclesAttemptedToBuildUpon[0].location).resizedTo(TOWER_PROPEL_BOTH_BUILDERS.toDouble())
+          fixCollisions(allEntities())
+          it.queenUnit.commitState(0.4)
+        }
+      }
 
       // Execute builds that remain
       scheduledBuildings.forEach { (player: Player, callback: () -> Unit) ->
@@ -250,14 +257,14 @@ class Referee : AbstractReferee() {
       allCreeps.forEach { it.damage(1) }
       repeat(5) {
         allCreeps.forEach { it.move(1.0 / 5) }
-        fixCollisions(allEntities(), dontLoop = true)
+        fixCollisions(allEntities(), 1)
       }
       allCreeps.forEach { it.dealDamage() }
 
       // Tear down enemy mines
       allCreeps.forEach { creep ->
         val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
-        if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius > TOUCHING_DELTA) return@forEach
+        if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius >= TOUCHING_DELTA) return@forEach
         val struc = closestObstacle.structure
         if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
       }
@@ -268,7 +275,7 @@ class Referee : AbstractReferee() {
       gameManager.activePlayers.forEach {
         val queen = it.queenUnit
         val closestObstacle = obstacles.minBy { it.location.distanceTo(queen.location) }!!
-        if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius > TOUCHING_DELTA) return@forEach
+        if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius >= TOUCHING_DELTA) return@forEach
         val struc = closestObstacle.structure
         if ((struc is Mine || struc is Barracks) && struc.owner != queen.owner) closestObstacle.structure = null
       }
