@@ -36,7 +36,8 @@ fun buildMap(theRandom: Random): List<Obstacle> {
     return obstacles
   }
 
-  val obstacles = generateSequence(Unit){Unit}.mapNotNull { buildObstacles() }.first()
+  var obstacles: List<Obstacle>?
+  do { obstacles = buildObstacles();  } while (obstacles == null)
 
   val mapCenter = Vector2(viewportX.length / 2, viewportY.length / 2)
   obstacles.forEach {
@@ -57,14 +58,16 @@ fun fixCollisions(entities: List<MyEntity>, maxIterations: Int = 999) {
  * @return false if everything is ok; true if there was a correction
  */
 fun collisionCheck(entities: List<MyEntity>, acceptableGap: Double = 0.0): Boolean {
-  return entities.any { u1 ->
+  return entities.flatMap { u1 ->
     val rad = u1.radius.toDouble()
     val clampDist = if (u1.mass == 0) Constants.OBSTACLE_GAP + rad else rad
     u1.location = u1.location.clampWithin(clampDist, WORLD_WIDTH - clampDist, clampDist, WORLD_HEIGHT - clampDist)
 
-    (entities-u1).any { u2 ->
+    (entities-u1).map { u2 ->
       val overlap = u1.radius + u2.radius + acceptableGap - u1.location.distanceTo(u2.location)
-      if (overlap <= 1e-6) false
+      if (overlap <= 1e-6) {
+        false
+      }
       else {
         val (d1, d2) = when {
           u1.mass == 0 && u2.mass == 0 -> Pair(0.5, 0.5)
@@ -76,13 +79,10 @@ fun collisionCheck(entities: List<MyEntity>, acceptableGap: Double = 0.0): Boole
         val u1tou2 = u2.location - u1.location
         val gap = if (u1.mass == 0 && u2.mass == 0) 20.0 else 1.0
 
-        System.err.println("Correction:")
-        System.err.println("${u1.location} ${u2.location}")
         u1.location -= u1tou2.resizedTo(d1 * overlap + if (u1.mass == 0 && u2.mass > 0) 0.0 else gap)
         u2.location += u1tou2.resizedTo(d2 * overlap + if (u2.mass == 0 && u1.mass > 0) 0.0 else gap)
-        System.err.println("${u1.location} ${u2.location}")
         true
       }
     }
-  }
+  }.any { it }
 }
