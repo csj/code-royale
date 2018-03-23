@@ -53,7 +53,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           .filter { target -> !obstacles.any {
             it.owner == 1 && it.structureType == 1 &&
               it.location.distanceTo(target.location) - it.attackRadiusOrCreepType - target.radius < -30 }}
-          .minBy { it.location.distanceTo(enemyQueenLoc + Vector2.random(theRandom, 40, 40)) - it.radius }
+          .minBy { it.location.distanceTo(queenLoc) - it.radius }
 
         if (queenTarget == null) {
           // bear toward closest friendly tower
