@@ -146,9 +146,6 @@ abstract class Creep(
     if (damageAmount <= 0) return   // no accidental healing!
 
     health -= damageAmount
-    if (health <= 0) {
-      owner.activeCreeps.remove(this)
-    }
     theTooltipModule.updateExtraTooltipText(sprite, "Health: $health")
   }
 

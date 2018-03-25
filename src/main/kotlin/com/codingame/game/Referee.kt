@@ -6,7 +6,6 @@ import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
-import com.codingame.game.Constants.TOWER_PROPEL_BOTH_BUILDERS
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
@@ -162,7 +161,7 @@ class Referee : AbstractReferee() {
               barracks.progress = 0
               barracks.isTraining = true
               barracks.onComplete = {
-                repeat(barracks.creepType.count) {
+                repeat(barracks.creepType.count) { iter ->
                   player.activeCreeps += when (barracks.creepType) {
                     CreepType.MELEE ->
                       QueenChasingCreep(barracks.owner, barracks.creepType)
@@ -171,9 +170,9 @@ class Referee : AbstractReferee() {
                     CreepType.GIANT ->
                       TowerBustingCreep(barracks.owner, barracks.creepType, obstacles)
                   }.also {
-                    it.location = barracks.obstacle.location
+                    it.location = barracks.obstacle.location + Vector2(iter, iter)
                     it.finalizeFrame()
-                    it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 30.0)
+                    it.location = it.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 30.0)
                     it.finalizeFrame()
                     it.commitState(0.0)
                   }
@@ -234,11 +233,6 @@ class Referee : AbstractReferee() {
       // If they're both building onto the same one, then actually build neither, and propel both queens away
       if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1]) {
         scheduledBuildings.clear()
-        gameManager.players.forEach {
-          it.queenUnit.location += (it.queenUnit.location - obstaclesAttemptedToBuildUpon[0].location).resizedTo(TOWER_PROPEL_BOTH_BUILDERS.toDouble())
-          fixCollisions(allEntities())
-          it.queenUnit.commitState(0.4)
-        }
       }
 
       // Execute builds that remain
@@ -253,8 +247,7 @@ class Referee : AbstractReferee() {
     }
 
     fun processCreeps() {
-      val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
-      allCreeps.forEach { it.damage(1) }
+      val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.sortedBy { it.creepType }.toList()
       repeat(5) {
         allCreeps.forEach { it.move(1.0 / 5) }
         fixCollisions(allEntities(), 1)
@@ -269,6 +262,7 @@ class Referee : AbstractReferee() {
         if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
       }
 
+      allCreeps.forEach { it.damage(1) }
       allCreeps.forEach { it.finalizeFrame() }
 
       // Queens tear down enemy structures (not TOWERs)
@@ -289,6 +283,9 @@ class Referee : AbstractReferee() {
 
     // Process structures
     obstacles.forEach { it.act() }
+
+    // Remove dead creeps
+    gameManager.activePlayers.forEach { it.activeCreeps.removeIf { it.health == 0 } }
 
     // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }

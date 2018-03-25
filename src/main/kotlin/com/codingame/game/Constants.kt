@@ -10,7 +10,6 @@ object Constants {
   val TOWER_QUEEN_DAMAGE = 1
   val TOWER_MELT_RATE = 4
   val TOWER_COVERAGE_PER_HP = 1000
-  val TOWER_PROPEL_BOTH_BUILDERS = 120
 
   val GIANT_BUST_RATE = 80
 
