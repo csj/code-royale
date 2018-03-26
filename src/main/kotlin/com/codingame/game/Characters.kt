@@ -37,10 +37,9 @@ abstract class MyEntity {
 abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
   abstract fun damage(damageAmount: Int)
 
-  protected val tokenCircle = theEntityManager.createCircle()
-    .setLineColor(0xffffff)
-    .setFillColor(owner.colorToken)
-    .setFillAlpha(1.0)
+  protected val tokenCircle = theEntityManager.createSprite()
+    .setImage(if (owner.isSecondPlayer) "assets/Unite_Base_Bleu.png" else "assets/Unite_Base_Rouge.png")
+    .setAnchor(0.5)
     .setZIndex(40)!!   // TODO: set to some kind of increasing ID
 
   protected val characterSprite = theEntityManager.createSprite()
@@ -61,7 +60,7 @@ abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
     set(value) {
       field = value
       if (value < 0) field = 0
-      tokenCircle.fillAlpha = when {
+      tokenCircle.alpha = when {
         health <= 0 -> 0.0
         else -> 0.8 * health / maxHealth + 0.2
       }
@@ -79,10 +78,10 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
   override val maxHealth = QUEEN_HP
 
   init {
-    characterSprite.image = "queen.png"
+    characterSprite.image = "Unite_Reine.png"
     theTooltipModule.registerEntity(tokenCircle, mapOf("id" to tokenCircle.id, "type" to "Queen"))
-    tokenCircle.radius = radius
-    tokenCircle.lineWidth = 2
+    tokenCircle.baseWidth = radius*2
+    tokenCircle.baseHeight = radius*2
     characterSprite.baseWidth = radius*2
     characterSprite.baseHeight = radius*2
   }
@@ -96,9 +95,6 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
     owner.health -= damageAmount
   }
 
-  fun commitState(time: Double) {
-    theEntityManager.commitEntityState(time, queenSprite, queenFillSprite, queenOutline)
-  }
 }
 
 abstract class Creep(
@@ -118,7 +114,7 @@ abstract class Creep(
     if (damageAmount <= 0) return   // no accidental healing!
 
     health -= damageAmount
-    theTooltipModule.updateExtraTooltipText(sprite, "Health: $health")
+    theTooltipModule.updateExtraTooltipText(tokenCircle, "Health: $health")
   }
 
   abstract fun dealDamage()
@@ -137,8 +133,8 @@ abstract class Creep(
   init {
     health = creepType.hp
 
-    tokenCircle.radius = radius
-    tokenCircle.lineWidth = 1
+    tokenCircle.baseWidth = radius*2
+    tokenCircle.baseHeight = radius*2
     characterSprite.image = creepType.assetName
     characterSprite.baseWidth = radius*2
     characterSprite.baseHeight = radius*2
@@ -147,7 +143,7 @@ abstract class Creep(
   }
 }
 
-class TowerBustingCreep(
+class GiantCreep(
   owner: Player,
   creepType: CreepType,
   private val obstacles: List<Obstacle>
@@ -168,20 +164,29 @@ class TowerBustingCreep(
         struc is Tower
           && struc.owner == owner.enemyPlayer
           && it.location.distanceTo(location) - radius - it.radius < 5
-      }?.let { (it.structure as Tower).health -= GIANT_BUST_RATE }
+      }?.also {
+        (it.structure as Tower).health -= GIANT_BUST_RATE
+        val creepToTower = it.location - location
+        characterSprite.location = tokenCircle.location + creepToTower.resizedTo(radius.toDouble())
+        theEntityManager.commitEntityState(0.2, characterSprite)
+        characterSprite.location = tokenCircle.location
+        theEntityManager.commitEntityState(1.0, characterSprite)
+      }
   }
 }
 
-class QueenChasingCreep(owner: Player, creepType: CreepType)
+class MeleeCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType) {
 
   private var lastLocation: Vector2? = null
+  private var attacksThisTurn: Boolean = false
+
   override fun finalizeFrame() {
     val last = lastLocation
 
     if (last != null) {
       val movementVector = when {
-        last.distanceTo(location) > 30 -> location - last
+        last.distanceTo(location) > 30 && !attacksThisTurn -> location - last
         else -> owner.enemyPlayer.queenUnit.location - location
       }
       characterSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
@@ -198,15 +203,22 @@ class QueenChasingCreep(owner: Player, creepType: CreepType)
   }
 
   override fun dealDamage() {
+    attacksThisTurn = false
     val enemyQueen = owner.enemyPlayer.queenUnit
     if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 5) {
+      attacksThisTurn = true
+      characterSprite.setAnchorX(0.5, Curve.IMMEDIATE)
+      theEntityManager.commitEntityState(0.4, characterSprite)
+      characterSprite.anchorX = 0.2
+      theEntityManager.commitEntityState(0.7, characterSprite)
+      characterSprite.anchorX = 0.5
+      theEntityManager.commitEntityState(1.0, characterSprite)
       owner.enemyPlayer.health -= 1
     }
   }
 }
 
-//targets the closest enemy creep
-class AutoAttackCreep(owner: Player, creepType: CreepType)
+class RangedCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType){
 
   private var lastLocation: Vector2? = null
@@ -238,10 +250,15 @@ class AutoAttackCreep(owner: Player, creepType: CreepType)
 
     val localAttackTarget = attackTarget
     if (localAttackTarget != null) {
+      characterSprite.anchorX = 0.8
+      theEntityManager.commitEntityState(0.3, characterSprite)
+      characterSprite.anchorX = 0.5
+      theEntityManager.commitEntityState(0.4, characterSprite)
+
       projectile.isVisible = true
       projectile.setX(location.x.toInt() + viewportX.first, Curve.NONE)
       projectile.setY(location.y.toInt() + viewportY.first, Curve.NONE)
-      theEntityManager.commitEntityState(0.0, projectile)
+      theEntityManager.commitEntityState(0.4, projectile)
       projectile.setX(localAttackTarget.location.x.toInt() + viewportX.first, Curve.EASE_IN_AND_OUT)
       projectile.setY(localAttackTarget.location.y.toInt() + viewportY.first, Curve.EASE_IN_AND_OUT)
       theEntityManager.commitEntityState(0.99, projectile)
