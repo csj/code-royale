@@ -95,6 +95,10 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
     if (damageAmount <= 0) return
     owner.health -= damageAmount
   }
+
+  fun commitState(time: Double) {
+    theEntityManager.commitEntityState(time, queenSprite, queenFillSprite, queenOutline)
+  }
 }
 
 abstract class Creep(
@@ -114,9 +118,7 @@ abstract class Creep(
     if (damageAmount <= 0) return   // no accidental healing!
 
     health -= damageAmount
-    if (health <= 0) {
-      owner.activeCreeps.remove(this)
-    }
+    theTooltipModule.updateExtraTooltipText(sprite, "Health: $health")
   }
 
   abstract fun dealDamage()

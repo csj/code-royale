@@ -161,7 +161,7 @@ class Referee : AbstractReferee() {
               barracks.progress = 0
               barracks.isTraining = true
               barracks.onComplete = {
-                repeat(barracks.creepType.count) {
+                repeat(barracks.creepType.count) { iter ->
                   player.activeCreeps += when (barracks.creepType) {
                     CreepType.MELEE ->
                       QueenChasingCreep(barracks.owner, barracks.creepType)
@@ -170,9 +170,9 @@ class Referee : AbstractReferee() {
                     CreepType.GIANT ->
                       TowerBustingCreep(barracks.owner, barracks.creepType, obstacles)
                   }.also {
-                    it.location = barracks.obstacle.location
+                    it.location = barracks.obstacle.location + Vector2(iter, iter)
                     it.finalizeFrame()
-                    it.location = barracks.obstacle.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 30.0)
+                    it.location = it.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 30.0)
                     it.finalizeFrame()
                     it.commitState(0.0)
                   }
@@ -209,10 +209,10 @@ class Referee : AbstractReferee() {
                 val strucType = toks.next()
 
                 val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
-                if (dist > TOUCHING_DELTA) {
-                  queen.moveTowards(obs.location)
-                } else {
+                if (dist < TOUCHING_DELTA) {
                   scheduleBuilding(player, obs, strucType)
+                } else {
+                  queen.moveTowards(obs.location)
                 }
               }
               else -> throw PlayerInputException("Didn't understand command: $command")
@@ -230,9 +230,10 @@ class Referee : AbstractReferee() {
         }
       }
 
-      // If they're both building onto the same one, then actually build neither
-      if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1])
+      // If they're both building onto the same one, then actually build neither, and propel both queens away
+      if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1]) {
         scheduledBuildings.clear()
+      }
 
       // Execute builds that remain
       scheduledBuildings.forEach { (player: Player, callback: () -> Unit) ->
@@ -246,29 +247,29 @@ class Referee : AbstractReferee() {
     }
 
     fun processCreeps() {
-      val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.toList()
-      allCreeps.forEach { it.damage(1) }
+      val allCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.sortedBy { it.creepType }.toList()
       repeat(5) {
         allCreeps.forEach { it.move(1.0 / 5) }
-        fixCollisions(allEntities(), dontLoop = true)
+        fixCollisions(allEntities(), 1)
       }
       allCreeps.forEach { it.dealDamage() }
 
       // Tear down enemy mines
       allCreeps.forEach { creep ->
         val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
-        if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius > TOUCHING_DELTA) return@forEach
+        if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius >= TOUCHING_DELTA) return@forEach
         val struc = closestObstacle.structure
         if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
       }
 
+      allCreeps.forEach { it.damage(1) }
       allCreeps.forEach { it.finalizeFrame() }
 
       // Queens tear down enemy structures (not TOWERs)
       gameManager.activePlayers.forEach {
         val queen = it.queenUnit
         val closestObstacle = obstacles.minBy { it.location.distanceTo(queen.location) }!!
-        if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius > TOUCHING_DELTA) return@forEach
+        if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius >= TOUCHING_DELTA) return@forEach
         val struc = closestObstacle.structure
         if ((struc is Mine || struc is Barracks) && struc.owner != queen.owner) closestObstacle.structure = null
       }
@@ -282,6 +283,9 @@ class Referee : AbstractReferee() {
 
     // Process structures
     obstacles.forEach { it.act() }
+
+    // Remove dead creeps
+    gameManager.activePlayers.forEach { it.activeCreeps.removeIf { it.health == 0 } }
 
     // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }
