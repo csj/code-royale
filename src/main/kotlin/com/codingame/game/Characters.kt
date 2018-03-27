@@ -38,7 +38,7 @@ abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
   abstract fun damage(damageAmount: Int)
 
   protected val tokenCircle = theEntityManager.createSprite()
-    .setImage(if (owner.isSecondPlayer) "assets/Unite_Base_Bleu.png" else "assets/Unite_Base_Rouge.png")
+    .setImage(if (owner.isSecondPlayer) "Unite_Base_Bleu.png" else "Unite_Base_Rouge.png")
     .setAnchor(0.5)
     .setZIndex(40)!!   // TODO: set to some kind of increasing ID
 

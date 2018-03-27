@@ -7,6 +7,7 @@ import kotlin.math.roundToInt
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // It's a utility, ok
 data class Vector2(val x: Double, val y: Double) {
   private val lengthSquared by lazy { x*x + y*y }
+  fun isLengthWithin(compareDist: Double) = lengthSquared < compareDist*compareDist
   val length by lazy { Math.sqrt(lengthSquared) }
   val isNearZero by lazy { Math.abs(x) < 1e-12 && Math.abs(y) < 1e-12 }
   val normalized: Vector2 by lazy {
