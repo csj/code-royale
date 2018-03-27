@@ -4,11 +4,18 @@ import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import java.util.*
 
-var background = theEntityManager.createSprite()
+val background = theEntityManager.createSprite()
   .setImage("Background.jpg")
   .setBaseWidth(Constants.WORLD_WIDTH).setBaseHeight(Constants.WORLD_HEIGHT)
   .setX(viewportX.first).setY(viewportY.first)
   .setZIndex(0)
+
+val hudBackground = theEntityManager.createSprite()
+  .setImage("Hud.png")
+  .setBaseWidth(1920)
+  .setX(0).setY(1080)
+  .setAnchorY(1.0)
+  .setZIndex(4000)
 
 fun buildMap(theRandom: Random): List<Obstacle> {
   fun IntRange.sample(): Int = theRandom.nextInt(last-first+1) + first

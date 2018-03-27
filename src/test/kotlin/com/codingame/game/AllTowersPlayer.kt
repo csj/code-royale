@@ -15,13 +15,13 @@ class AllTowersPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStre
           .filter { it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrCooldown < 400 }
           .firstOrNull { it.location.distanceTo(queenLoc) - it.radius - QUEEN_RADIUS < 5 }
 
-        if (growingTower != null) return "BUILD TOWER"
+        if (growingTower != null) return "BUILD ${growingTower.obstacleId} TOWER"
 
         val queenTarget = obstacles
           .filter { it.owner == -1 }
           .minBy { it.location.distanceTo(queenLoc) - it.radius } ?: return "WAIT"
 
-        return "BUILDONOBSTACLE ${queenTarget.obstacleId} TOWER"
+        return "BUILD ${queenTarget.obstacleId} TOWER"
       }
 
       stdout.println(getQueenAction())

@@ -18,7 +18,7 @@ lateinit var theTooltipModule: TooltipModule
 lateinit var theGameManager: GameManager<Player>
 
 val viewportX = 0..1920
-val viewportY = 180..1080
+val viewportY = 0..1000
 
 var <T : Entity<*>?> Entity<T>.location: Vector2
   get() = Vector2(x - viewportX.first, y - viewportY.first)
@@ -44,6 +44,7 @@ abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
 
   protected val characterSprite = theEntityManager.createSprite()
     .setZIndex(41)
+    .setScale(1.2)
     .setAnchor(0.5)!!
 
   override var location: Vector2 = Vector2.Zero

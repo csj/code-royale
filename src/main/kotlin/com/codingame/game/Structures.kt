@@ -173,8 +173,8 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
   )
 
   private val towerRangeCircle = theEntityManager.createCircle()
-    .setFillAlpha(0.2)
-    .setLineWidth(0)
+    .setFillAlpha(0.0)
+    .setLineWidth(10)
     .setZIndex(10)
     .also { it.location = obstacle.location }
     .setRadius(obstacle.radius)
@@ -212,7 +212,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
   override fun updateEntities()
   {
     towerRangeCircle.isVisible = true
-    towerRangeCircle.fillColor = owner.colorToken
+    towerRangeCircle.lineColor = owner.colorToken
     sprite.isVisible = true
     fillSprite.isVisible = true
     fillSprite.tint = owner.colorToken

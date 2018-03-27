@@ -101,7 +101,7 @@ function getMouseMoveFunc(tooltip, container, module) {
   };
 }
 
-var hudHeight = 180;
+var hudHeight = 0;
 
 export class TooltipModule {
   constructor(assets) {
