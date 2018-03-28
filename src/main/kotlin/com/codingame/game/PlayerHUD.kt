@@ -33,6 +33,14 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setFontFamily("Arial Black")
     .setZIndex(4003)
 
+  private val healthText = theEntityManager.createText(player.health.toString())!!
+    .setX(healthBarFill.x + healthBarFill.width - 10).setY(healthBarFill.y + healthBarFill.height/2)
+    .setAnchorX(1.0).setAnchorY(0.5)
+    .setScale(1.3)
+    .setFontFamily("Arial Black")
+    .setFillColor(0xffffff)
+    .setZIndex(4003)
+
   private val moneyText = theEntityManager.createText("0")
     .setY(bottom - 15).setAnchorY(1.0)
     .setX(if (isSecondPlayer) 1020 else 700)
@@ -52,6 +60,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
 
   fun update() {
     healthBarFill.width = healthBarWidth * player.health / Constants.QUEEN_HP
+    healthText.text = player.health.toString()
     moneyText.text = player.resources.toString()
     moneyIncText.text = when (player.resourcesPerTurn) {
       0 -> ""
