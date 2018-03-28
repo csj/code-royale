@@ -193,11 +193,6 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     .also { theEntityManager.commitEntityState(0.0, it) }
 
   private val sprite = theEntityManager.createSpriteAnimation()
-//    .setImages(
-//      "Tour Bleu/Tour_Bleu0001.png",
-//      "Tour Bleu/Tour_Bleu0004.png",
-//      "Tour Bleu/Tour_Bleu0007.png"
-//    )
     .setImages(*{
       val color = if (owner.isSecondPlayer) "Bleu" else "Rouge"
       (1..15).map {
@@ -224,6 +219,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     towerRangeCircle.radius = obstacle.radius
     towerRangeCircle.isVisible = false
     sprite.isVisible = false
+    theEntityManager.commitEntityState(0.0, towerRangeCircle, sprite)
   }
 
   override fun updateEntities()
@@ -299,19 +295,11 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     return retVal
   }
 
-  private val progressOutline = theEntityManager.createRectangle()
-    .also { it.location = obstacle.location + Vector2(-40,20) }
-    .setHeight(25)
-    .setWidth(80)
-    .setLineColor(0xFFFFFF)
-    .setLineWidth(1)
-    .setFillAlpha(0.0)
-    .setZIndex(401)
-
+  private val progressFillMaxWidth =(obstacle.radius * 1.0).toInt()
   private val progressFill = theEntityManager.createRectangle()
-    .also { it.location = obstacle.location + Vector2(-40,20) }
-    .setHeight(25)
-    .setWidth(80)
+    .also { it.location = obstacle.location + Vector2(-0.5, 0.7) * obstacle.radius.toDouble() }
+    .setHeight(8)
+    .setWidth(progressFillMaxWidth)
     .setLineAlpha(0.0)
     .setFillColor(owner.colorToken)
     .setZIndex(400)
@@ -322,42 +310,44 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
 
   var onComplete: () -> Unit = { }
 
-  private val creepSprite = theEntityManager.createSprite()
+  private val barracksImage = theEntityManager.createSprite()
     .setAnchor(0.5)
+    .setImage(if (owner.isSecondPlayer) "Caserne_Bleu.png" else "Caserne_Rouge.png")
     .setZIndex(40)
     .also { it.location = obstacle.location }
-    .setScale(2.0)!!
-//
-//  private val creepFillSprite = theEntityManager.createSprite()
-//    .setTint(owner.colorToken)
-//    .setAnchor(0.5)
-//    .setZIndex(30)
-//    .also { it.location = obstacle.location }
-//    .setTint(owner.colorToken)
-//    .setScale(2.0)!!
+    .setBaseHeight(obstacle.radius * 2).setBaseWidth(obstacle.radius * 2)
+
+  private val creepToken = theEntityManager.createSprite()
+    .setAnchor(0.5)
+    .setImage(if (owner.isSecondPlayer) "Unite_Base_Bleu.png" else "Unite_Base_Rouge.png")
+    .setZIndex(41)
+    .also { it.location = obstacle.location + Vector2(-0.1, -0.45) * obstacle.radius.toDouble() }
+    .setBaseHeight((barracksImage.baseHeight * 0.32).toInt()).setBaseWidth((barracksImage.baseWidth * 0.32).toInt())
+
+  private val creepSprite = theEntityManager.createSprite()
+    .setAnchor(0.5)
+    .setZIndex(42)
+    .also { it.location = creepToken.location }
+    .setBaseHeight(creepToken.baseHeight).setBaseWidth(creepToken.baseWidth)
 
   override fun updateEntities() {
+    barracksImage.isVisible = true
+    creepToken.isVisible = true
     creepSprite.isVisible = true
     creepSprite.image = creepType.assetName
-//    creepFillSprite.isVisible = true
-//    creepFillSprite.image = creepType.fillAssetName
-//    theEntityManager.commitEntityState(0.0, creepSprite, creepFillSprite)
+    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite)
 
-//    creepFillSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
-    creepSprite.location = obstacle.location + Vector2(0, if (isTraining) -20 else 0)
-//    theEntityManager.commitEntityState(0.3, creepSprite, creepFillSprite)
-
-    progressOutline.isVisible = isTraining
     progressFill.isVisible = isTraining
-    theEntityManager.commitEntityState(0.0, progressFill, progressOutline)
-    progressFill.width = (80 * progress / (progressMax-1))
-    theEntityManager.commitEntityState(1.0, progressFill, progressOutline)
+    theEntityManager.commitEntityState(0.0, progressFill)
+    progressFill.width = (progressFillMaxWidth * progress / (progressMax-1))
+    theEntityManager.commitEntityState(1.0, progressFill)
   }
 
   override fun hideEntities() {
-    //creepFillSprite.isVisible = false
+    barracksImage.isVisible = false
+    creepToken.isVisible = false
     creepSprite.isVisible = false
-    progressOutline.isVisible = false
+    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite)
     progressFill.isVisible = false
   }
 
