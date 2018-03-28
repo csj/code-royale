@@ -16,6 +16,10 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setBaseHeight(140)
     .setZIndex(4003)!!
 
+  init {
+//    avatar.setMask(theEntityManager.createCircle().setRadius(70).setX( if (isSecondPlayer) 1920-70 else 70).setY(bottom - 70))
+  }
+
   private val healthBarFill = theEntityManager.createRectangle()!!
     .setLineAlpha(0.0)
     .setY(top + 40)

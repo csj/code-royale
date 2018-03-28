@@ -1,11 +1,12 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.CREEP_DAMAGE
 import com.codingame.game.Constants.GIANT_BUST_RATE
+import com.codingame.game.Constants.MELEE_DAMAGE
 import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.game.Constants.QUEEN_MASS
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.QUEEN_SPEED
+import com.codingame.game.Constants.RANGED_DAMAGE
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.Curve
@@ -214,7 +215,7 @@ class MeleeCreep(owner: Player, creepType: CreepType)
       theEntityManager.commitEntityState(0.7, characterSprite)
       characterSprite.anchorX = 0.5
       theEntityManager.commitEntityState(1.0, characterSprite)
-      owner.enemyPlayer.health -= 1
+      owner.enemyPlayer.health -= MELEE_DAMAGE
     }
   }
 }
@@ -279,7 +280,7 @@ class RangedCreep(owner: Player, creepType: CreepType)
     attackTarget = null
     val target = findTarget() ?: return
     if (location.distanceTo(target.location) < radius + target.radius + attackRange + TOUCHING_DELTA) {
-      target.damage(CREEP_DAMAGE)
+      target.damage(RANGED_DAMAGE)
       attackTarget = target
     }
   }

@@ -22,7 +22,8 @@ object Constants {
   val OBSTACLE_MINERAL_INCREASE_DISTANCE_2 = 200
   val OBSTACLE_PAIRS = 12
 
-  val CREEP_DAMAGE = 1
+  val MELEE_DAMAGE = 1
+  val RANGED_DAMAGE = 2
 
   val QUEEN_RADIUS = 30
   val QUEEN_MASS = 10000

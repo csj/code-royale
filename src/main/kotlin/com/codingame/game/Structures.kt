@@ -55,11 +55,11 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
   fun updateEntities() {
     structure?.updateEntities()
     val struc = structure
-    if (struc != null) {
-      theTooltipModule.updateExtraTooltipText(outline, *struc.extraTooltipLines().toTypedArray())
-    } else {
-      theTooltipModule.updateExtraTooltipText(outline, "Radius: $radius", "Remaining resources: $minerals")
-    }
+    val lines = listOf(
+      "Radius: $radius",
+      "Remaining resources: $minerals"
+    ) + (struc?.extraTooltipLines() ?: listOf())
+    theTooltipModule.updateExtraTooltipText(outline, *lines.toTypedArray())
   }
 
   fun destroy() {
@@ -96,8 +96,7 @@ interface Structure {
 class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRate: Int) : Structure {
 
   override fun extraTooltipLines(): List<String> = listOf(
-    "MINE (+$incomeRate)",
-    "Remaining resources: ${obstacle.minerals}"
+    "MINE (+$incomeRate)"
   )
 
   private val mineImage = theEntityManager.createSprite()
@@ -186,6 +185,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
 
   private val towerRangeCircle = theEntityManager.createCircle()
     .setFillAlpha(0.0)
+    .setAlpha(0.2)
     .setLineWidth(10)
     .setZIndex(10)
     .also { it.location = obstacle.location }
@@ -225,7 +225,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
   override fun updateEntities()
   {
     towerRangeCircle.isVisible = true
-    towerRangeCircle.lineColor = owner.colorToken
+    towerRangeCircle.lineColor = if (owner.isSecondPlayer) 0x8844ff else 0xff4444
     sprite.isVisible = true
     theEntityManager.commitEntityState(0.0, towerRangeCircle, sprite)
     towerRangeCircle.radius = attackRadius

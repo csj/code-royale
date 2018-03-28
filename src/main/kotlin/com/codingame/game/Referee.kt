@@ -141,9 +141,11 @@ class Referee : AbstractReferee() {
         val queen = player.queenUnit
         try {
           try {
+            val toks = player.outputs[1].split(" ")
+            if (toks[0] != "TRAIN") throw PlayerInputException("Expected TRAIN on the second line")
 
             // Process building creeps
-            val buildingBarracks = player.outputs[1].split(" ").drop(1)
+            val buildingBarracks = toks.drop(1)
               .map { obsIdStr -> obsIdStr.toIntOrNull() ?: throw PlayerInputException("Couldn't process obstacleId: $obsIdStr") }
               .map { obsId -> obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("No obstacle with id = $obsId") }
               .map { obs ->
@@ -152,6 +154,9 @@ class Referee : AbstractReferee() {
                 if (struc.isTraining) throw PlayerInputWarning("Barracks ${obs.obstacleId} is training")
                 struc
               }
+
+            if (buildingBarracks.size > buildingBarracks.toSet().size)
+              throw PlayerInputWarning("Training from some barracks more than once")
 
             val sum = buildingBarracks.sumBy { it.creepType.cost }
             if (sum > player.resources) throw PlayerInputWarning("Training too many creeps ($sum total resources requested)")

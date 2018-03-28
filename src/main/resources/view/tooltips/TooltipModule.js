@@ -75,7 +75,7 @@ function getMouseMoveFunc(tooltip, container, module) {
           }
           const extra = extras[frames[index]];
           if (extra) {
-            tooltip.label.text += "\n" + extra;
+            tooltip.label.text += "\n" + extra.join("\n")
           }
         }
       } else {
