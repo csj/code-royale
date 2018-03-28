@@ -77,7 +77,7 @@ fun collisionCheck(entities: List<MyEntity>, acceptableGap: Double = 0.0): Boole
     u1.location = u1.location.clampWithin(clampDist, WORLD_WIDTH - clampDist, clampDist, WORLD_HEIGHT - clampDist)
 
     (entities-u1).map { u2 ->
-      val overlap = u1.radius + u2.radius + acceptableGap - u1.location.distanceTo(u2.location)
+      val overlap = u1.radius + u2.radius + acceptableGap - u1.location.distanceTo(u2.location).toDouble  // TODO: Fix this?
       if (overlap <= 1e-6) {
         false
       }
@@ -97,5 +97,5 @@ fun collisionCheck(entities: List<MyEntity>, acceptableGap: Double = 0.0): Boole
         true
       }
     }
-  }.any { it }
+  }.toList().any { it }
 }

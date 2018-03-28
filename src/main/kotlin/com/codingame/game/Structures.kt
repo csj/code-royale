@@ -239,7 +239,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     val enemyQueen = owner.enemyPlayer.queenUnit
 
     attackTarget = if (closestEnemy != null && closestEnemy.location.distanceTo(obstacle.location) < attackRadius) {
-      val shotDistance = closestEnemy.location.distanceTo(obstacle.location) - obstacle.radius  // should be maximum right at the foot
+      val shotDistance = closestEnemy.location.distanceTo(obstacle.location).toDouble - obstacle.radius  // should be maximum right at the foot
       closestEnemy.also { it.damage(TOWER_CREEP_DAMAGE_MAX - (shotDistance / TOWER_CREEP_DAMAGE_DROP_DISTANCE).toInt()) }
     } else if (enemyQueen.location.distanceTo(obstacle.location) < attackRadius) {
       enemyQueen.also { it.damage(TOWER_QUEEN_DAMAGE) }

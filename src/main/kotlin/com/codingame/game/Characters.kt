@@ -164,7 +164,7 @@ class GiantCreep(
         val struc = it.structure
         struc is Tower
           && struc.owner == owner.enemyPlayer
-          && it.location.distanceTo(location) - radius - it.radius < 5
+          && it.location.distanceTo(location) < radius + it.radius + TOUCHING_DELTA
       }?.also {
         (it.structure as Tower).health -= GIANT_BUST_RATE
         val creepToTower = it.location - location
@@ -199,14 +199,14 @@ class MeleeCreep(owner: Player, creepType: CreepType)
   override fun move(frames: Double)  {
     val enemyQueen = owner.enemyPlayer.queenUnit
     // move toward enemy queen, if not yet in range
-    if (location.distanceTo(enemyQueen.location) - radius - enemyQueen.radius > attackRange)
+    if (location.distanceTo(enemyQueen.location) > radius + enemyQueen.radius + attackRange)
       location = location.towards((enemyQueen.location + (location - enemyQueen.location).resizedTo(3.0)), speed.toDouble() * frames)
   }
 
   override fun dealDamage() {
     attacksThisTurn = false
     val enemyQueen = owner.enemyPlayer.queenUnit
-    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + 5) {
+    if (location.distanceTo(enemyQueen.location) < radius + enemyQueen.radius + attackRange + TOUCHING_DELTA) {
       attacksThisTurn = true
       characterSprite.setAnchorX(0.5, Curve.IMMEDIATE)
       theEntityManager.commitEntityState(0.4, characterSprite)
@@ -271,7 +271,7 @@ class RangedCreep(owner: Player, creepType: CreepType)
   override fun move(frames: Double) {
     val target = findTarget() ?: owner.queenUnit
     // move toward target, if not yet in range
-    if (location.distanceTo(target.location) - radius - target.radius > attackRange)
+    if (location.distanceTo(target.location) > radius + target.radius + attackRange)
       location = location.towards((target.location + (location - target.location).resizedTo(3.0)), speed.toDouble() * frames)
   }
 

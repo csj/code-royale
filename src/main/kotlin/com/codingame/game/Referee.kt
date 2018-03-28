@@ -208,8 +208,8 @@ class Referee : AbstractReferee() {
                 val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
                 val strucType = toks.next()
 
-                val dist = obs.location.distanceTo(queen.location) - queen.radius - obs.radius
-                if (dist < TOUCHING_DELTA) {
+                val dist = obs.location.distanceTo(queen.location)
+                if (dist < queen.radius + obs.radius + TOUCHING_DELTA) {
                   scheduleBuilding(player, obs, strucType)
                 } else {
                   queen.moveTowards(obs.location)
@@ -257,7 +257,7 @@ class Referee : AbstractReferee() {
       // Tear down enemy mines
       allCreeps.forEach { creep ->
         val closestObstacle = obstacles.minBy { it.location.distanceTo(creep.location) }!!
-        if (closestObstacle.location.distanceTo(creep.location) - closestObstacle.radius - creep.radius >= TOUCHING_DELTA) return@forEach
+        if (closestObstacle.location.distanceTo(creep.location) >= closestObstacle.radius + creep.radius + TOUCHING_DELTA) return@forEach
         val struc = closestObstacle.structure
         if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
       }
@@ -269,7 +269,7 @@ class Referee : AbstractReferee() {
       gameManager.activePlayers.forEach {
         val queen = it.queenUnit
         val closestObstacle = obstacles.minBy { it.location.distanceTo(queen.location) }!!
-        if (closestObstacle.location.distanceTo(queen.location) - closestObstacle.radius - queen.radius >= TOUCHING_DELTA) return@forEach
+        if (closestObstacle.location.distanceTo(queen.location) >= closestObstacle.radius + queen.radius + TOUCHING_DELTA) return@forEach
         val struc = closestObstacle.structure
         if ((struc is Mine || struc is Barracks) && struc.owner != queen.owner) closestObstacle.structure = null
       }

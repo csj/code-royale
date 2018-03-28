@@ -3,18 +3,25 @@ package com.codingame.game
 import java.lang.IllegalArgumentException
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
+
+data class Distance(private val squareDistance: Double): Comparable<Distance> {
+  override fun compareTo(other: Distance) = squareDistance.compareTo(other.squareDistance)
+  operator fun compareTo(compareDist: Double) = squareDistance.compareTo(compareDist * compareDist)
+  operator fun compareTo(compareDist: Int) = squareDistance.compareTo(compareDist * compareDist)
+  val toDouble by lazy { sqrt(squareDistance) }
+}
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // It's a utility, ok
 data class Vector2(val x: Double, val y: Double) {
   private val lengthSquared by lazy { x*x + y*y }
-  fun isLengthWithin(compareDist: Double) = lengthSquared < compareDist*compareDist
-  val length by lazy { Math.sqrt(lengthSquared) }
+  val length by lazy { Distance(lengthSquared) }
   val isNearZero by lazy { Math.abs(x) < 1e-12 && Math.abs(y) < 1e-12 }
   val normalized: Vector2 by lazy {
     val len = length
-    when(len) {
-      0.0 -> Vector2(1,0)
-      else -> Vector2(x / len, y / len)
+    when {
+      len < 1e-6 -> Vector2(1,0)
+      else -> Vector2(x / len.toDouble, y / len.toDouble)
     }
   }
   constructor(x: Int, y: Int): this(x.toDouble(), y.toDouble())
