@@ -20,7 +20,8 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
   private val outline: Circle = theEntityManager.createCircle()
     .setLineWidth(3)
     .setLineColor(0xbbbbbb)
-    .setFillColor(0x222222)
+    .setFillAlpha(0.0)
+//    .setFillColor(0x222222)
     .setZIndex(20)
 
   override var radius: Int = 0
@@ -180,18 +181,37 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     .setRadius(obstacle.radius)
     .also { theEntityManager.commitEntityState(0.0, it) }
 
-  private val sprite = theEntityManager.createSprite()
-    .setImage("tower.png")
+  private val sprite = theEntityManager.createSpriteAnimation()
+//    .setImages(
+//      "Tour Bleu/Tour_Bleu0001.png",
+//      "Tour Bleu/Tour_Bleu0004.png",
+//      "Tour Bleu/Tour_Bleu0007.png"
+//    )
+    .setImages(*{
+      val color = if (owner.isSecondPlayer) "Bleu" else "Rouge"
+      (1..15).map {
+        "Tour $color/Tour_$color${it.toString().padStart(4, '0')}.png"
+      }
+    }().toTypedArray())
     .setZIndex(40)
     .also { it.location = obstacle.location }
-    .setAnchor(0.5)!!
+    .setAnchorX(0.5).setAnchorY(1 - (220.0 / 238.0 * 0.5))
+    .setStarted(true)
+    .setLoop(true)
+    .setScale(obstacle.radius * 2 / 220.0)
 
-  private val fillSprite = theEntityManager.createSprite()!!
-    .setImage("tower-fill.png")
-    .setZIndex(30)
-    .also { it.location = obstacle.location }
-    .setAnchor(0.5)
+//  private val sprite = theEntityManager.createSprite()
+//    .setImage("tower.png")
+//    .setZIndex(40)
+//    .also { it.location = obstacle.location }
+//    .setAnchor(0.5)!!
 
+//  private val fillSprite = theEntityManager.createSprite()!!
+//    .setImage("tower-fill.png")
+//    .setZIndex(30)
+//    .also { it.location = obstacle.location }
+//    .setAnchor(0.5)
+//
   private val projectile = theEntityManager.createCircle()!!
     .setZIndex(30)
     .setRadius(8)
@@ -206,7 +226,6 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     towerRangeCircle.radius = obstacle.radius
     towerRangeCircle.isVisible = false
     sprite.isVisible = false
-    fillSprite.isVisible = false
   }
 
   override fun updateEntities()
@@ -214,9 +233,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     towerRangeCircle.isVisible = true
     towerRangeCircle.lineColor = owner.colorToken
     sprite.isVisible = true
-    fillSprite.isVisible = true
-    fillSprite.tint = owner.colorToken
-    theEntityManager.commitEntityState(0.0, towerRangeCircle, sprite, fillSprite)
+    theEntityManager.commitEntityState(0.0, towerRangeCircle, sprite)
     towerRangeCircle.radius = attackRadius
     theEntityManager.commitEntityState(1.0, towerRangeCircle)
 
