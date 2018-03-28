@@ -17,17 +17,15 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
   override val mass = 0
   var minerals by nonNegative(initialAmount)
 
-  private val outline: Circle = theEntityManager.createCircle()
-    .setLineWidth(3)
-    .setLineColor(0xbbbbbb)
-    .setFillAlpha(0.0)
-//    .setFillColor(0x222222)
+  private val outline = theEntityManager.createSprite()
+    .setImage("LC_1.png")
     .setZIndex(20)
+    .setAnchor(0.5)
 
   override var radius: Int = 0
     set(value) {
       field = value
-      outline.radius = value
+      outline.setScale(value * 2 / 220.0)
     }
 
   override var location: Vector2 = initialLocation
@@ -50,6 +48,8 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
       structure?.hideEntities()
       field = value
       value?.updateEntities()
+      outline.alpha = if (value == null) 1.0 else 0.0
+      theEntityManager.commitEntityState(0.0, outline)
     }
 
   fun updateEntities() {
