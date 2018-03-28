@@ -100,29 +100,38 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     "Remaining resources: ${obstacle.minerals}"
   )
 
-  private val text = theEntityManager.createText("+$incomeRate")
-    .setFillColor(owner.colorToken)!!
-    .setZIndex(401)
-    .also { it.location = obstacle.location + Vector2(-7,0) }
+  private val mineImage = theEntityManager.createSprite()
+    .setImage("Mine.png")
+    .setZIndex(40)
+    .setAnchor(0.5)
+    .also { it.location = obstacle.location }
+    .setScale(obstacle.radius * 2 / 220.0)
 
   private val pickaxeSprite = theEntityManager.createSprite()
-    .setImage("pickaxe.png")
-    .setZIndex(40)
-    .also { it.location = obstacle.location + Vector2(-20, 15) }
+    .setImage(if (owner.isSecondPlayer) "Mine_Bleu.png" else "Mine_Rouge.png")
+    .setZIndex(41)
+    .also { it.location = obstacle.location + Vector2(0, -40) }
     .setAnchor(0.5)!!
 
+  private val text = theEntityManager.createText("+$incomeRate")
+    .setFillColor(0xffffff)!!
+    .setZIndex(42)
+    .setFontFamily("Arial Black")
+    .setAnchorY(0.5)
+    .also { it.location = obstacle.location + Vector2(0,-40) }
+
   private val mineralBarOutline = theEntityManager.createRectangle()
-    .also { it.location = obstacle.location + Vector2(-40, -30) }
-    .setHeight(25)
+    .also { it.location = obstacle.location + Vector2(-40, -90) }
+    .setHeight(15)
     .setWidth(80)
-    .setLineColor(0xFFFFFF)
+    .setLineColor(0)
     .setLineWidth(1)
     .setFillAlpha(0.0)
     .setZIndex(401)!!
 
   private val mineralBarFill = theEntityManager.createRectangle()
-    .also { it.location = obstacle.location + Vector2(-40, -30) }
-    .setHeight(25)
+    .also { it.location = obstacle.location + Vector2(-40, -90) }
+    .setHeight(15)
     .setWidth(80)
     .setFillColor(0xffbf00)
     .setLineAlpha(0.0)!!
@@ -137,18 +146,20 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
   override fun hideEntities() {
     text.isVisible = false
     pickaxeSprite.isVisible = false
+    mineImage.isVisible = false
     mineralBarOutline.isVisible = false
     mineralBarFill.isVisible = false
-    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineralBarOutline, mineralBarFill)
+    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineImage, mineralBarOutline, mineralBarFill)
   }
 
   override fun updateEntities() {
     text.isVisible = true
     pickaxeSprite.isVisible = true
+    mineImage.isVisible = true
     mineralBarOutline.isVisible = true
     mineralBarFill.isVisible = true
     mineralBarFill.width = 80 * obstacle.minerals / (OBSTACLE_MINERAL_RANGE.last + 2 * OBSTACLE_MINERAL_INCREASE)
-    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineralBarOutline, mineralBarFill)
+    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineImage, mineralBarOutline, mineralBarFill)
   }
 
   override fun act(): Boolean {
