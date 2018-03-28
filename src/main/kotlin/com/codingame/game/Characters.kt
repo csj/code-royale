@@ -190,7 +190,7 @@ class MeleeCreep(owner: Player, creepType: CreepType)
         last.distanceTo(location) > 30 && !attacksThisTurn -> location - last
         else -> owner.enemyPlayer.queenUnit.location - location
       }
-      characterSprite.rotation = Math.atan2(movementVector.y, movementVector.x)
+      characterSprite.rotation = movementVector.angle
     }
 
     lastLocation = location

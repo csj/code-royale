@@ -200,25 +200,12 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     .setLoop(true)
     .setScale(obstacle.radius * 2 / 220.0)
 
-//  private val sprite = theEntityManager.createSprite()
-//    .setImage("tower.png")
-//    .setZIndex(40)
-//    .also { it.location = obstacle.location }
-//    .setAnchor(0.5)!!
-
-//  private val fillSprite = theEntityManager.createSprite()!!
-//    .setImage("tower-fill.png")
-//    .setZIndex(30)
-//    .also { it.location = obstacle.location }
-//    .setAnchor(0.5)
-//
-  private val projectile = theEntityManager.createCircle()!!
-    .setZIndex(30)
-    .setRadius(8)
-    .setFillColor(owner.colorToken)
-    .setLineColor(0xffffff)
-    .setLineWidth(3)
+  private val projectile = theEntityManager.createSprite()!!
+    .setImage(if (owner.isSecondPlayer) "Eclair_Bleu.png" else "Eclair_Rouge.png")
+    .setZIndex(50)
     .setVisible(false)
+    .setAnchorX(0.5)
+    .setAnchorY(0.5)
 
   var attackTarget: MyEntity? = null
 
@@ -240,14 +227,28 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     val localAttackTarget = attackTarget
     if (localAttackTarget != null) {
       projectile.isVisible = true
-      projectile.setX(obstacle.location.x.toInt() + viewportX.first, Curve.NONE)
-      projectile.setY(obstacle.location.y.toInt() + viewportY.first, Curve.NONE)
+      val projectileSource = obstacle.location - Vector2(0.0, obstacle.radius * 0.6)
+      val obsToTarget = localAttackTarget.location - projectileSource
+      projectile.location = (projectileSource + localAttackTarget.location) / 2.0
+      projectile.scaleX = obsToTarget.length.toDouble / 200.0
+      projectile.scaleY = 1.0
+      projectile.setRotation (obsToTarget.angle, Curve.IMMEDIATE)
       theEntityManager.commitEntityState(0.0, projectile)
-      projectile.setX(localAttackTarget.location.x.toInt() + viewportX.first, Curve.EASE_IN_AND_OUT)
-      projectile.setY(localAttackTarget.location.y.toInt() + viewportY.first, Curve.EASE_IN_AND_OUT)
+      projectile.setRotation ((-obsToTarget).angle, Curve.IMMEDIATE)
+      projectile.scaleY = 2.0
+      theEntityManager.commitEntityState(0.2, projectile)
+      projectile.setRotation (obsToTarget.angle, Curve.IMMEDIATE)
+      theEntityManager.commitEntityState(0.4, projectile)
+      projectile.setRotation ((-obsToTarget).angle, Curve.IMMEDIATE)
+      projectile.scaleY = 1.0
+      theEntityManager.commitEntityState(0.6, projectile)
+      projectile.setRotation (obsToTarget.angle, Curve.IMMEDIATE)
+      theEntityManager.commitEntityState(0.8, projectile)
+      projectile.setRotation ((-obsToTarget).angle, Curve.IMMEDIATE)
       theEntityManager.commitEntityState(0.99, projectile)
       projectile.isVisible = false
       theEntityManager.commitEntityState(1.0, projectile)
+
     }
   }
 

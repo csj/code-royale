@@ -24,6 +24,8 @@ data class Vector2(val x: Double, val y: Double) {
       else -> Vector2(x / len.toDouble, y / len.toDouble)
     }
   }
+  val angle by lazy { Math.atan2(y, x) }
+
   constructor(x: Int, y: Int): this(x.toDouble(), y.toDouble())
 
   operator fun minus(other: Vector2) = Vector2(x - other.x, y - other.y)
@@ -33,6 +35,7 @@ data class Vector2(val x: Double, val y: Double) {
     0.0 -> throw IllegalArgumentException("Division by zero")
     else -> Vector2(x / other, y / other)
   }
+  operator fun unaryMinus() = Vector2(-x, -y)
   fun resizedTo(newLength: Double) = normalized * newLength
   fun distanceTo(other: Vector2) = (this - other).length
   fun dot(other: Vector2) = x * other.x + y * other.y
