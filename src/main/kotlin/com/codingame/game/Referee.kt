@@ -228,7 +228,6 @@ class Referee : AbstractReferee() {
         } catch (e: AbstractPlayer.TimeoutException) {
           e.printStackTrace()
           player.kill("Timeout!")
-          gameManager.addToGameSummary("Player ${if (player.isSecondPlayer) 2 else 1} timed out. Setting score to ${player.score}. Opponent's score is: ${player.enemyPlayer.score}")
         } catch (e: PlayerInputException) {
           System.err.println("WARNING: Terminating ${player.nicknameToken}, because of:")
           e.printStackTrace()
@@ -296,7 +295,6 @@ class Referee : AbstractReferee() {
     // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }
     if (gameManager.activePlayers.size < 2) {
-      gameManager.addToGameSummary("Final scores: ${gameManager.players[0].score} - ${gameManager.players[1].score}")
       gameManager.endGame()
     }
 
