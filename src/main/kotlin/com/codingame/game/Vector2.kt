@@ -2,8 +2,7 @@ package com.codingame.game
 
 import java.lang.IllegalArgumentException
 import java.util.*
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
+import kotlin.math.*
 
 data class Distance(private val squareDistance: Double): Comparable<Distance> {
   override fun compareTo(other: Distance) = squareDistance.compareTo(other.squareDistance)
@@ -59,5 +58,10 @@ data class Vector2(val x: Double, val y: Double) {
   companion object {
     val Zero = Vector2(0, 0)
     fun random(theRandom: Random, maxX: Int, maxY: Int) = Vector2(theRandom.nextInt(maxX), theRandom.nextInt(maxY))
+    fun randomCircle(theRandom: Random, maxRadius: Int): Vector2 {
+      val ang = theRandom.nextDouble() * PI * 2
+      val radius = theRandom.nextDouble() * maxRadius
+      return Vector2(cos(ang) * radius, sin(ang) * radius)
+    }
   }
 }
