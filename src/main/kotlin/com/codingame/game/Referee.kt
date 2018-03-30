@@ -235,9 +235,9 @@ class Referee : AbstractReferee() {
         }
       }
 
-      // If they're both building onto the same one, then actually build neither, and propel both queens away
+      // If they're both building onto the same one, then actually build only one: depending on parity of the turn number
       if (obstaclesAttemptedToBuildUpon.size == 2 && obstaclesAttemptedToBuildUpon[0] == obstaclesAttemptedToBuildUpon[1]) {
-        scheduledBuildings.clear()
+        scheduledBuildings.removeAt(turn % 2)
       }
 
       // Execute builds that remain
