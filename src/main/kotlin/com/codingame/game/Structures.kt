@@ -347,8 +347,8 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     barracksImage.isVisible = false
     creepToken.isVisible = false
     creepSprite.isVisible = false
-    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite)
     progressFill.isVisible = false
+    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite, progressFill)
   }
 
   override fun act(): Boolean {
