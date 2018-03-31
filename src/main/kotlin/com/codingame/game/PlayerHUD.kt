@@ -6,7 +6,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
   private val top = viewportY.last
   private val bottom = 1080
 
-  private val healthBarWidth = 406
+  private val healthBarWidth = 420
 
   private val avatar = theEntityManager.createSprite()
     .setImage(player.avatarToken)
@@ -17,17 +17,30 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4003)!!
 
   init {
-//    avatar.setMask(theEntityManager.createCircle().setRadius(70).setX( if (isSecondPlayer) 1920-70 else 70).setY(bottom - 70))
+    val maskCircle = theEntityManager.createCircle()
+      .setRadius(64)
+      .setX( if (isSecondPlayer) 1920-69 else 69)
+      .setY(bottom - 68)
+
+    avatar.setMask(maskCircle)
   }
 
-  private val healthBarFill = theEntityManager.createRectangle()!!
+  private val healthBarFillMask = theEntityManager.createRectangle()!!
     .setLineAlpha(0.0)
-    .setY(top + 40)
-    .setX(if (isSecondPlayer) 1920 - 150 - healthBarWidth else 150)
+    .setY(top + 39)
+    .setX(if (isSecondPlayer) 1920 - 139 - healthBarWidth else 143)
     .setWidth(healthBarWidth).setHeight(28)
     .setFillColor(player.colorToken)
+    .setFillAlpha(0.0)
     .setLineWidth(0)
     .setZIndex(4002)
+
+  private val healthBarFill = theEntityManager.createSprite()
+    .setImage(if (isSecondPlayer) "Life-Bleu.png" else "Life-Rouge.png")
+    .setX(if (isSecondPlayer) 1920 - 139 - healthBarWidth else 143)
+    .setY(top + 39)
+    .setZIndex(4002)
+    .setMask(healthBarFillMask)
 
   private val playerName = theEntityManager.createText(player.nicknameToken)!!
     .setY(bottom - 45).setAnchorY(1.0)
@@ -38,7 +51,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4003)
 
   private val healthText = theEntityManager.createText(player.health.toString())!!
-    .setX(healthBarFill.x + healthBarFill.width - 10).setY(healthBarFill.y + healthBarFill.height/2)
+    .setX(healthBarFillMask.x + healthBarFillMask.width - 10).setY(healthBarFillMask.y + healthBarFillMask.height/2)
     .setAnchorX(1.0).setAnchorY(0.5)
     .setScale(1.3)
     .setFontFamily("Arial Black")
@@ -63,7 +76,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4002)!!
 
   fun update() {
-    healthBarFill.width = healthBarWidth * player.health / Constants.QUEEN_HP
+    healthBarFillMask.width = healthBarWidth * player.health / Constants.QUEEN_HP
     healthText.text = player.health.toString()
     moneyText.text = player.resources.toString()
     moneyIncText.text = when (player.resourcesPerTurn) {

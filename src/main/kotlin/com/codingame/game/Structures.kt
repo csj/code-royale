@@ -7,7 +7,6 @@ import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_DROP_DISTANCE
 import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_MAX
 import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE
-import com.codingame.gameengine.module.entities.Circle
 import com.codingame.gameengine.module.entities.Curve
 import kotlin.math.min
 
@@ -295,14 +294,22 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     return retVal
   }
 
-  private val progressFillMaxWidth =(obstacle.radius * 1.0).toInt()
-  private val progressFill = theEntityManager.createRectangle()
-    .also { it.location = obstacle.location + Vector2(-0.5, 0.7) * obstacle.radius.toDouble() }
+  private val progressFillMaxWidth =(obstacle.radius * 1.05).toInt()
+
+  private val progressFillMask = theEntityManager.createRectangle()
+    .also { it.location = obstacle.location + Vector2(-0.51, 0.72) * obstacle.radius.toDouble() }
     .setHeight(8)
     .setWidth(progressFillMaxWidth)
-    .setLineAlpha(0.0)
-    .setFillColor(owner.colorToken)
+//    .setLineAlpha(0.0)
+//    .setFillColor(owner.colorToken)
+//    .setZIndex(400)
+
+  private val progressFill = theEntityManager.createSprite()
+    .setImage(if (owner.isSecondPlayer) "Life-Bleu.png" else "Life-Rouge.png")
+    .setBaseHeight(8).setBaseWidth(progressFillMaxWidth)
+    .also { it.location = obstacle.location + Vector2(-0.51, 0.72) * obstacle.radius.toDouble() }
     .setZIndex(400)
+    .setMask(progressFillMask)
 
   var progressMax = creepType.buildTime
   var progress = 0
@@ -338,9 +345,9 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite)
 
     progressFill.isVisible = isTraining
-    theEntityManager.commitEntityState(0.0, progressFill)
-    progressFill.width = (progressFillMaxWidth * progress / (progressMax-1))
-    theEntityManager.commitEntityState(1.0, progressFill)
+    theEntityManager.commitEntityState(0.0, progressFill, progressFillMask)
+    progressFillMask.width = (progressFillMaxWidth * progress / (progressMax-1))
+    theEntityManager.commitEntityState(1.0, progressFillMask)
   }
 
   override fun hideEntities() {
@@ -348,7 +355,7 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     creepToken.isVisible = false
     creepSprite.isVisible = false
     progressFill.isVisible = false
-    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite, progressFill)
+    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite, progressFill, progressFillMask)
   }
 
   override fun act(): Boolean {
