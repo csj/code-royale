@@ -5,8 +5,8 @@ import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
 import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_DROP_DISTANCE
 import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_MAX
+import com.codingame.game.Constants.TOWER_HP_PER_QUEEN_DAMAGE
 import com.codingame.game.Constants.TOWER_MELT_RATE
-import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE
 import com.codingame.gameengine.module.entities.Curve
 import kotlin.math.min
 
@@ -266,7 +266,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
       val shotDistance = closestEnemy.location.distanceTo(obstacle.location).toDouble - obstacle.radius  // should be maximum right at the foot
       closestEnemy.also { it.damage(TOWER_CREEP_DAMAGE_MAX - (shotDistance / TOWER_CREEP_DAMAGE_DROP_DISTANCE).toInt()) }
     } else if (enemyQueen.location.distanceTo(obstacle.location) < attackRadius) {
-      enemyQueen.also { it.damage(TOWER_QUEEN_DAMAGE) }
+      enemyQueen.also { it.damage(health / TOWER_HP_PER_QUEEN_DAMAGE + 1 ) }
     } else {
       null
     }
