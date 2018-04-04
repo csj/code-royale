@@ -107,20 +107,29 @@ class Referee : AbstractReferee() {
           if (!toks.hasNext()) throw PlayerInputException("Structure type must be specified")
           val firstToken = toks.next()
           when (firstToken) {
-            "MINE" ->
+            "MINE" -> {
+              // removed for Wood 2
+              /*
               if (struc is Mine) {
                 struc.incomeRate++
                 if (struc.incomeRate > obs.maxMineralRate) struc.incomeRate = obs.maxMineralRate
               } else {
                 obs.setMine(player)
               }
+              */
+              throw PlayerInputException("MINE invalid in wood 3")
+            }
             "TOWER" -> {
+              // removed for Wood 2
+              /*
               if (struc is Tower) {
                 struc.health += TOWER_HP_INCREMENT
                 if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
               } else {
                 obs.setTower(player, TOWER_HP_INITIAL)
               }
+              */
+              throw PlayerInputException("TOWER invalid in wood 2")
             }
             "BARRACKS" -> {
               if (!toks.hasNext()) throw PlayerInputException("BARRACKS type must be specified")
@@ -129,6 +138,9 @@ class Referee : AbstractReferee() {
                 CreepType.valueOf(creepInputType)
               } catch (e:Exception) {
                 throw PlayerInputException("Invalid BARRACKS type: $creepInputType")
+              }
+              if (creepType == CreepType.GIANT){
+                throw PlayerInputException("BARRACKS GIANT invalid in wood 2")
               }
               obs.setBarracks(player, creepType)
             }
@@ -280,7 +292,7 @@ class Referee : AbstractReferee() {
       }
     }
 
-    gameManager.activePlayers.forEach { it.resourcesPerTurn = 0 }
+    gameManager.activePlayers.forEach { it.resourcesPerTurn = Constants.WOOD_RESOURCE_RATE }
 
     sendGameStates()
     processPlayerActions()
@@ -288,6 +300,9 @@ class Referee : AbstractReferee() {
 
     // Process structures
     obstacles.forEach { it.act() }
+
+    // Process flat income - WOOD 2, 1
+    gameManager.activePlayers.forEach{ it.resources += Constants.WOOD_RESOURCE_RATE }
 
     // Remove dead creeps
     gameManager.activePlayers.forEach { it.activeCreeps.removeIf { it.health == 0 } }

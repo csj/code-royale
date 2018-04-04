@@ -2,6 +2,7 @@ package com.codingame.game
 
 object Constants {
   val STARTING_RESOURCES = 100
+  val WOOD_RESOURCE_RATE = 20
 
   val QUEEN_SPEED = 60
   val TOWER_HP_INITIAL = 200
@@ -36,6 +37,7 @@ object Constants {
   val WORLD_HEIGHT = viewportY.last - viewportY.first
 
   val TOUCHING_DELTA = 5
+
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
