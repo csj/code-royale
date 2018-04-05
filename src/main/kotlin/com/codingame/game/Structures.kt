@@ -21,7 +21,7 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
   override val mass = 0
   var minerals by nonNegative(initialAmount)
 
-  private val outline = theEntityManager.createSprite()
+  private val obstacleImage = theEntityManager.createSprite()
     .setImage("LC_${rando.nextInt(10) + 1}.png")
     .setZIndex(20)
     .setAnchor(0.5)
@@ -29,20 +29,20 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
   override var radius: Int = 0
     set(value) {
       field = value
-      outline.setScale(value * 2 / 220.0)
+      obstacleImage.setScale(value * 2 / 220.0)
     }
 
   override var location: Vector2 = initialLocation
     set(value) {
       field = value
-      outline.location = location
+      obstacleImage.location = location
     }
 
   init {
     radius = initialRadius
     location = initialLocation
     val params = hashMapOf("id" to obstacleId, "type" to "Obstacle")
-    theTooltipModule.registerEntity(outline, params as Map<String, Any>?)
+    theTooltipModule.registerEntity(obstacleImage, params as Map<String, Any>?)
   }
 
   val area = Math.PI * radius * radius
@@ -52,8 +52,14 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
       structure?.hideEntities()
       field = value
       value?.updateEntities()
-      outline.alpha = if (value == null) 1.0 else 0.0
-      theEntityManager.commitEntityState(0.0, outline)
+      if (value == null) {
+        obstacleImage.alpha = 1.0
+      } else {
+        obstacleImage.alpha = 0.0
+        obstacleImage.image = "LieuDetruit.png"
+      }
+      obstacleImage.alpha = if (value == null) 1.0 else 0.0
+      theEntityManager.commitEntityState(0.0, obstacleImage)
     }
 
   fun updateEntities() {
@@ -63,11 +69,11 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
       "Radius: $radius",
       "Remaining resources: $minerals"
     ) + (struc?.extraTooltipLines() ?: listOf())
-    theTooltipModule.updateExtraTooltipText(outline, *lines.toTypedArray())
+    theTooltipModule.updateExtraTooltipText(obstacleImage, *lines.toTypedArray())
   }
 
   fun destroy() {
-    outline.isVisible = false
+    obstacleImage.isVisible = false
   }
 
   fun act() {
