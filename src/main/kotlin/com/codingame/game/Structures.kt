@@ -3,12 +3,14 @@ package com.codingame.game
 import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE
 import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
-import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_DROP_DISTANCE
-import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_MAX
-import com.codingame.game.Constants.TOWER_HP_PER_QUEEN_DAMAGE
+import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_CLIMB_DISTANCE
+import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_MIN
 import com.codingame.game.Constants.TOWER_MELT_RATE
+import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE
+import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_MIN
 import com.codingame.gameengine.module.entities.Curve
 import kotlin.math.min
+import kotlin.math.sqrt
 
 var nextObstacleId = 0
 class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, initialLocation: Vector2): MyEntity() {
@@ -258,21 +260,32 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     }
   }
 
+  private fun damageCreep(target: Creep) {
+    val shotDistance = target.location.distanceTo(obstacle.location).toDouble - obstacle.radius
+    val damage = TOWER_CREEP_DAMAGE_MIN + (shotDistance / TOWER_CREEP_DAMAGE_CLIMB_DISTANCE).toInt()
+    target.damage(damage)
+  }
+
+  private fun damageQueen(target: Queen) {
+    val shotDistance = target.location.distanceTo(obstacle.location).toDouble - obstacle.radius
+    val damage = TOWER_QUEEN_DAMAGE_MIN + (shotDistance / TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE).toInt()
+    target.damage(damage)
+  }
+
   override fun act(): Boolean {
     val closestEnemy = owner.enemyPlayer.activeCreeps.minBy { it.location.distanceTo(obstacle.location) }
     val enemyQueen = owner.enemyPlayer.queenUnit
 
-    attackTarget = if (closestEnemy != null && closestEnemy.location.distanceTo(obstacle.location) < attackRadius) {
-      val shotDistance = closestEnemy.location.distanceTo(obstacle.location).toDouble - obstacle.radius  // should be maximum right at the foot
-      closestEnemy.also { it.damage(TOWER_CREEP_DAMAGE_MAX - (shotDistance / TOWER_CREEP_DAMAGE_DROP_DISTANCE).toInt()) }
-    } else if (enemyQueen.location.distanceTo(obstacle.location) < attackRadius) {
-      enemyQueen.also { it.damage(health / TOWER_HP_PER_QUEEN_DAMAGE + 1 ) }
-    } else {
-      null
+    attackTarget = when {
+      closestEnemy != null && closestEnemy.location.distanceTo(obstacle.location) < attackRadius ->
+        closestEnemy.also { damageCreep(it) }
+      enemyQueen.location.distanceTo(obstacle.location) < attackRadius ->
+        enemyQueen.also { damageQueen(it) }
+      else -> null
     }
 
     health -= TOWER_MELT_RATE
-    attackRadius = Math.sqrt((health * TOWER_COVERAGE_PER_HP + obstacle.area) / Math.PI).toInt()
+    attackRadius = sqrt((health * TOWER_COVERAGE_PER_HP + obstacle.area) / Math.PI).toInt()
 
     if (health <= 0) {
       hideEntities()
