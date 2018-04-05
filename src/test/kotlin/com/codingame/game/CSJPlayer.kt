@@ -81,7 +81,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           val barracksType = when {
             theirTowers >= 2 && ourGiants == 0 -> CreepType.GIANT
             ourMelees > ourRanged -> CreepType.RANGED
-            else -> CreepType.MELEE
+            else -> CreepType.RANGED
           }
           return "BUILD ${queenTarget.obstacleId} BARRACKS-$barracksType"
         }

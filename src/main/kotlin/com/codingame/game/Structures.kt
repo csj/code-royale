@@ -9,17 +9,20 @@ import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE
 import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_MIN
 import com.codingame.gameengine.module.entities.Curve
+import java.util.*
 import kotlin.math.min
 import kotlin.math.sqrt
 
 var nextObstacleId = 0
+val rando = Random()
+
 class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, initialLocation: Vector2): MyEntity() {
   val obstacleId = nextObstacleId++
   override val mass = 0
   var minerals by nonNegative(initialAmount)
 
   private val outline = theEntityManager.createSprite()
-    .setImage("LC_1.png")
+    .setImage("LC_${rando.nextInt(10) + 1}.png")
     .setZIndex(20)
     .setAnchor(0.5)
 
