@@ -108,7 +108,7 @@ class Referee : AbstractReferee() {
           val firstToken = toks.next()
           when (firstToken) {
             "MINE" -> {
-              // removed for Wood 2
+              // removed for Wood 1
               /*
               if (struc is Mine) {
                 struc.incomeRate++
@@ -117,19 +117,15 @@ class Referee : AbstractReferee() {
                 obs.setMine(player)
               }
               */
-              throw PlayerInputException("MINE invalid in wood 3")
+              throw PlayerInputException("MINE invalid in wood 1")
             }
             "TOWER" -> {
-              // removed for Wood 2
-              /*
               if (struc is Tower) {
                 struc.health += TOWER_HP_INCREMENT
                 if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
               } else {
                 obs.setTower(player, TOWER_HP_INITIAL)
               }
-              */
-              throw PlayerInputException("TOWER invalid in wood 2")
             }
             "BARRACKS" -> {
               if (!toks.hasNext()) throw PlayerInputException("BARRACKS type must be specified")
@@ -138,9 +134,6 @@ class Referee : AbstractReferee() {
                 CreepType.valueOf(creepInputType)
               } catch (e:Exception) {
                 throw PlayerInputException("Invalid BARRACKS type: $creepInputType")
-              }
-              if (creepType == CreepType.GIANT){
-                throw PlayerInputException("BARRACKS GIANT invalid in wood 2")
               }
               obs.setBarracks(player, creepType)
             }
