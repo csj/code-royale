@@ -37,6 +37,14 @@ object Constants {
   val WORLD_HEIGHT = viewportY.last - viewportY.first
 
   val TOUCHING_DELTA = 5
+  val WOOD_FIXED_INCOME = 10
+}
+
+object Leagues {
+  var towers = true
+  var giants = true
+  var mines = true
+  var fixedIncome:Int? = null
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
