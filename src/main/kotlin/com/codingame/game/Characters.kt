@@ -1,5 +1,6 @@
 package com.codingame.game
 
+import animationModule.AnimationModule
 import com.codingame.game.Constants.GIANT_BUST_RATE
 import com.codingame.game.Constants.MELEE_DAMAGE
 import com.codingame.game.Constants.QUEEN_HP
@@ -16,6 +17,7 @@ import tooltipModule.TooltipModule
 
 lateinit var theEntityManager: GraphicEntityModule
 lateinit var theTooltipModule: TooltipModule
+lateinit var theAnimationModule: AnimationModule
 lateinit var theGameManager: GameManager<Player>
 
 val viewportX = 0..1920
@@ -129,6 +131,7 @@ abstract class Creep(
       if (super.health == 0) {
         characterSprite.alpha = 0.0
         tokenCircle.alpha = 0.0
+        theAnimationModule.triggerAnimation(tokenCircle, "Death")
       }
     }
 

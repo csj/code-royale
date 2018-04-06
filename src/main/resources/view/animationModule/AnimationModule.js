@@ -1,15 +1,17 @@
 
 import * as utils from '../core/utils.js';
 import { WIDTH, HEIGHT } from '../core/constants.js';
+import {SpriteAnimation} from '../entity-module/SpriteAnimation.js';
+import {api} from '../entity-module/GraphicEntityModule.js';
 
-export class AnimatedEventModule {
-  constructor(assets) {
+export class AnimationModule {
+  constructor() {
     this.globalData = {};
     this.lastProgress = 1;
     this.lastFrame = 0;
 
     this.eventAnimators = {
-      Ping: PingAnimator
+      Death: DeathAnimator
     };
     this.activeAnimators = [];
   }
@@ -76,20 +78,32 @@ export class AnimatedEventModule {
 }
 
 
-class PingAnimator {
+class DeathAnimator {
   constructor(event, layer, globalData) {
     this.time = 0;
-    const g = new PIXI.Graphics();
-    g.lineStyle(3, globalData.players[event.params.player].color, 0.8);
-    g.drawCircle(0, 0, 20);
-    g.position.set(event.params.x * globalData.coeff, event.params.y * globalData.coeff);
-    layer.addChild(g);
-    this.graphics = g;
-    this.duration = 600; //ms
+    this.anim = new SpriteAnimation();
+    this.anim.defaultState.images = [
+        'Anim_Death/Mort0001.png',
+        'Anim_Death/Mort0006.png',
+        'Anim_Death/Mort0011.png',
+        'Anim_Death/Mort0016.png',
+        'Anim_Death/Mort0021.png',
+        'Anim_Death/Mort0026.png',
+        'Anim_Death/Mort0031.png',
+        'Anim_Death/Mort0036.png',
+        'Anim_Death/Mort0041.png'
+        'Anim_Death/Mort0046.png'
+    ];
+    this.anim.defaultState.started = true;
+
+    const newId = ++globalData.instanceCount;
+    this.anim.id = newId;
+    // api.entities[newId] = this.anim;
   }
 
   animate(delta) {
     this.time += delta;
+    this.anim.
     this.graphics.scale.set(utils.lerp(0, 4, utils.unlerp(0, this.duration, this.time)));
   }
 

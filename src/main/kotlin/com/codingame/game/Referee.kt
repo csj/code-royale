@@ -1,5 +1,6 @@
 package com.codingame.game
 
+import animationModule.AnimationModule
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.TOUCHING_DELTA
@@ -20,6 +21,7 @@ class Referee : AbstractReferee() {
   @Inject private lateinit var gameManager: GameManager<Player>
   @Inject private lateinit var entityManager: GraphicEntityModule
   @Inject private lateinit var tooltipModule: TooltipModule
+  @Inject private lateinit var animationModule: AnimationModule
 
   private var obstacles: List<Obstacle> = listOf()
 
@@ -29,6 +31,7 @@ class Referee : AbstractReferee() {
 
     theEntityManager = entityManager
     theTooltipModule = tooltipModule
+    theAnimationModule = animationModule
     theGameManager = gameManager
     theGameManager.maxTurns = 250
 
