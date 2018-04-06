@@ -322,16 +322,6 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     .also { it.location = obstacle.location + Vector2(-0.51, 0.72) * obstacle.radius.toDouble() }
     .setHeight(8)
     .setWidth(progressFillMaxWidth)
-//    .setLineAlpha(0.0)
-//    .setFillColor(owner.colorToken)
-//    .setZIndex(400)
-
-  private val progressFill = theEntityManager.createSprite()
-    .setImage(if (owner.isSecondPlayer) "Life-Bleu.png" else "Life-Rouge.png")
-    .setBaseHeight(8).setBaseWidth(progressFillMaxWidth)
-    .also { it.location = obstacle.location + Vector2(-0.51, 0.72) * obstacle.radius.toDouble() }
-    .setZIndex(400)
-    .setMask(progressFillMask)
 
   var progressMax = creepType.buildTime
   var progress = 0
@@ -345,6 +335,14 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     .setZIndex(40)
     .also { it.location = obstacle.location }
     .setBaseHeight(obstacle.radius * 2).setBaseWidth(obstacle.radius * 2)
+
+  private val progressFill = theEntityManager.createSprite()
+    .setAnchor(0.5)
+    .setImage(if (owner.isSecondPlayer) "Caserne_Bleu_Jauge.png" else "Caserne_Rouge_Jauge.png")
+    .setZIndex(400)
+    .also { it.location = obstacle.location }
+    .setBaseHeight(obstacle.radius * 2).setBaseWidth(obstacle.radius * 2)
+    .setMask(progressFillMask)
 
   private val creepToken = theEntityManager.createSprite()
     .setAnchor(0.5)
