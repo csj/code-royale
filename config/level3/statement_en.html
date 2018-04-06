@@ -199,8 +199,9 @@
                 Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.<br>
                 This can be delayed by regular visits by the Queen, and issuing the BUILD TOWER command again.<br>
                 <br>
-                Every turn, towers automatically fire upon the nearest enemy creep inside their firing radius. They deal <const>10</const> damage, minus one damage for every <const>50</const> units measured from the edge of the obstacle.<br>
-                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her instead, dealing <const>1</const> damage.<br>
+                Every turn, towers automatically fire upon the nearest enemy creep inside their firing radius. They deal <const>5</const> base damage at the edge of their firing range.<br>
+                The closer the creep is to the tower, the more damage will be dealt (<const>+1</const> for every <const>200</const> units closer)<br>
+                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her instead, dealing <const>1</const> base damage <const>+1</const> for every <const>200</const> units of distance closer.<br>
             </p>
 
             <p><strong>Training Creeps</strong><br>
