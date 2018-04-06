@@ -6,6 +6,7 @@ import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
+import com.codingame.game.Constants.WOOD_FIXED_INCOME
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
@@ -31,6 +32,12 @@ class Referee : AbstractReferee() {
     theTooltipModule = tooltipModule
     theGameManager = gameManager
     theGameManager.maxTurns = 250
+
+    when (gameManager.leagueLevel) {
+      1 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false }
+      2 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME }
+      else -> { }
+    }
 
     gameManager.frameDuration = 750
 
@@ -106,15 +113,15 @@ class Referee : AbstractReferee() {
         scheduledBuildings += player to {
           if (!toks.hasNext()) throw PlayerInputException("Structure type must be specified")
           val firstToken = toks.next()
-          when (firstToken) {
-            "MINE" ->
+          when {
+            firstToken == "MINE" && Leagues.mines ->
               if (struc is Mine) {
                 struc.incomeRate++
                 if (struc.incomeRate > obs.maxMineralRate) struc.incomeRate = obs.maxMineralRate
               } else {
                 obs.setMine(player)
               }
-            "TOWER" -> {
+            firstToken == "TOWER" && Leagues.towers -> {
               if (struc is Tower) {
                 struc.health += TOWER_HP_INCREMENT
                 if (struc.health > TOWER_HP_MAXIMUM) struc.health = TOWER_HP_MAXIMUM
@@ -122,11 +129,12 @@ class Referee : AbstractReferee() {
                 obs.setTower(player, TOWER_HP_INITIAL)
               }
             }
-            "BARRACKS" -> {
+            firstToken == "BARRACKS" -> {
               if (!toks.hasNext()) throw PlayerInputException("BARRACKS type must be specified")
               val creepInputType = toks.next()
               val creepType = try {
                 CreepType.valueOf(creepInputType)
+                  .also { if (!Leagues.giants && it == CreepType.GIANT) throw Exception("GIANTS")}
               } catch (e:Exception) {
                 throw PlayerInputException("Invalid BARRACKS type: $creepInputType")
               }
@@ -288,6 +296,13 @@ class Referee : AbstractReferee() {
 
     // Process structures
     obstacles.forEach { it.act() }
+
+    Leagues.fixedIncome?.also { income ->
+      gameManager.activePlayers.forEach {
+        it.resourcesPerTurn = income
+        it.resources += income
+      }
+    }
 
     // Remove dead creeps
     gameManager.activePlayers.forEach { it.activeCreeps.removeIf { it.health == 0 } }
