@@ -80,7 +80,7 @@ export class AnimationModule {
 
 class DeathAnimator {
   constructor(event, layer, globalData) {
-    this.time = 0;
+    // this.time = 0;
     this.anim = new SpriteAnimation();
     this.anim.defaultState.images = [
         'Anim_Death/Mort0001.png',
@@ -91,23 +91,23 @@ class DeathAnimator {
         'Anim_Death/Mort0026.png',
         'Anim_Death/Mort0031.png',
         'Anim_Death/Mort0036.png',
-        'Anim_Death/Mort0041.png'
+        'Anim_Death/Mort0041.png',
         'Anim_Death/Mort0046.png'
     ];
     this.anim.defaultState.started = true;
 
     const newId = ++globalData.instanceCount;
     this.anim.id = newId;
-    // api.entities[newId] = this.anim;
+    api.entities[newId] = this.anim;
   }
 
-  animate(delta) {
-    this.time += delta;
-    this.anim.
-    this.graphics.scale.set(utils.lerp(0, 4, utils.unlerp(0, this.duration, this.time)));
-  }
-
-  isActive() {
-    return this.time <= this.duration;
-  }
+  // animate(delta) {
+  //   this.time += delta;
+  //   this.anim.
+  //   this.graphics.scale.set(utils.lerp(0, 4, utils.unlerp(0, this.duration, this.time)));
+  // }
+  //
+  // isActive() {
+  //   return this.time <= this.duration;
+//  }
 }
