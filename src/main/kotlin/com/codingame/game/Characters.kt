@@ -226,14 +226,12 @@ class RangedCreep(owner: Player, creepType: CreepType)
   private var lastLocation: Vector2? = null
 
   var attackTarget: Creep? = null
-
-  private val projectile = theEntityManager.createCircle()!!
-      .setZIndex(30)
-      .setRadius(4)
-      .setFillColor(owner.colorToken)
-      .setLineColor(0xffffff)
-      .setLineWidth(2)
-      .setVisible(false)
+  val color = if (owner.isSecondPlayer) "Bleu" else "Rouge"
+  private val projectile = theEntityManager.createSprite()!!
+    .setZIndex(60)
+    .setImage("Fleche_$color.png")
+    .setVisible(false)
+    .setAnchorX(1.0).setAnchorY(0.5)
 
   override fun finalizeFrame() {
     val target = findTarget() ?: owner.enemyPlayer.queenUnit
@@ -257,6 +255,7 @@ class RangedCreep(owner: Player, creepType: CreepType)
       characterSprite.anchorX = 0.5
       theEntityManager.commitEntityState(0.4, characterSprite)
 
+      projectile.setRotation((localAttackTarget.location - location).angle, Curve.IMMEDIATE)
       projectile.isVisible = true
       projectile.setX(location.x.toInt() + viewportX.first, Curve.NONE)
       projectile.setY(location.y.toInt() + viewportY.first, Curve.NONE)
