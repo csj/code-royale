@@ -59,7 +59,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4003)
 
   private val moneyText = theEntityManager.createText("0")
-    .setY(bottom - 15).setAnchorY(1.0)
+    .setY(bottom - 40).setAnchorY(0.5)
     .setX(if (isSecondPlayer) 1020 else 700)
     .setFillColor(0xffffff)
     .setScale(1.8)
@@ -67,11 +67,10 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4002)!!
 
   private val moneyIncText = theEntityManager.createText("")
-    .setY(bottom - 20).setAnchorY(1.0)
-    .setX(if (isSecondPlayer) 1225 else 915)
-    .setAnchorX(1.0)
+    .setY(bottom - 40).setAnchorY(0.5)
+    .setX(if (isSecondPlayer) 1220 else 910).setAnchorX(1.0)
     .setFillColor(0xffffff)
-    .setScale(1.5)
+    .setScale(1.2)
     .setFontFamily("Arial Black")
     .setZIndex(4002)!!
 
@@ -81,7 +80,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     moneyText.text = player.resources.toString()
     moneyIncText.text = when (player.resourcesPerTurn) {
       0 -> ""
-      else -> "(+${player.resourcesPerTurn})"
+      else -> "+${player.resourcesPerTurn}"
     }
     theEntityManager.commitEntityState(0.0, moneyText, moneyIncText)
   }
