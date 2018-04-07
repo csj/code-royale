@@ -117,7 +117,7 @@ class Referee : AbstractReferee() {
             firstToken == "MINE" && Leagues.mines ->
               if (struc is Mine) {
                 struc.incomeRate++
-                if (struc.incomeRate > obs.maxMineralRate) struc.incomeRate = obs.maxMineralRate
+                if (struc.incomeRate > obs.maxMineSize) struc.incomeRate = obs.maxMineSize
               } else {
                 obs.setMine(player)
               }

@@ -42,7 +42,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
 
         // if touching a mine that isn't at max capacity, keep growing it
         val growingMine = obstacles
-            .filter { it.owner == 0 && it.structureType == 0 && it.incomeRateOrHealthOrCooldown < it.maxResourceRate }
+            .filter { it.owner == 0 && it.structureType == 0 && it.incomeRateOrHealthOrCooldown < it.maxMineSize }
             .firstOrNull { it.location.distanceTo(queenLoc).toDouble - it.radius - QUEEN_RADIUS < 5 }
         if (growingMine != null) {
           return "BUILD ${growingMine.obstacleId} MINE"
@@ -70,7 +70,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
           // Touching an obstacle; do something here
           if (danger) return "BUILD ${queenTarget.obstacleId} TOWER"
           if (totalIncome * 1.5 <= totalProduction)
-            return if (queenTarget.minerals > 0) "BUILD ${queenTarget.obstacleId} MINE" else "BUILD ${queenTarget.obstacleId} TOWER"
+            return if (queenTarget.gold > 0) "BUILD ${queenTarget.obstacleId} MINE" else "BUILD ${queenTarget.obstacleId} TOWER"
 
           // count enemy towers; make sure we have a giant if they have more than 3
           val ourMelees = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }

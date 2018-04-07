@@ -23,11 +23,11 @@ class AllMeleePlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStrea
 
         // if touching a mine that isn't at max capacity, keep growing it
         val growingMine = obstacles
-            .filter { it.owner == 0 && it.structureType == 0 && it.incomeRateOrHealthOrCooldown < it.maxResourceRate }
+            .filter { it.owner == 0 && it.structureType == 0 && it.incomeRateOrHealthOrCooldown < it.maxMineSize }
             .firstOrNull { it.location.distanceTo(queenLoc).toDouble - it.radius - QUEEN_RADIUS < TOUCHING_DELTA }
 
         if (growingMine != null) {
-          stderr.println("Max: ${growingMine.maxResourceRate}")
+          stderr.println("Max: ${growingMine.maxMineSize}")
           return "BUILD ${growingMine.obstacleId} MINE"
         }
 

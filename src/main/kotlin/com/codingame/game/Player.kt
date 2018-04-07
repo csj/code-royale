@@ -26,8 +26,8 @@ class Player : AbstractPlayer() {
 
     val toks = listOf(
         obstacle.obstacleId,
-        if (visible) obstacle.minerals else -1,
-        if (visible) obstacle.maxMineralRate else -1) + when (struc) {
+        if (visible) obstacle.gold else -1,
+        if (visible) obstacle.maxMineSize else -1) + when (struc) {
       is Mine -> listOf(0, fixOwner(struc.owner), if (visible) struc.incomeRate else -1, -1)
       is Tower -> listOf(1, fixOwner(struc.owner), struc.health, struc.attackRadius)
       is Barracks -> listOf(2, fixOwner(struc.owner), struc.progress, struc.creepType.ordinal)

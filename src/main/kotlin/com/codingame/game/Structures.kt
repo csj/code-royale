@@ -1,7 +1,7 @@
 package com.codingame.game
 
-import com.codingame.game.Constants.OBSTACLE_MINERAL_INCREASE
-import com.codingame.game.Constants.OBSTACLE_MINERAL_RANGE
+import com.codingame.game.Constants.OBSTACLE_GOLD_INCREASE
+import com.codingame.game.Constants.OBSTACLE_GOLD_RANGE
 import com.codingame.game.Constants.TOWER_COVERAGE_PER_HP
 import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_CLIMB_DISTANCE
 import com.codingame.game.Constants.TOWER_CREEP_DAMAGE_MIN
@@ -16,10 +16,10 @@ import kotlin.math.sqrt
 var nextObstacleId = 0
 val rando = Random()
 
-class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, initialLocation: Vector2): MyEntity() {
+class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initialLocation: Vector2): MyEntity() {
   val obstacleId = nextObstacleId++
   override val mass = 0
-  var minerals by nonNegative(initialAmount)
+  var gold by nonNegative(initialGold)
 
   private val obstacleImage = theEntityManager.createSprite()
     .setImage("LC_${rando.nextInt(10) + 1}.png")
@@ -67,7 +67,7 @@ class Obstacle(var maxMineralRate: Int, initialAmount: Int, initialRadius: Int, 
     val struc = structure
     val lines = listOf(
       "Radius: $radius",
-      "Remaining resources: $minerals"
+      "Remaining gold: $gold"
     ) + (struc?.extraTooltipLines() ?: listOf())
     theTooltipModule.updateExtraTooltipText(obstacleImage, *lines.toTypedArray())
   }
@@ -167,17 +167,17 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     mineImage.isVisible = true
     mineralBarOutline.isVisible = true
     mineralBarFill.isVisible = true
-    mineralBarFill.width = 80 * obstacle.minerals / (OBSTACLE_MINERAL_RANGE.last + 2 * OBSTACLE_MINERAL_INCREASE)
+    mineralBarFill.width = 80 * obstacle.gold / (OBSTACLE_GOLD_RANGE.last + 2 * OBSTACLE_GOLD_INCREASE)
     theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineImage, mineralBarOutline, mineralBarFill)
   }
 
   override fun act(): Boolean {
-    val cash = min(incomeRate, obstacle.minerals)
+    val cash = min(incomeRate, obstacle.gold)
 
     owner.goldPerTurn += cash
     owner.gold += cash
-    obstacle.minerals -= cash
-    if (obstacle.minerals <= 0) {
+    obstacle.gold -= cash
+    if (obstacle.gold <= 0) {
       hideEntities()
       return true
     }

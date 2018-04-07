@@ -9,8 +9,8 @@ data class UnitInput(
 
 data class ObstaclePerTurnInput(
   val obstacleId: Int,
-  val minerals: Int,
-  val maxResourceRate: Int,
+  val gold: Int,
+  val maxMineSize: Int,
   val structureType: Int,
   val owner: Int,
   val incomeRateOrHealthOrCooldown: Int,
@@ -21,8 +21,8 @@ data class ObstacleInput(
   val obstacleId: Int,
   val location: Vector2,
   val radius: Int,
-  var minerals: Int = -1,
-  var maxResourceRate: Int = -1,
+  var gold: Int = -1,
+  var maxMineSize: Int = -1,
   var structureType: Int = -1,                 // -1 = None, 0 = Mine, 1 = Tower, 2 = Barracks
   var owner: Int = -1,                         // 0 = Us, 1 = Enemy
   var incomeRateOrHealthOrCooldown: Int = -1,  // mine / tower / barracks
@@ -30,8 +30,8 @@ data class ObstacleInput(
 ) {
   fun applyUpdate(update: ObstaclePerTurnInput) {
     structureType = update.structureType
-    minerals = update.minerals
-    maxResourceRate = update.maxResourceRate
+    gold = update.gold
+    maxMineSize = update.maxMineSize
     owner = update.owner
     incomeRateOrHealthOrCooldown = update.incomeRateOrHealthOrCooldown
     attackRadiusOrCreepType = update.attackRadiusOrCreepType

@@ -24,8 +24,8 @@ fun buildMap(theRandom: Random): List<Obstacle> {
     nextObstacleId = 0
 
     val obstaclePairs = (1..Constants.OBSTACLE_PAIRS).map {
-      val rate = Constants.OBSTACLE_MINERAL_BASERATE_RANGE.sample()
-      val gold = Constants.OBSTACLE_MINERAL_RANGE.sample()
+      val rate = Constants.OBSTACLE_MINE_BASESIZE_RANGE.sample()
+      val gold = Constants.OBSTACLE_GOLD_RANGE.sample()
       val radius = Constants.OBSTACLE_RADIUS_RANGE.sample()
       val l1 = Vector2.random(theRandom, WORLD_WIDTH, WORLD_HEIGHT)
       val l2 = Vector2(WORLD_WIDTH, WORLD_HEIGHT) - l1
@@ -55,8 +55,8 @@ fun buildMap(theRandom: Random): List<Obstacle> {
   val mapCenter = Vector2(viewportX.length / 2, viewportY.length / 2)
   obstacles.forEach {
     it.location = it.location.snapToIntegers()
-    if (it.location.distanceTo(mapCenter) < Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_1) { it.maxMineralRate++; it.minerals += Constants.OBSTACLE_MINERAL_INCREASE }
-    if (it.location.distanceTo(mapCenter) < Constants.OBSTACLE_MINERAL_INCREASE_DISTANCE_2) { it.maxMineralRate++; it.minerals += Constants.OBSTACLE_MINERAL_INCREASE }
+    if (it.location.distanceTo(mapCenter) < Constants.OBSTACLE_GOLD_INCREASE_DISTANCE_1) { it.maxMineSize++; it.gold += Constants.OBSTACLE_GOLD_INCREASE }
+    if (it.location.distanceTo(mapCenter) < Constants.OBSTACLE_GOLD_INCREASE_DISTANCE_2) { it.maxMineSize++; it.gold += Constants.OBSTACLE_GOLD_INCREASE }
     it.updateEntities()
   }
   PlayerHUD.obstacles = obstacles
