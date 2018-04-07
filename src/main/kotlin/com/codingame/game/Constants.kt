@@ -1,7 +1,7 @@
 package com.codingame.game
 
 object Constants {
-  val STARTING_RESOURCES = 100
+  val STARTING_GOLD = 100
 
   val QUEEN_SPEED = 60
   val TOWER_HP_INITIAL = 200

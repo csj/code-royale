@@ -36,13 +36,13 @@ abstract class BasePlayer(stdin: InputStream, val stdout: PrintStream, val stder
   }
 
   protected fun readInputs(): AllInputs {
-    val resources = scanner.nextInt()
+    val gold = scanner.nextInt()
     val obstacles = (0 until obstacles.size).map { applyObstacleUpdate(readObstaclePerTurn()) }
     val units = (0 until scanner.nextInt()).map { readUnit() }
     return AllInputs(
       units.single { it.isFriendly && it.creepType == null }.let { it.location },
       units.single { it.isFriendly && it.creepType == null }.let { it.health },
-      resources,
+      gold,
       units.single { !it.isFriendly && it.creepType == null }.let { it.location },
       units.single { !it.isFriendly && it.creepType == null }.let { it.health },
       obstacles,

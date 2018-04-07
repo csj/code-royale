@@ -41,7 +41,7 @@ data class ObstacleInput(
 data class AllInputs(
   val queenLoc: Vector2,
   val health: Int,
-  val resources: Int,
+  val gold: Int,
   val enemyQueenLoc: Vector2,
   val enemyHealth: Int,
   val obstacles: List<ObstacleInput>,

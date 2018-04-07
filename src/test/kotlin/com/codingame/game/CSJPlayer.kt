@@ -14,7 +14,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
     while (true) {
       turn++
 
-      val (queenLoc, _, resources, enemyQueenLoc, _, obstacles, _, enemyCreeps) = readInputs()
+      val (queenLoc, _, gold, enemyQueenLoc, _, obstacles, _, enemyCreeps) = readInputs()
 
       // strategy:
       // build mines
@@ -95,7 +95,7 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
         if (myBarracks.isEmpty()) return listOf()
         if (myBarracks.any { it.incomeRateOrHealthOrCooldown > 0 }) return listOf()
         val totalCost = myBarracks.sumBy { CreepType.values()[it.attackRadiusOrCreepType].cost }
-        if (resources < totalCost) return listOf()
+        if (gold < totalCost) return listOf()
         return myBarracks
       }
 

@@ -2,7 +2,7 @@ package com.codingame.game
 
 import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.game.Constants.QUEEN_VISION
-import com.codingame.game.Constants.STARTING_RESOURCES
+import com.codingame.game.Constants.STARTING_GOLD
 import com.codingame.gameengine.core.AbstractPlayer
 import kotlin.math.roundToInt
 
@@ -42,8 +42,8 @@ class Player : AbstractPlayer() {
 
   init { score = QUEEN_HP }
   var health by nonNegative<Player>(QUEEN_HP).andAlso { if (score >= 0) score = it }
-  var resources = STARTING_RESOURCES
-  var resourcesPerTurn = 0
+  var gold = STARTING_GOLD
+  var goldPerTurn = 0
 
   fun checkQueenHealth() {
     queenUnit.health = health

@@ -174,8 +174,8 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
   override fun act(): Boolean {
     val cash = min(incomeRate, obstacle.minerals)
 
-    owner.resourcesPerTurn += cash
-    owner.resources += cash
+    owner.goldPerTurn += cash
+    owner.gold += cash
     obstacle.minerals -= cash
     if (obstacle.minerals <= 0) {
       hideEntities()

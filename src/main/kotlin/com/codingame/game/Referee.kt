@@ -75,7 +75,7 @@ class Referee : AbstractReferee() {
   override fun gameTurn(turn: Int) {
     fun sendGameStates() {
       for (activePlayer in gameManager.activePlayers) {
-        activePlayer.sendInputLine("${activePlayer.resources}")
+        activePlayer.sendInputLine("${activePlayer.gold}")
         obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
         val units = gameManager.activePlayers.flatMap { it.activeCreeps + it.queenUnit }
@@ -167,9 +167,9 @@ class Referee : AbstractReferee() {
               throw PlayerInputWarning("Training from some barracks more than once")
 
             val sum = buildingBarracks.sumBy { it.creepType.cost }
-            if (sum > player.resources) throw PlayerInputWarning("Training too many creeps ($sum total resources requested)")
+            if (sum > player.gold) throw PlayerInputWarning("Training too many creeps ($sum total gold requested)")
 
-            player.resources -= sum
+            player.gold -= sum
             buildingBarracks.forEach { barracks ->
               barracks.progress = 0
               barracks.isTraining = true
@@ -288,7 +288,7 @@ class Referee : AbstractReferee() {
       }
     }
 
-    gameManager.activePlayers.forEach { it.resourcesPerTurn = 0 }
+    gameManager.activePlayers.forEach { it.goldPerTurn = 0 }
 
     sendGameStates()
     processPlayerActions()
@@ -299,8 +299,8 @@ class Referee : AbstractReferee() {
 
     Leagues.fixedIncome?.also { income ->
       gameManager.activePlayers.forEach {
-        it.resourcesPerTurn = income
-        it.resources += income
+        it.goldPerTurn = income
+        it.gold += income
       }
     }
 

@@ -77,10 +77,10 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
   fun update() {
     healthBarFillMask.width = healthBarWidth * player.health / Constants.QUEEN_HP
     healthText.text = player.health.toString()
-    moneyText.text = player.resources.toString()
-    moneyIncText.text = when (player.resourcesPerTurn) {
+    moneyText.text = player.gold.toString()
+    moneyIncText.text = when (player.goldPerTurn) {
       0 -> ""
-      else -> "+${player.resourcesPerTurn}"
+      else -> "+${player.goldPerTurn}"
     }
     theEntityManager.commitEntityState(0.0, moneyText, moneyIncText)
   }

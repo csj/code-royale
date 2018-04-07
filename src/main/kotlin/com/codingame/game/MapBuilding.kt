@@ -25,11 +25,11 @@ fun buildMap(theRandom: Random): List<Obstacle> {
 
     val obstaclePairs = (1..Constants.OBSTACLE_PAIRS).map {
       val rate = Constants.OBSTACLE_MINERAL_BASERATE_RANGE.sample()
-      val resources = Constants.OBSTACLE_MINERAL_RANGE.sample()
+      val gold = Constants.OBSTACLE_MINERAL_RANGE.sample()
       val radius = Constants.OBSTACLE_RADIUS_RANGE.sample()
       val l1 = Vector2.random(theRandom, WORLD_WIDTH, WORLD_HEIGHT)
       val l2 = Vector2(WORLD_WIDTH, WORLD_HEIGHT) - l1
-      Pair(Obstacle(rate, resources, radius, l1), Obstacle(rate, resources, radius, l2))
+      Pair(Obstacle(rate, gold, radius, l1), Obstacle(rate, gold, radius, l2))
     }
     val obstacles = obstaclePairs.flatMap { listOf(it.first, it.second) }
 
