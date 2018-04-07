@@ -271,13 +271,15 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
 
   private fun damageCreep(target: Creep) {
     val shotDistance = target.location.distanceTo(obstacle.location).toDouble - obstacle.radius
-    val damage = TOWER_CREEP_DAMAGE_MIN + (shotDistance / TOWER_CREEP_DAMAGE_CLIMB_DISTANCE).toInt()
+    val differenceFromMax = attackRadius - shotDistance
+    val damage = TOWER_CREEP_DAMAGE_MIN + (differenceFromMax / TOWER_CREEP_DAMAGE_CLIMB_DISTANCE).toInt()
     target.damage(damage)
   }
 
   private fun damageQueen(target: Queen) {
     val shotDistance = target.location.distanceTo(obstacle.location).toDouble - obstacle.radius
-    val damage = TOWER_QUEEN_DAMAGE_MIN + (shotDistance / TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE).toInt()
+    val differenceFromMax = attackRadius - shotDistance
+    val damage = TOWER_QUEEN_DAMAGE_MIN + (differenceFromMax / TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE).toInt()
     target.damage(damage)
   }
 

@@ -13,7 +13,6 @@ class Wood1Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
       val (queenLoc, _, _, _, _, obstacles, _, _) = readInputs()
 
       fun getQueenAction(): String {
-
         val queenTarget = obstacles
           .filter { it.owner == -1 || (it.owner == 0 && it.structureType == 1 && it.incomeRateOrHealthOrCooldown < 400) }
           .minBy { it.location.distanceTo(queenLoc) } ?: return "WAIT"
@@ -21,12 +20,14 @@ class Wood1Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
         val needsMelee = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 0 }
         val needsRanged = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 1 }
         val needsGiant = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 2 }
+        val needsTower = obstacles.count { it.structureType == 1 && it.owner == 0 } < 3
 
         return when {
           needsMelee -> "BUILD ${queenTarget.obstacleId} BARRACKS-MELEE"
           needsRanged -> "BUILD ${queenTarget.obstacleId} BARRACKS-RANGED"
           needsGiant -> "BUILD ${queenTarget.obstacleId} BARRACKS-GIANT"
-          else -> "BUILD ${queenTarget.obstacleId} TOWER"
+          needsTower -> "BUILD ${queenTarget.obstacleId} TOWER"
+          else -> "WAIT"
         }
       }
 
