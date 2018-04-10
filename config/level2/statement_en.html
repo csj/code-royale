@@ -11,19 +11,16 @@
     margin-bottom: 10px;
     text-align: left;">
         <div style="text-align: center; margin-bottom: 6px">
-            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_01.png" />
         </div>
 
-        <!-- BEGIN bronze -->
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
             Summary of new rules
         </p>
         <span class="statement-league-alert-content">
-            <!--TODO: League alerts and specific rule sections-->
-            Placeholder.<br />
+            You are now able to build TOWER structures to defend yourself against enemy creeps and GIANT creeps to destroy opposing towers.<br />
             See the updated statement for details.
       </span>
-        <!-- END -->
     </div>
 
 
@@ -82,26 +79,12 @@
                 <li>On odd-numbered turns, player 1 gets to build</li>
             </ul>
             <p>
-                Structures can be built at no cost. Towers and mines begin working the turn they are built, and can be grown over time. Barracks are available for use on the turn immediately following their construction.<br>
+                Structures can be built at no cost. Towers begin working the turn they are built, and can be grown over time. Barracks are available for use on the turn immediately following their construction.<br>
             </p>
 
-            <p><strong>Mining</strong><br>
+            <p><strong>Gold</strong><br>
                 <br>
-                Each player begins with 100 gold. A player can increase the amount of gold collected per turn by
-                building goldmines on obstacles.<br>
-                <br>
-                Each obstacle has a different rate at which gold can be collected, ranging from <const>+1</const>/turn to <const>+5</const>/turn.<br>
-                When a mine is first built, it has an income rate of +1. This can be increased by issuing repeated commands to build a mine on the same obstacle, up to its maximum capacity.<br>
-                Gold will accumulate in the player’s bank over several turns automatically. However, the obstacle will be exhausted of gold over time.<br>
-                Obstacles begin with different, random amounts of gold every game. Obstacles near the middle of the field have higher gold available, and higher maximum mining rates.<br>
-                Gold totals and mining rates are not given for all obstacles, they must be discovered by the Queen. These numbers will be available for any
-                obstacle whose center is within <const>300</const> units from the Queen.<br>
-                <br>
-                A mine will be destroyed if:
-                <ul>
-                    <li>It runs out of gold</li>
-                    <li>An enemy creep or the enemy Queen comes in contact with it</li>
-                </ul>
+                Each player begins with 100 gold and will gain 10 gold at the end of each turn.<br>
             </p>
 
             <p><strong>Creeps</strong><br>
@@ -275,15 +258,14 @@
                         </ul>
                     </li>
                     <li>Creeps move, collisions resolved</li>
-                    <li>Creeps attack and destroy enemy mines</li>
-                    <li>Queens destroy enemy mines and barracks</li>
+                    <li>Queens destroy enemy barracks</li>
                     <li>Remaining structures act (including ones built this turn):
                         <ul>
                             <li>Towers shoot, dead creeps removed</li>
                             <li>Barracks that are in progress advance; new creeps spawned</li>
-                            <li>Mines collect gold for Queens</li>
                         </ul>
                     </li>
+                    <li>Each player is given 10 gold</li>
                     <li>Creeps age, dead creeps removed</li>
                     <li>End game condition checked</li>
                 </ol>
@@ -314,7 +296,6 @@
                 <ul>
                     <li>MELEE - Queen (damage)</li>
                     <li>Queen - Obstacle (construction, and tearing down enemy structures)</li>
-                    <li>Creep - Mine</li>
                     <li>GIANT - Tower</li>
                 </ul>
 
@@ -322,10 +303,9 @@
 
                 <p>
                     All obstacles are randomized in pairs: attributes that apply to mirroring obstacles are always the same at the game's start.<br>
-                    Each obstacle-pair gets assigned a random gold amount between <const>200</const> and <const>250</const>, a maximum mining rate between <const>+1</const> and <const>+3</const>, and a radius between <const>60</const> and <const>110</const> units.<br>
-                    Obstacles whose center is located within <const>500</const> units of the map's center are given a bonus of <const>50</const> gold, and <const>+1</const> to maximum mining rate.<br>
-                    Obstacles whose center is located within <const>200</const> units of the map's center are given a further bonus of <const>50</const> gold, and <const>+1</const> to maximum mining rate.<br>
+                    Each obstacle-pair gets assigned a radius between <const>60</const> and <const>110</const> units.<br>
                 </p>
+
 
                 <p><strong>Tower HP</strong></p>
 
@@ -433,7 +413,6 @@
                     <ul>
                         <li><action>WAIT</action> Do nothing</li>
                         <li><action>MOVE x y</action> Will attempt to move towards the provided coordinates (x,y given as integers)</li>
-                        <li><action>BUILD {obstacleId} MINE</action> Will attempt to build or grow a goldmine at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle.</li>
                         <li><action>BUILD {obstacleId} TOWER</action> Will attempt to build or repair a tower at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle.</li>
                         <li><action>BUILD {obstacleId} BARRACKS-{type}</action> Will attempt to build a barracks at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle. The type must be given as either <action>MELEE</action>, <action>RANGED</action>, or <action>GIANT</action>.</li>
                     </ul>
@@ -448,6 +427,24 @@
                     Response time for first turn ≤ 1000ms <br>
                     Response time for one turn ≤ 50ms</div>
             </div>
+        </div>
+
+        <!-- NEXT LEAGUE RULES -->
+        <div style="color: #7cc576;
+      background-color: rgba(124, 197, 118,.1);
+      padding: 20px;
+      margin-top: 10px;
+      text-align: left;">
+            <div style="text-align: center; margin-bottom: 6px">
+                <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_01.png" />
+            </div>
+            <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
+                What is in store for me in the higher leagues?
+            </p>
+            The extra rules available in higher leagues are:
+            <ul class="statement-next-rules">
+                <li>You will need to build MINE structures in order to generate gold.</li>
+            </ul>
         </div>
 
     <!-- STORY -->
