@@ -230,6 +230,8 @@ class Referee : AbstractReferee() {
               }
               else -> throw PlayerInputException("Didn't understand command: $command")
             }
+            if (toks.hasNext()) throw PlayerInputException("Too many tokens after $command command")
+
           } catch (e: PlayerInputWarning) {
             gameManager.addToGameSummary("WARNING: ${e.message}")
           }

@@ -4,7 +4,7 @@ gameloop
 read gold:int
 loop numObstacles read obstacleId:int goldRemaining:int maxMineSize:int structureType:int owner:int param1:int param2:int
 read numUnits:int
-loop numUnits read x:int y:int owner:int type:int health:int
+loop numUnits read x:int y:int owner:int unitType:int health:int
 write WAIT
 TRAIN
 
