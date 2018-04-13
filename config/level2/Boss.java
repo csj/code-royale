@@ -21,6 +21,8 @@ class Player {
         // game loop
         while (true) {
             int gold = in.nextInt();
+            int touching = in.nextInt();
+
             for (int i = 0; i < numObstacles; i++) {
                 int obstacleId = in.nextInt();
                 int goldRemaining = in.nextInt(); // -1 if unknown
