@@ -7,7 +7,7 @@ object Constants {
   const val TOWER_HP_INITIAL = 200
   const val TOWER_HP_INCREMENT = 100
   const val TOWER_HP_MAXIMUM = 800
-  const val TOWER_CREEP_DAMAGE_MIN = 5
+  const val TOWER_CREEP_DAMAGE_MIN = 3
   const val TOWER_CREEP_DAMAGE_CLIMB_DISTANCE = 200
   const val TOWER_QUEEN_DAMAGE_MIN = 1
   const val TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE = 200
@@ -26,7 +26,7 @@ object Constants {
   const val OBSTACLE_PAIRS = 12
 
   const val MELEE_DAMAGE = 1
-  const val RANGED_DAMAGE = 2
+  const val RANGED_DAMAGE = 3
 
   const val QUEEN_RADIUS = 30
   const val QUEEN_MASS = 10000
