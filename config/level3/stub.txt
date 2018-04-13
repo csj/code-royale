@@ -1,7 +1,7 @@
 read numObstacles:int
 loop numObstacles read obstacleId:int x:int y:int radius:int
 gameloop
-read gold:int
+read gold:int touchedObstacle:int
 loop numObstacles read obstacleId:int goldRemaining:int maxMineSize:int structureType:int owner:int param1:int param2:int
 read numUnits:int
 loop numUnits read x:int y:int owner:int unitType:int health:int
@@ -9,6 +9,7 @@ write WAIT
 TRAIN
 
 INPUT
+touchedObstacle: -1 if none
 goldRemaining: -1 if unknown
 maxMineSize: -1 if unknown
 structureType: -1 = No structure, 0 = Goldmine, 1 = Tower, 2 = Barracks

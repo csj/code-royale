@@ -1,5 +1,6 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.TOUCHING_DELTA
@@ -33,7 +34,8 @@ class Referee : AbstractReferee() {
     theGameManager = gameManager
     theGameManager.maxTurns = 250
 
-    when (gameManager.leagueLevel) {
+    when (3) {
+//    when (gameManager.leagueLevel) {
       1 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false }
       2 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME }
       else -> { }
@@ -75,7 +77,9 @@ class Referee : AbstractReferee() {
   override fun gameTurn(turn: Int) {
     fun sendGameStates() {
       for (activePlayer in gameManager.activePlayers) {
-        activePlayer.sendInputLine("${activePlayer.gold}")
+        val touchedObstacle = obstacles.singleOrNull { it.location.distanceTo(activePlayer.queenUnit.location) < it.radius + QUEEN_RADIUS + TOUCHING_DELTA }
+          ?.obstacleId ?: -1
+        activePlayer.sendInputLine("${activePlayer.gold} $touchedObstacle")
         obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
         val units = gameManager.activePlayers.flatMap { it.activeCreeps + it.queenUnit }

@@ -14,7 +14,8 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
     while (true) {
       turn++
 
-      val (queenLoc, _, gold, enemyQueenLoc, _, obstacles, _, enemyCreeps) = readInputs()
+      val (queenLoc, _, gold, touch, enemyQueenLoc, _, obstacles, _, enemyCreeps) = readInputs()
+//      stderr.println("Touching: $touch")
 
       // strategy:
       // build mines
