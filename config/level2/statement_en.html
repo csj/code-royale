@@ -11,14 +11,14 @@
     margin-bottom: 10px;
     text-align: left;">
         <div style="text-align: center; margin-bottom: 6px">
-            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_01.png" />
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
         </div>
 
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
             Summary of new rules
         </p>
         <span class="statement-league-alert-content">
-            You are now able to build TOWER structures to defend yourself against enemy creeps and GIANT creeps to destroy opposing towers.<br />
+            You are now able to build TOWER structures to defend yourself against enemy creeps, and use GIANT creeps to destroy opposing towers.<br />
             See the updated statement for details.
       </span>
     </div>
@@ -84,7 +84,7 @@
 
             <p><strong>Gold</strong><br>
                 <br>
-                Each player begins with 100 gold and will gain 10 gold at the end of each turn.<br>
+                Each player begins with <const>100</const> gold and will gain <const>10</const> gold at the end of each turn.<br>
             </p>
 
             <p><strong>Creeps</strong><br>
@@ -355,21 +355,20 @@
                 <div class="title">Input for one game turn</div>
                 <div class="text">
 
-                    <span class="statement-lineno">Line 1:</span>Two integers <var>gold</var> <var>touchedObstacle</var><br>
+                    <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedObstacle</var><br>
                     <ul>
                         <li><var>gold</var>: the current amount of gold available to be spent</li>
                         <li><var>touchedObstacle</var>: the id of the obstacle your Queen is touching, or -1 if none</li>
                     </ul>
-                    <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers <var>obstacleId</var> <var>gold</var>
-                        <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
+                    <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers <var>obstacleId</var> <var>ignore1</var>
+                        <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                     <ul>
                         <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
-                        <li><var>gold</var>: The total number of gold remaining to be mined from this obstacle (-1 if unknown)</li>
-                        <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this obstacle (-1 if unknown)</li>
+                        <li><var>ignore1</var>: Reserved for future leagues</li>
+                        <li><var>ignore2</var>: Reserved for future leagues</li>
                         <li><var>structureType</var>:
                             <ul>
                                 <li><const>-1</const>: No structure</li>
-                                <li><const>0</const>: Goldmine</li>
                                 <li><const>1</const>: Tower</li>
                                 <li><const>2</const>: Barracks</li>
                             </ul>
@@ -384,7 +383,6 @@
                         <li><var>param1</var>:
                             <ul>
                                 <li>When no structure: <const>-1</const></li>
-                                <li>When goldmine: the income rate ranging from <const>1</const> to <const>5</const>(or <const>-1</const> if enemy)</li>
                                 <li>When tower: the remaining HP</li>
                                 <li>When barracks, the current progress of a set of creeps being trained or <const>0</const> if nothing is being trained</li>
                             </ul>
@@ -392,7 +390,6 @@
                         <li><var>param2</var>
                             <ul>
                                 <li>When no structure: <const>-1</const></li>
-                                <li>When goldmine: <const>-1</const></li>
                                 <li>When tower: the attack radius measured from its center</li>
                                 <li>When barracks: the creep type: <const>0</const> for MELEE, <const>1</const> for RANGED, <const>2</const> for GIANT</li>
                             </ul>
@@ -440,7 +437,7 @@
       margin-top: 10px;
       text-align: left;">
             <div style="text-align: center; margin-bottom: 6px">
-                <img src="//cdn.codingame.com/smash-the-code/statement/league_bronze.png" />
+                <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
             </div>
             <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
                 What is in store for me in the higher leagues?
