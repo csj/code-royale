@@ -10,13 +10,14 @@ import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE
 import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_MIN
 import com.codingame.gameengine.module.entities.Curve
 import java.util.*
+import kotlin.Unit
 import kotlin.math.min
 import kotlin.math.sqrt
 
 var nextObstacleId = 0
 val rando = Random()
 
-class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initialLocation: Vector2): MyEntity() {
+class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initialLocation: Vector2): FieldObject() {
   val obstacleId = nextObstacleId++
   override val mass = 0
   var gold by nonNegative(initialGold)
@@ -223,7 +224,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     .setAnchorX(0.5)
     .setAnchorY(0.5)
 
-  var attackTarget: MyEntity? = null
+  var attackTarget: FieldObject? = null
 
   override fun hideEntities() {
     towerRangeCircle.radius = obstacle.radius

@@ -25,7 +25,7 @@ class Referee : AbstractReferee() {
 
   private var obstacles: List<Obstacle> = listOf()
 
-  private fun allEntities(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
+  private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
   override fun init(params: Properties): Properties {
 
@@ -101,7 +101,7 @@ class Referee : AbstractReferee() {
 
     fun processPlayerActions() {
       val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
-      val scheduledBuildings = mutableListOf<Pair<Player, ()->Unit>>()
+      val scheduledBuildings = mutableListOf<Pair<Player, ()-> kotlin.Unit>>()
       class PlayerInputException(message: String): Exception(message)
       class PlayerInputWarning(message: String): Exception(message)
 
@@ -255,7 +255,7 @@ class Referee : AbstractReferee() {
       }
 
       // Execute builds that remain
-      scheduledBuildings.forEach { (player: Player, callback: () -> Unit) ->
+      scheduledBuildings.forEach { (player: Player, callback: () -> kotlin.Unit) ->
         try { callback.invoke() }
         catch (e: PlayerInputException) {
           System.err.println("WARNING: Deactivating ${player.nicknameToken} because of:")
