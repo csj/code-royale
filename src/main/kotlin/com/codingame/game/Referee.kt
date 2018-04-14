@@ -34,8 +34,8 @@ class Referee : AbstractReferee() {
     theGameManager = gameManager
     theGameManager.maxTurns = 250
 
-    when (3) {
-//    when (gameManager.leagueLevel) {
+//    when (3) {
+    when (gameManager.leagueLevel) {
       1 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false }
       2 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME }
       else -> { }
