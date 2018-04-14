@@ -7,6 +7,7 @@ import com.codingame.game.Constants.QUEEN_MASS
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.QUEEN_SPEED
 import com.codingame.game.Constants.RANGED_DAMAGE
+import com.codingame.game.Constants.RANGED_DAMAGE_TO_GIANTS
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.Curve
@@ -73,10 +74,10 @@ abstract class Unit(val owner: Player) : FieldObject() {
         tokenCircle.alpha = 0.0
         deathSprite.let {
           it.isVisible = true
+          it.location = location
           for (i in 1..5) {
-            it.location = location + Vector2(0, i*-10)
-            it.alpha = i*0.2
-            it.setScale(1 + (i*0.3))
+            it.alpha = 0.5 + i*0.1
+            it.setScale(0.3 + (i*0.2))
             theEntityManager.commitEntityState(i*0.15, it)
           }
           it.isVisible = false
@@ -297,7 +298,7 @@ class RangedCreep(owner: Player, creepType: CreepType)
     attackTarget = null
     val target = findTarget() ?: return
     if (location.distanceTo(target.location) < radius + target.radius + attackRange + TOUCHING_DELTA) {
-      target.damage(RANGED_DAMAGE)
+      target.damage(if (target is GiantCreep) RANGED_DAMAGE_TO_GIANTS else RANGED_DAMAGE)
       attackTarget = target
     }
   }
