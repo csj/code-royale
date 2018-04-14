@@ -11,13 +11,17 @@
     margin-bottom: 10px;
     text-align: left;">
         <div style="text-align: center; margin-bottom: 6px">
-            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_02.png"/>
         </div>
 
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
-            Introduction
+            Summary of new rules
         </p>
         <span class="statement-league-alert-content">
+            <strong>This is a league based puzzle.</strong>
+            For this puzzle, multiple versions of the same game are available.<br>
+            Once you have proven your skills on this first version, you will access a higher league and extra rules will be unlocked.<br>
+            <br>
             You have control over a single Queen unit which you can use to build barracks.<br />
             Use barracks to train Creeps to attack and destroy the enemy Queen and to protect your own.<br />
             See the statement for details.
@@ -33,7 +37,7 @@
         </h1>
         <div class="statement-goal-content">
             <!-- LEAGUES wood3 wood2 wood1 bronze -->
-            To destroy the enemy Queen.
+            Your objective is to build structures and train troops in order to destroy the enemy Queen.
         </div>
     </div>
 
@@ -54,7 +58,7 @@
                 The field is generated randomly every game, with the obstacles being symmetrically laid out (rotationally around the map's center).
             </p>
 
-            <p><strong>Queens</strong>
+            <p><strong>Queens</strong></p>
 
             <p>Each player controls a single Queen character, who can establish different structures on those obstacles.
             The Queen is the player’s only way to directly interact with the field.
@@ -62,26 +66,20 @@
             The Queen is modeled as a circle with radius <const>30</const> units, and moves up to <const>60</const> units every turn.<br>
             Each Queen starts with <const>200</const> HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
             If both Queens are destroyed on the same turn, the game will end in a draw.<br>
+            </p>
 
             <p><strong>Structures</strong></p>
-
             <p>
-                <br>
-                A Queen character can build a structure on an obstacle that she is in contact with.<br>
-                If she so chooses, a Queen can replace an existing friendly structure simply by building another one in its place (unless it is a Barracks that is currently training).<br>
-                If both Queens try simultaneously to build a structure on the same obstacle, then only one will be built:<br>
-            </p>
-            <ul>
-                <li>On even-numbered turns (this includes the first turn: turn 0), player 2 gets to build</li>
-                <li>On odd-numbered turns, player 1 gets to build</li>
-            </ul>
-            <p>
+                A Queen character can build a structure on the <var>touchedObstacle</var> that she is in contact
+                with.<br>
+                A Queen can replace an existing friendly structure by building another one in its place unless it is a
+                Barracks that is currently training.<br>
                 Structures can be built at no cost. Barracks are available for use on the turn immediately following their construction.<br>
             </p>
 
             <p><strong>Gold</strong><br>
                 <br>
-                Each player begins with <const>100</const> gold and will gain <const>10</const> gold at the end of each turn.<br>
+                Each player begins with 100 gold and will gain 10 gold at the end of each turn.<br>
             </p>
 
             <p><strong>Creeps</strong><br>
@@ -90,70 +88,17 @@
                 Once built, creeps follow very simple behaviours (see below), and cannot be controlled by the player.<br>
                 Creeps will eventually age and die on their own, losing <const>1</const> HP every turn.<br>
                 <br>
-                There are two different creep types that can be built. (The Queen is listed here for comparison)<br>
-
-                <table style="width: 100%; border-spacing: 10px; border-collapse: separate;">
-                    <tr>
-                        <th>Type</th>
-                        <td>MELEE</td>
-                        <td>RANGED</td>
-                        <td>Queen</td>
-
-                    </tr>
-                    <tr>
-                        <th>Cost</th>
-                        <td>80</td>
-                        <td>120</td>
-                        <td>N/A</td>
-                    </tr>
-                    <tr>
-                        <th>Number</th>
-                        <td>4</td>
-                        <td>2</td>
-                        <td>N/A</td>
-                    </tr>
-                    <tr>
-                        <th>Speed</th>
-                        <td>100</td>
-                        <td>75</td>
-                        <td>60</td>
-                    </tr>
-                    <tr>
-                        <th>Damage per turn</th>
-                        <td>1 to Queen</td>
-                        <td>2 to any creep</td>
-                        <td>N/A</td>
-                    </tr>
-                    <tr>
-                        <th>Range</th>
-                        <td>0</td>
-                        <td>200</td>
-                        <td>N/A</td>
-                    </tr>
-                    <tr>
-                        <th>HP</th>
-                        <td>30</td>
-                        <td>45</td>
-                        <td>200</td>
-                    </tr>
-                    <tr>
-                        <th>Training Time (turns)</th>
-                        <td>5</td>
-                        <td>8</td>
-                        <td>N/A</td>
-                    </tr>
-                    <tr>
-                        <th>Radius</th>
-                        <td>20</td>
-                        <td>25</td>
-                        <td>30</td>
-                    </tr>
-                </table>
-
+                There are two different creep types that can be built.<br>
                 <br>
-                MELEE units are light, fast units which attack the enemy Queen, dealing <const>1</const> damage every turn they end in contact with the enemy Queen.<br>
+                MELEE units are light, fast units which attack the enemy Queen.<br>
+                They cost
+                <const>80</const>
+                gold to train a group of 4.<br>
+                <br>
                 RANGED units are slower, ranged units which move toward and attack nearby enemy creeps from a short distance.<br>
-                They deal <const>2</const> damage to the their nearest enemy creep every turn they end within range of that creep. (Note: they can shoot past obstacles).<br>
+                They cost
+                <const>120</const>
+                gold to train a group of 2.<br>
                 <br>
                 A player needs to build a BARRACKS with his Queen in order to create creeps.<br>
                 A barracks can be destroyed if it is touched by the enemy Queen.<br>
@@ -211,80 +156,18 @@
         </div>
     </div>
 
-
-        <!-- EXPERT RULES -->
         <div class="statement-section statement-expertrules">
             <h1>
                 <span class="icon icon-expertrules">&nbsp;</span>
                 <span>Expert Rules</span>
             </h1>
             <div class="statement-expert-rules-content">
-
-                <p><strong>Turn sequence</strong><br></p>
-                <ol>
-                    <li>Game state sent to players</li>
-                    <li>Player inputs received and processed:
-                        <ul>
-                            <li>New trainees started</li>
-                            <li>Queens move</li>
-                            <li>New structures built</li>
-                        </ul>
-                    </li>
-                    <li>Creeps move, collisions resolved</li>
-                    <li>Queens destroy enemy barracks</li>
-                    <li>Remaining structures act (including ones built this turn):
-                        <ul>
-                            <li>Barracks that are in progress advance; new creeps spawned</li>
-                        </ul>
-                    </li>
-                    <li>Each player is given 10 gold</li>
-                    <li>Creeps age, dead creeps removed</li>
-                    <li>End game condition checked</li>
-                </ol>
-
-                <p><strong>Collisions</strong><br>
-                    <br>
-                    Units cannot share space. All obstacles, Queens and creeps are modeled as circles.<br>
-                    <br>
-                    Unit movement is done by simply moving toward the desired target. However, at the end of every turn, a series of collision
-                    checks are performed. While there are any collisions, the offending units are simply translated away from each other (except for
-                    obstacles, they stay put.) Hence it is possible for a Queen to be "shoved" out of her way by a swarm of creeps.<br>
-                    <br>
-                    For this purpose, units are assigned a weight as follows:<br>
-                </p>
-                <ul>
-                    <li>Obstacle: infinite (unmovable)</li>
-                    <li>Queen: 100</li>
-                    <li>Ranged: 9</li>
-                    <li>Melee: 4</li>
-                </ul>
-                <p>
-                    In case of collisions, a lower-weight unit will be displaced more than a higher-weight unit.<br>
-                    <br>
-                    Two entities are considered "touching" by comparing the distance between their centers, thus: <br>
-                    isTouching = distance - radius1 - radius2 < <const>5</const>. This applies to:
-                </p>
-                <ul>
-                    <li>MELEE - Queen (damage)</li>
-                    <li>Queen - Obstacle (construction, and tearing down enemy structures)</li>
-                </ul>
-
-                <p><strong>Obstacle gold</strong></p>
-
-                <p>
-                    All obstacles are randomized in pairs: attributes that apply to mirroring obstacles are always the same at the game's start.<br>
-                    Each obstacle-pair gets assigned a radius between <const>60</const> and <const>110</const> units.<br>
-                </p>
-
-                <p><strong>Draws</strong><br>
-                    <br>
-                    The game will end in a draw if after <const>250</const> turns both Queens have the same HP.<br>
-                </p>
-
+                An expanded statement with full simulation details will be available in Bronze league.
             </div>
         </div>
 
-         <!-- PROTOCOL -->
+
+        <!-- PROTOCOL -->
         <div class="statement-section statement-protocol">
             <h1>
                 <span class="icon icon-protocol">&nbsp;</span>
@@ -309,17 +192,13 @@
                 <div class="title">Input for one game turn</div>
                 <div class="text">
 
-                    <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedObstacle</var><br>
-                    <ul>
-                        <li><var>gold</var>: the current amount of gold available to be spent</li>
-                        <li><var>touchedObstacle</var>: the id of the obstacle your Queen is touching, or -1 if none</li>
-                    </ul>
-                    <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers <var>obstacleId</var> <var>ignore1</var>
-                        <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
+                    <span class="statement-lineno">Line 1:</span>A single integer <var>gold</var>: the current amount of gold available to be spent<br>
+                    <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers <var>obstacleId</var> <var>gold</var>
+                        <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                     <ul>
                         <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
-                        <li><var>ignore1</var>: Reserved for future leagues</li>
-                        <li><var>ignore2</var>: Reserved for future leagues</li>
+                        <li><var>gold</var>: Ignore for Wood 1.</li>
+                        <li><var>maxMineSize</var>: Ignore for Wood 1.</li>
                         <li><var>structureType</var>:
                             <ul>
                                 <li><const>-1</const>: No structure</li>
@@ -342,7 +221,12 @@
                         <li><var>param2</var>
                             <ul>
                                 <li>When no structure: <const>-1</const></li>
-                                <li>When barracks: the creep type: <const>0</const> for MELEE, <const>1</const> for RANGED</li>
+                                <li>When barracks: the creep type:
+                                    <const>0</const>
+                                    for MELEE,
+                                    <const>1</const>
+                                    for RANGED
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -365,7 +249,7 @@
                     <ul>
                         <li><action>WAIT</action> Do nothing</li>
                         <li><action>MOVE x y</action> Will attempt to move towards the provided coordinates (x,y given as integers)</li>
-                        <li><action>BUILD {obstacleId} BARRACKS-{type}</action> Will attempt to build a barracks at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle. The type must be given as either <action>MELEE</action> or <action>RANGED</action>.</li>
+                        <li><action>BUILD {obstacleId} BARRACKS-{type}</action> Will attempt to build a barracks at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle. The type must be given as either <action>MELEE</action>, <action>RANGED</action>, or <action>GIANT</action>.</li>
                     </ul>
                     <strong>Second line:</strong> <action>TRAIN</action> followed by a list of <const>obstacleId</const>s to start training at.
                 </div>
@@ -387,7 +271,7 @@
       margin-top: 10px;
       text-align: left;">
         <div style="text-align: center; margin-bottom: 6px">
-            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_02.png" />
         </div>
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
             What is in store for me in the higher leagues?
