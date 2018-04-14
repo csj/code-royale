@@ -1,5 +1,6 @@
 package com.codingame.game
 
+import kotlin.Unit
 import kotlin.reflect.KProperty
 
 interface PropertyDelegate<in S, T> {

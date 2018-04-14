@@ -7,6 +7,7 @@ import com.codingame.game.Constants.QUEEN_MASS
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.QUEEN_SPEED
 import com.codingame.game.Constants.RANGED_DAMAGE
+import com.codingame.game.Constants.RANGED_DAMAGE_TO_GIANTS
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.Curve
@@ -29,13 +30,13 @@ var <T : Entity<*>?> Entity<T>.location: Vector2
     y = (value.y + viewportY.first).toInt()
   }
 
-abstract class MyEntity {
+abstract class FieldObject {
   abstract var location: Vector2
   abstract var radius: Int
   abstract val mass: Int   // 0 := immovable
 }
 
-abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
+abstract class Unit(val owner: Player) : FieldObject() {
   abstract fun damage(damageAmount: Int)
 
   protected val tokenCircle = theEntityManager.createSprite()
@@ -47,6 +48,13 @@ abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
     .setZIndex(41)
     .setScale(1.2)
     .setAnchor(0.5)!!
+
+  protected val deathSprite = theEntityManager.createSprite()
+    .setZIndex(41)
+    .setScale(1.2)
+    .setAnchor(0.5)
+    .setImage("Death.png")
+    .setVisible(false)
 
   override var location: Vector2 = Vector2.Zero
     set(value) {
@@ -62,10 +70,21 @@ abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
     set(value) {
       field = value
       if (value < 0) field = 0
-      tokenCircle.alpha = when {
-        health <= 0 -> 0.0
-        else -> 0.8 * health / maxHealth + 0.2
+      if (health <= 0) {
+        tokenCircle.alpha = 0.0
+        deathSprite.let {
+          it.isVisible = true
+          it.location = location
+          for (i in 1..5) {
+            it.alpha = 0.5 + i*0.1
+            it.setScale(0.3 + (i*0.2))
+            theEntityManager.commitEntityState(i*0.15, it)
+          }
+          it.isVisible = false
+          theEntityManager.commitEntityState(1.0, it)
+        }
       }
+      else tokenCircle.alpha = 0.8 * health / maxHealth + 0.2
       theTooltipModule.updateExtraTooltipText(tokenCircle, "Health: $health")
     }
 
@@ -74,7 +93,7 @@ abstract class MyOwnedEntity(val owner: Player) : MyEntity() {
   }
 }
 
-class Queen(owner: Player) : MyOwnedEntity(owner) {
+class Queen(owner: Player) : Unit(owner) {
   override val mass = QUEEN_MASS
   override var radius = QUEEN_RADIUS
   override val maxHealth = QUEEN_HP
@@ -102,7 +121,7 @@ class Queen(owner: Player) : MyOwnedEntity(owner) {
 abstract class Creep(
   owner: Player,
   val creepType: CreepType
-) : MyOwnedEntity(owner) {
+) : Unit(owner) {
 
   protected val speed: Int = creepType.speed
   val attackRange: Int = creepType.range
@@ -279,7 +298,7 @@ class RangedCreep(owner: Player, creepType: CreepType)
     attackTarget = null
     val target = findTarget() ?: return
     if (location.distanceTo(target.location) < radius + target.radius + attackRange + TOUCHING_DELTA) {
-      target.damage(RANGED_DAMAGE)
+      target.damage(if (target is GiantCreep) RANGED_DAMAGE_TO_GIANTS else RANGED_DAMAGE)
       attackTarget = target
     }
   }

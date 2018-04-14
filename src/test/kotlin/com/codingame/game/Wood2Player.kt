@@ -10,8 +10,8 @@ class Wood2Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
   init {
 
     while (true) {
-      val (queenLoc, _, _, _, _, obstacles, _, _) = readInputs()
-
+      val (queenLoc, _, _, touch, _, _, obstacles, _, _) = readInputs()
+//      stderr.println("Touching: $touch")
       fun getQueenAction(): String {
 
         val queenTarget = obstacles

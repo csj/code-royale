@@ -7,7 +7,7 @@ import java.io.PrintStream
 class AllTowersPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
   init {
     while (true) {
-      val (queenLoc, _, _, _, _, obstacles, _, _) = readInputs()
+      val (queenLoc, _, _, _, _, _, obstacles, _, _) = readInputs()
 
       fun getQueenAction(): String {
         // if touching a tower that isn't at max health, keep growing it

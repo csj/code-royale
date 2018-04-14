@@ -5,7 +5,7 @@ import com.codingame.game.ObstacleInput
 import java.io.InputStream
 import java.io.PrintStream
 
-class AllMeleePlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
+class AllRangedPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
 
   private fun myBarracks(): List<ObstacleInput> = obstacles.filter { it.owner == 0 && it.structureType == 2 }
 
@@ -42,7 +42,7 @@ class AllMeleePlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStrea
         val maxUnitSpend = (myBarracks().size + 0.5) * 16 //  = 80/5
         val needsBarracks = income >= maxUnitSpend
 
-        return "BUILD ${queenTarget.obstacleId} ${if(needsBarracks) "BARRACKS-MELEE" else "MINE"}"
+        return "BUILD ${queenTarget.obstacleId} ${if(needsBarracks) "BARRACKS-RANGED" else "MINE"}"
       }
 
       try {

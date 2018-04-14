@@ -1,5 +1,6 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.TOUCHING_DELTA
@@ -24,7 +25,7 @@ class Referee : AbstractReferee() {
 
   private var obstacles: List<Obstacle> = listOf()
 
-  private fun allEntities(): List<MyEntity> = gameManager.players.flatMap { it.allUnits() } + obstacles
+  private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
   override fun init(params: Properties): Properties {
 
@@ -33,7 +34,8 @@ class Referee : AbstractReferee() {
     theGameManager = gameManager
     theGameManager.maxTurns = 250
 
-    when (gameManager.leagueLevel) {
+    when (3) {
+//    when (gameManager.leagueLevel) {
       1 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false }
       2 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME }
       else -> { }
@@ -75,7 +77,9 @@ class Referee : AbstractReferee() {
   override fun gameTurn(turn: Int) {
     fun sendGameStates() {
       for (activePlayer in gameManager.activePlayers) {
-        activePlayer.sendInputLine("${activePlayer.gold}")
+        val touchedObstacle = obstacles.singleOrNull { it.location.distanceTo(activePlayer.queenUnit.location) < it.radius + QUEEN_RADIUS + TOUCHING_DELTA }
+          ?.obstacleId ?: -1
+        activePlayer.sendInputLine("${activePlayer.gold} $touchedObstacle")
         obstacles.forEach { activePlayer.printObstaclePerTurn(it) }
 
         val units = gameManager.activePlayers.flatMap { it.activeCreeps + it.queenUnit }
@@ -97,7 +101,7 @@ class Referee : AbstractReferee() {
 
     fun processPlayerActions() {
       val obstaclesAttemptedToBuildUpon = mutableListOf<Obstacle>()
-      val scheduledBuildings = mutableListOf<Pair<Player, ()->Unit>>()
+      val scheduledBuildings = mutableListOf<Pair<Player, ()-> kotlin.Unit>>()
       class PlayerInputException(message: String): Exception(message)
       class PlayerInputWarning(message: String): Exception(message)
 
@@ -230,6 +234,8 @@ class Referee : AbstractReferee() {
               }
               else -> throw PlayerInputException("Didn't understand command: $command")
             }
+            if (toks.hasNext()) throw PlayerInputException("Too many tokens after $command command")
+
           } catch (e: PlayerInputWarning) {
             gameManager.addToGameSummary("WARNING: ${e.message}")
           }
@@ -249,7 +255,7 @@ class Referee : AbstractReferee() {
       }
 
       // Execute builds that remain
-      scheduledBuildings.forEach { (player: Player, callback: () -> Unit) ->
+      scheduledBuildings.forEach { (player: Player, callback: () -> kotlin.Unit) ->
         try { callback.invoke() }
         catch (e: PlayerInputException) {
           System.err.println("WARNING: Deactivating ${player.nicknameToken} because of:")

@@ -10,7 +10,7 @@ class Wood1Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
   init {
 
     while (true) {
-      val (queenLoc, _, _, _, _, obstacles, _, _) = readInputs()
+      val (queenLoc, _, _, _, _, _, obstacles, _, _) = readInputs()
 
       fun getQueenAction(): String {
         val queenTarget = obstacles

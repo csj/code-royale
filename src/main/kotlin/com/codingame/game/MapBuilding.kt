@@ -63,14 +63,14 @@ fun buildMap(theRandom: Random): List<Obstacle> {
   return obstacles
 }
 
-fun fixCollisions(entities: List<MyEntity>, maxIterations: Int = 999) {
+fun fixCollisions(entities: List<FieldObject>, maxIterations: Int = 999) {
   repeat(maxIterations) { if (!collisionCheck(entities)) return }
 }
 
 /**
  * @return false if everything is ok; true if there was a correction
  */
-fun collisionCheck(entities: List<MyEntity>, acceptableGap: Double = 0.0): Boolean {
+fun collisionCheck(entities: List<FieldObject>, acceptableGap: Double = 0.0): Boolean {
   return entities.flatMap { u1 ->
     val rad = u1.radius.toDouble()
     val clampDist = if (u1.mass == 0) Constants.OBSTACLE_GAP + rad else rad
