@@ -108,7 +108,7 @@ class Referee : AbstractReferee() {
       fun scheduleBuilding(player: Player, obs: Obstacle, strucType: String) {
         val struc = obs.structure
         if (struc?.owner == player.enemyPlayer) throw PlayerInputWarning("Cannot build: owned by enemy player")
-        if (struc is Barracks && struc.owner == player && struc.progress > 0)
+        if (struc is Barracks && struc.owner == player && struc.isTraining)
           throw PlayerInputWarning("Cannot rebuild: training is in progress")
 
         obstaclesAttemptedToBuildUpon += obs

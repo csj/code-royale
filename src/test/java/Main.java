@@ -1,3 +1,4 @@
+import com.codingame.game.ThibaudPlayer;
 import com.codingame.gameengine.runner.GameRunner;
 
 public class Main {
@@ -6,8 +7,8 @@ public class Main {
         GameRunner gameRunner = new GameRunner();
 
         // Adds as many player as you need to test your game
-        gameRunner.addAgent(AllRangedPlayer.class);
-        gameRunner.addAgent(AllMeleePlayer.class);
+        gameRunner.addAgent(WaitBot.class);
+        gameRunner.addAgent(ThibaudPlayer.class);
 
         // gameRunner.addCommandLinePlayer("python3 /home/user/player.py");
 
