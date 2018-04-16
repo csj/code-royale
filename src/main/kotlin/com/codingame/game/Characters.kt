@@ -70,8 +70,8 @@ abstract class Unit(val owner: Player) : FieldObject() {
     set(value) {
       field = value
       if (value < 0) field = 0
+
       if (health <= 0) {
-        tokenCircle.alpha = 0.0
         deathSprite.let {
           it.isVisible = true
           it.location = location
@@ -84,7 +84,6 @@ abstract class Unit(val owner: Player) : FieldObject() {
           theEntityManager.commitEntityState(1.0, it)
         }
       }
-      else tokenCircle.alpha = 0.8 * health / maxHealth + 0.2
       theTooltipModule.updateExtraTooltipText(tokenCircle, "Health: $health")
     }
 
@@ -148,6 +147,8 @@ abstract class Creep(
       if (super.health == 0) {
         characterSprite.alpha = 0.0
         tokenCircle.alpha = 0.0
+      } else {
+        tokenCircle.alpha = 0.8 * health / maxHealth + 0.2
       }
     }
 
