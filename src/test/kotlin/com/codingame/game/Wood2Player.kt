@@ -18,7 +18,7 @@ class Wood2Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream):
           .filter { it.owner == -1 }
           .minBy { it.location.distanceTo(queenLoc) } ?: return "WAIT"
 
-        val needsMelee = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 0 }
+        val needsMelee = obstacles.count { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 0 } < 2
         val needsRanged = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 1 }
 //        val needsGiant = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 2 }
 
