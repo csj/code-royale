@@ -1,6 +1,6 @@
 <div id="statement_back" class="statement_back" style="display:none"></div>
 
-    <div class="statement-body">
+<div class="statement-body">
 
     <!-- LEAGUE ALERT -->
     <div style="color: #7cc576;
@@ -32,7 +32,7 @@
         </h1>
         <div class="statement-goal-content">
             <!-- LEAGUES wood3 wood2 wood1 bronze -->
-            To destroy the enemy Queen.
+            Destroy the enemy Queen.
         </div>
     </div>
 
@@ -49,13 +49,11 @@
 
             <p>
                 The game is played by two players on a semi-open two-dimensional field <const>1920</const> units wide and <const>1000</const>
-                units high, littered with circular obstacles of varying radius. The top-left corner is 0,0.<br>
+                units high, littered with circular obstacles of varying radius. The top-left corner is <const>0,0</const>.<br>
                 The field is generated randomly every game, with the obstacles being symmetrically laid out (rotationally around the map's center).
             </p>
 
-            <!-- BEGIN wood3 wood2 -->
-            <!-- END -->
-
+            <br>
             <p><strong>Queens</strong>
 
             <p>Each player controls a single Queen character, who can establish different structures on those obstacles.
@@ -65,10 +63,11 @@
             Each Queen starts with <const>200</const> HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
             If both Queens are destroyed on the same turn, the game will end in a draw.<br>
 
+            </p>
+            
+            <br>
             <p><strong>Structures</strong></p>
-
             <p>
-                <br>
                 A Queen character can build a structure on an obstacle that she is in contact with.<br>
                 If she so chooses, a Queen can replace an existing friendly structure simply by building another one in its place (unless it is a Barracks that is currently training).<br>
                 If an enemy Tower is already in place on an obstacle, a Queen cannot replace it.<br>
@@ -81,14 +80,16 @@
             <p>
                 Structures can be built at no cost. Towers begin working the turn they are built, and can be grown over time. Barracks are available for use on the turn immediately following their construction.<br>
             </p>
-
-            <p><strong>Gold</strong><br>
-                <br>
+            
+            <br>
+            <p><strong>Gold</strong></p>
+            <p>
                 Each player begins with <const>100</const> gold and will gain <const>10</const> gold at the end of each turn.<br>
             </p>
 
-            <p><strong>Creeps</strong><br>
-                <br>
+            <br>
+            <p><strong>Creeps</strong></p>
+            <p>
                 In order to destroy the enemy Queen, a player will need to build creeps.<br>
                 Once built, creeps follow very simple behaviours (see below), and cannot be controlled by the player.<br>
                 Creeps will eventually age and die on their own, losing <const>1</const> HP every turn.<br>
@@ -173,8 +174,8 @@
                 Training creeps is explained in a section below.<br><br>
             </p>
 
-            <p><strong>Towers</strong><br>
-                <br>
+            <p><strong>Towers</strong></p>
+            <p>
                 With enemy creeps hunting down the Queen, a player will be well-advised to create some static defense in the form of towers. These are also built by the Queen.<br>
                 <br>
                 When a tower is first built, it has a small firing radius.<br>
@@ -187,15 +188,16 @@
                 If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her instead, dealing <const>1</const> base damage <const>+1</const> for every <const>200</const> units of distance closer.<br>
             </p>
 
-            <p><strong>Training Creeps</strong><br>
-                <br>
+            <br>
+            <p><strong>Training Creeps</strong></p>
+            <p>
                 Every obstacle is numbered, starting from <const>0</const>.<br>
                 A player trains creeps by indicating which numbered obstacles containing a barracks he wishes to train creeps at.<br>
                 Examples:<br>
                 <ul>
-                    <li>“TRAIN 13 6 19” - Three barracks begin training creeps</li>
-                    <li>“TRAIN 14” - One barracks begins training creeps</li>
-                    <li>“TRAIN” - No barracks begin training creeps.</li>
+                    <li><action>TRAIN 13 6 19</action> - Three barracks begin training creeps</li>
+                    <li><action>TRAIN 14</action> - One barracks begins training creeps</li>
+                    <li><action>TRAIN</action> - No barracks begin training creeps.</li>
                 </ul>
                 <br>
                 Every barracks is built with the ability to train a single creep type.<br>
@@ -214,7 +216,7 @@
                 <div class="blk">
                     <div class="title">Victory Conditions</div>
                     <div class="text">
-                        <ul>
+                        <ul style="padding-bottom: 0;">
                             <li>Destroy the enemy Queen.</li>
                             <li>After <const>250</const> turns, your Queen has more HP than the enemy Queen.</li>
                         </ul>
@@ -228,7 +230,7 @@
                 <div class="blk">
                     <div class="title">Lose Conditions</div>
                     <div class="text">
-                        <ul>
+                        <ul style="padding-bottom: 0;">
                             <li>Your Queen is destroyed.</li>
                             <li>Output an invalid command.</li>
                         </ul>
@@ -251,7 +253,7 @@
                 <ol>
                     <li>Game state sent to players</li>
                     <li>Player inputs received and processed:
-                        <ul>
+                        <ul style="padding-top: 0;padding-bottom: 0;">
                             <li>New trainees started</li>
                             <li>Queens move</li>
                             <li>New structures built</li>
@@ -260,7 +262,7 @@
                     <li>Creeps move, collisions resolved</li>
                     <li>Queens destroy enemy barracks</li>
                     <li>Remaining structures act (including ones built this turn):
-                        <ul>
+                        <ul style="padding-top: 0;padding-bottom: 0;">
                             <li>Towers shoot, dead creeps removed</li>
                             <li>Barracks that are in progress advance; new creeps spawned</li>
                         </ul>
@@ -270,8 +272,9 @@
                     <li>End game condition checked</li>
                 </ol>
 
-                <p><strong>Collisions</strong><br>
-                    <br>
+                <br>
+                <p><strong>Collisions</strong></p>
+                <p>
                     Units cannot share space. All obstacles, Queens and creeps are modeled as circles.<br>
                     <br>
                     Unit movement is done by simply moving toward the desired target. However, at the end of every turn, a series of collision
@@ -306,7 +309,7 @@
                     Each obstacle-pair gets assigned a radius between <const>60</const> and <const>110</const> units.<br>
                 </p>
 
-
+                <br>
                 <p><strong>Tower HP</strong></p>
 
                 <p>
@@ -322,8 +325,9 @@
                     Each GIANT that ends its turn next to a tower reduces its HP by <const>80</const>. Hence a Queen can slightly outpace a single GIANT by building at the same time.<br>
                 </p>
 
-                <p><strong>Draws</strong><br>
-                    <br>
+                <br>
+                <p><strong>Draws</strong></p>
+                <p>
                     The game will end in a draw if after <const>250</const> turns both Queens have the same HP.<br>
                 </p>
 
@@ -342,7 +346,7 @@
                 <div class="text">
                     <span class="statement-lineno">Line 1:</span> an integer <var>numObstacles</var>, indicating the number of obstacles on the map.<br>
                     <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> 4 integers <var>obstacleId</var> <var>x</var> <var>y</var> <var>radius</var><br>
-                    <ul>
+                    <ul style="padding-bottom: 0;">
                         <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
                         <li><var>x y</var>: The numeric coordinates of the obstacle's center</li>
                         <li><var>radius</var>: The radius of the obstacle</li>
@@ -362,33 +366,33 @@
                     </ul>
                     <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers <var>obstacleId</var> <var>ignore1</var>
                         <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
-                    <ul>
+                    <ul style="padding-bottom: 0;">
                         <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
                         <li><var>ignore1</var>: Reserved for future leagues</li>
                         <li><var>ignore2</var>: Reserved for future leagues</li>
                         <li><var>structureType</var>:
-                            <ul>
+                            <ul style="padding-top: 0;padding-bottom: 0;">
                                 <li><const>-1</const>: No structure</li>
                                 <li><const>1</const>: Tower</li>
                                 <li><const>2</const>: Barracks</li>
                             </ul>
                         </li>
                         <li><var>owner</var>:
-                            <ul>
+                          <ul style="padding-top: 0; padding-bottom: 0;">
                                 <li><const>-1</const>: No structure</li>
                                 <li><const>0</const>: Friendly</li>
                                 <li><const>1</const>: Enemy</li>
                             </ul>
                         </li>
                         <li><var>param1</var>:
-                            <ul>
+                          <ul style="padding-top: 0; padding-bottom: 0;">
                                 <li>When no structure: <const>-1</const></li>
                                 <li>When tower: the remaining HP</li>
                                 <li>When barracks, the current progress of a set of creeps being trained or <const>0</const> if nothing is being trained</li>
                             </ul>
                         </li>
                         <li><var>param2</var>
-                            <ul>
+                          <ul style="padding-top: 0; padding-bottom: 5px;">
                                 <li>When no structure: <const>-1</const></li>
                                 <li>When tower: the attack radius measured from its center</li>
                                 <li>When barracks: the creep type: <const>0</const> for MELEE, <const>1</const> for RANGED, <const>2</const> for GIANT</li>
@@ -398,10 +402,10 @@
                     <br>
                     <span class="statement-lineno">Next Line:</span> <var>numUnits</var>: Number of total active units, including Queens<br>
                     <span class="statement-lineno">Next <var>numUnits</var> lines: 5 integers <var>x</var> <var>y</var> <var>owner</var> <var>type</var> <var>health</var> </span><br>
-                    <ul>
+                    <ul style="padding-bottom: 0;" >
                         <li><var>x</var> <var>y</var>: Coordinates of the unit</li>
-                        <li><var>owner</var>: 0 = Friendly; 1 = Enemy</li>
-                        <li><var>type</var>: The unit type: <const>-1</const> for Queen, <const>0</const> for MELEE, <const>1</const> for RANGED, <const>2</const> for GIANT</li>
+                        <li><var>owner</var>: <const>0</const> = Friendly; <const>1</const> = Enemy</li>
+                        <li><var>type</var>: The unit type: <const>-1</const> for Queen, <const>0</const> for MELEE, <const>1</const> for RANGED</li>
                         <li><var>health</var>: Current HP of the unit</li>
                     </ul>
                 </div>
@@ -409,7 +413,8 @@
 
             <!-- Protocol block -->
             <div class="blk">
-                <div class="title">Output for one game turn
+                <div class="title">Output for one game turn</div>
+                <div>
                     <strong>First line:</strong> One of the following
                     <ul>
                         <li><action>WAIT</action> Do nothing</li>
@@ -443,21 +448,21 @@
                 What is in store for me in the higher leagues?
             </p>
             The extra rules available in higher leagues are:
-            <ul class="statement-next-rules">
+            <ul style="padding-bottom: 0;" class="statement-next-rules">
                 <li>You will need to build MINE structures in order to generate gold.</li>
             </ul>
         </div>
 
-    <!-- STORY -->
+    <!-- STORY 
     <div class="statement-story-background">
         <div class="statement-story-cover" style="background-size: cover;">
             <div class="statement-story" style="min-height: 300px; position: relative">
                 <h2>Code Royale</h2>
                 <div class="story-text">
-                    <!--TODO: Write engaging story.-->
                     <p>Engaging story.</p>
                 </div>
             </div>
         </div>
     </div>
+    -->
 </div>
