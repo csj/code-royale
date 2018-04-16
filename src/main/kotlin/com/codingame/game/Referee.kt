@@ -242,10 +242,12 @@ class Referee : AbstractReferee() {
         } catch (e: AbstractPlayer.TimeoutException) {
           e.printStackTrace()
           player.kill("Timeout!")
+          gameManager.addToGameSummary("${player.nicknameToken} failed to provide ${player.expectedOutputLines} lines of output in time.")
         } catch (e: PlayerInputException) {
           System.err.println("WARNING: Terminating ${player.nicknameToken}, because of:")
           e.printStackTrace()
           player.kill("${e.message}")
+          gameManager.addToGameSummary("${player.nicknameToken}: ${e.message}")
         }
       }
 
@@ -261,6 +263,7 @@ class Referee : AbstractReferee() {
           System.err.println("WARNING: Deactivating ${player.nicknameToken} because of:")
           e.printStackTrace()
           player.kill("${e.message}")
+          gameManager.addToGameSummary("${player.nicknameToken}: ${e.message}")
         }
       }
     }
