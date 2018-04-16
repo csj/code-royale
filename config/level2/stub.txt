@@ -14,7 +14,7 @@ ignore1: used in future leagues
 ignore2: used in future leagues
 structureType: -1 = No structure, 1 = Tower, 2 = Barracks
 owner: -1 = No structure, 0 = Friendly, 1 = Enemy
-creepType: 0 = MELEE, 1 = RANGED, 2 = GIANT
+unitType: -1 = QUEEN, 0 = MELEE, 1 = RANGED, 2 = GIANT
 
 OUTPUT
 First line: A valid queen action

@@ -47,9 +47,8 @@
             <p><strong>Field</strong></p>
 
             <p>
-                The game is played by two players on a semi-open two-dimensional field <const>1920</const> units wide and <const>1000</const>
-                units high, littered with circular obstacles of varying radius. The top-left corner is <const>0,0</const>.<br>
-                The field is generated randomly every game, with the obstacles being symmetrically laid out (rotationally around the map's center).
+                The game is played by two players on a field <const>1920</const> units wide and <const>1000</const>
+                units high, littered with circular obstacles. The top-left corner is <const>0,0</const>.<br>
             </p>
 
             <br>
@@ -62,7 +61,7 @@
             Each Queen starts with <const>200</const> HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
             If both Queens are destroyed on the same turn, the game will end in a draw.<br>
             </p>
-            
+
             <br>
             <p><strong>Structures</strong></p>
             <p>
@@ -72,12 +71,11 @@
                 Barracks that is currently training.<br>
                 Structures can be built at no cost. Barracks are available for use on the turn immediately following their construction.<br>
             </p>
-            
+
             <br>
             <p><strong>Gold</strong></p>
             <p>
-                Each player begins with 100 gold and will gain 10 gold at the end of each turn.<br>
-            </p>
+                Each player begins with <const>100</const> gold and will gain <const>10</const> gold at the end of each turn.<br>
 
             <br>
             <p><strong>Creeps</strong></p>
@@ -96,7 +94,7 @@
                 RANGED units are slower, ranged units which move toward and attack nearby enemy creeps from a short distance.<br>
                 They cost
                 <const>120</const>
-                gold to train a group of 2.<br>
+                gold to train a group of 2. Note: RANGED units do not attack the enemy Queen!<br>
                 <br>
                 A player needs to build a BARRACKS with his Queen in order to create creeps.<br>
                 A barracks can be destroyed if it is touched by the enemy Queen.<br>
@@ -229,11 +227,11 @@
                         </li>
                     </ul>
                     <span class="statement-lineno">Next Line:</span> <var>numUnits</var>: Number of total active units, including Queens<br>
-                    <span class="statement-lineno">Next <var>numUnits</var> lines: 5 integers <var>x</var> <var>y</var> <var>owner</var> <var>type</var> <var>health</var> </span><br>
+                    <span class="statement-lineno">Next <var>numUnits</var> lines: 5 integers <var>x</var> <var>y</var> <var>owner</var> <var>unitType</var> <var>health</var> </span><br>
                     <ul style="padding-bottom: 0;" >
                         <li><var>x</var> <var>y</var>: Coordinates of the unit</li>
                         <li><var>owner</var>: <const>0</const> = Friendly; <const>1</const> = Enemy</li>
-                        <li><var>type</var>: The unit type: <const>-1</const> for Queen, <const>0</const> for MELEE, <const>1</const> for RANGED</li>
+                        <li><var>unitType</var>: The unit type: <const>-1</const> for Queen, <const>0</const> for MELEE, <const>1</const> for RANGED</li>
                         <li><var>health</var>: Current HP of the unit</li>
                     </ul>
                 </div>
@@ -279,7 +277,7 @@
         </ul>
     </div>
 
-    <!-- STORY 
+    <!-- STORY
     <div class="statement-story-background">
         <div class="statement-story-cover" style="background-size: cover;">
             <div class="statement-story" style="min-height: 300px; position: relative">
