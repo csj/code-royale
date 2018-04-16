@@ -96,7 +96,7 @@
                 <const>120</const>
                 gold to train a group of 2. Note: RANGED units do not attack the enemy Queen!<br>
                 <br>
-                A player needs to build a BARRACKS with his Queen in order to create creeps.<br>
+                A player needs to build a BARRACKS with his Queen in order to train creeps.<br>
                 A barracks can be destroyed if it is touched by the enemy Queen.<br>
                 Training creeps is explained in a section below.<br>
             </p>
@@ -193,8 +193,8 @@
                         <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                     <ul style="padding-bottom: 0;">
                         <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
-                        <li><var>gold</var>: Ignore for Wood 1.</li>
-                        <li><var>maxMineSize</var>: Ignore for Wood 1.</li>
+                        <li><var>ignore1</var>: Reserved for future leagues.</li>
+                        <li><var>ignore2</var>: Reserved for future leagues.</li>
                         <li><var>structureType</var>:
                             <ul style="padding-top: 0; padding-bottom: 0;">
                                 <li><const>-1</const>: No structure</li>
@@ -244,7 +244,16 @@
                 <ul style="padding-bottom: 0;">
                     <li><action>WAIT</action> Do nothing</li>
                     <li><action>MOVE x y</action> Will attempt to move towards the provided coordinates (x,y given as integers)</li>
-                    <li><action>BUILD {obstacleId} BARRACKS-{type}</action> Will attempt to build a barracks at the indicated obstacle. If too far away, the Queen will instead move towards the obstacle. The type must be given as either <action>MELEE</action>, or <action>RANGED</action>.</li>
+                    <li>
+                        <action>BUILD {obstacleId} BARRACKS-{type}</action>
+                        Will attempt to build a barracks at the indicated obstacle.
+                        If too far away, the Queen will instead move towards the obstacle. The type must be given as
+                        either
+                        <action>MELEE</action>
+                        , or
+                        <action>RANGED</action>
+                        .
+                    </li>
                 </ul>
                 <strong>Second line:</strong> <action>TRAIN</action> followed by a list of <const>obstacleId</const>s to start training at.
             </div>
