@@ -3,7 +3,7 @@ import com.codingame.game.ObstacleInput
 import java.io.InputStream
 import java.io.PrintStream
 
-class Wood1Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
+class Level1Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream) : BasePlayer(stdin, stdout, stderr) {
 
   private fun myBarracks(): List<ObstacleInput> = obstacles.filter { it.owner == 0 && it.structureType == 2 }
 
