@@ -50,6 +50,11 @@ class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initi
 
   var structure: Structure? = null
     set(value) {
+      if (value != null && structure != value)
+        theAnimModule.createAnimationEvent("construction", 0.0).location = location   // includes replacing
+      if (value == null && structure != null)
+        theAnimModule.createAnimationEvent("destruction", 0.0).location = location
+
       structure?.hideEntities()
       field = value
       value?.updateEntities()
@@ -159,7 +164,7 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     mineImage.isVisible = false
     mineralBarOutline.isVisible = false
     mineralBarFill.isVisible = false
-    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineImage, mineralBarOutline, mineralBarFill)
+    theEntityManager.commitEntityState(0.51, text, pickaxeSprite, mineImage, mineralBarOutline, mineralBarFill)
   }
 
   override fun updateEntities() {
@@ -169,7 +174,7 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
     mineralBarOutline.isVisible = true
     mineralBarFill.isVisible = true
     mineralBarFill.width = 80 * obstacle.gold / (OBSTACLE_GOLD_RANGE.last + 2 * OBSTACLE_GOLD_INCREASE)
-    theEntityManager.commitEntityState(0.0, text, pickaxeSprite, mineImage, mineralBarOutline, mineralBarFill)
+    theEntityManager.commitEntityState(0.5, text, pickaxeSprite, mineImage, mineralBarOutline, mineralBarFill)
   }
 
   override fun act(): Boolean {
@@ -230,7 +235,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     towerRangeCircle.radius = obstacle.radius
     towerRangeCircle.isVisible = false
     sprite.isVisible = false
-    theEntityManager.commitEntityState(0.0, towerRangeCircle, sprite)
+    theEntityManager.commitEntityState(0.51, towerRangeCircle, sprite)
   }
 
   override fun updateEntities()
@@ -238,7 +243,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     towerRangeCircle.isVisible = true
     towerRangeCircle.lineColor = if (owner.isSecondPlayer) 0x8844ff else 0xff4444
     sprite.isVisible = true
-    theEntityManager.commitEntityState(0.0, towerRangeCircle, sprite)
+    theEntityManager.commitEntityState(0.5, towerRangeCircle, sprite)
     towerRangeCircle.radius = attackRadius
     theEntityManager.commitEntityState(1.0, towerRangeCircle)
 
@@ -365,7 +370,7 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     creepToken.isVisible = true
     creepSprite.isVisible = true
     creepSprite.image = creepType.assetName
-    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite)
+    theEntityManager.commitEntityState(0.5, barracksImage, creepToken, creepSprite)
 
     progressFill.isVisible = isTraining
     theEntityManager.commitEntityState(0.0, progressFill, progressFillMask)
@@ -378,7 +383,7 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     creepToken.isVisible = false
     creepSprite.isVisible = false
     progressFill.isVisible = false
-    theEntityManager.commitEntityState(0.0, barracksImage, creepToken, creepSprite, progressFill, progressFillMask)
+    theEntityManager.commitEntityState(0.51, barracksImage, creepToken, creepSprite, progressFill, progressFillMask)
   }
 
   override fun act(): Boolean {

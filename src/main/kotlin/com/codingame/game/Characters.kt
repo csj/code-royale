@@ -1,5 +1,7 @@
 package com.codingame.game
 
+import anims.Anim
+import anims.AnimModule
 import com.codingame.game.Constants.GIANT_BUST_RATE
 import com.codingame.game.Constants.MELEE_DAMAGE
 import com.codingame.game.Constants.QUEEN_HP
@@ -14,13 +16,22 @@ import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
 import tooltipModule.TooltipModule
+import java.lang.UnsupportedOperationException
 
 lateinit var theEntityManager: GraphicEntityModule
 lateinit var theTooltipModule: TooltipModule
 lateinit var theGameManager: GameManager<Player>
+lateinit var theAnimModule: AnimModule
 
 val viewportX = 0..1920
 val viewportY = 0..1000
+
+var Anim.location: Vector2
+  get() = throw UnsupportedOperationException()
+  set(value) {
+    params["x"] = value.x
+    params["y"] = value.y
+  }
 
 var <T : Entity<*>?> Entity<T>.location: Vector2
   get() = Vector2(x - viewportX.first, y - viewportY.first)
@@ -49,13 +60,6 @@ abstract class Unit(val owner: Player) : FieldObject() {
     .setScale(1.2)
     .setAnchor(0.5)!!
 
-  protected val deathSprite = theEntityManager.createSprite()
-    .setZIndex(41)
-    .setScale(1.2)
-    .setAnchor(0.5)
-    .setImage("Death.png")
-    .setVisible(false)
-
   override var location: Vector2 = Vector2.Zero
     set(value) {
       if (value == Vector2.Zero) return
@@ -70,20 +74,6 @@ abstract class Unit(val owner: Player) : FieldObject() {
     set(value) {
       field = value
       if (value < 0) field = 0
-
-      if (health <= 0) {
-        deathSprite.let {
-          it.isVisible = true
-          it.location = location
-          for (i in 1..5) {
-            it.alpha = 0.5 + i*0.1
-            it.setScale(0.3 + (i*0.2))
-            theEntityManager.commitEntityState(i*0.15, it)
-          }
-          it.isVisible = false
-          theEntityManager.commitEntityState(1.0, it)
-        }
-      }
       theTooltipModule.updateExtraTooltipText(tokenCircle, "Health: $health")
     }
 

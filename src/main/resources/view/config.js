@@ -26,9 +26,11 @@
 
 import { GraphicEntityModule } from './entity-module/GraphicEntityModule.js';
 import {TooltipModule} from './tooltips/TooltipModule.js';
+import { AnimModule } from './anims/AnimModule.js';
 
 // List of viewer modules that you want to use in your game
 export const modules = [
     GraphicEntityModule,
-    TooltipModule
+    TooltipModule,
+    AnimModule
 ];

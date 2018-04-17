@@ -1,19 +1,20 @@
 package com.codingame.game
 
+import anims.AnimModule
 import com.codingame.game.Constants.QUEEN_RADIUS
-import com.codingame.game.Constants.WORLD_HEIGHT
-import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
 import com.codingame.game.Constants.TOWER_HP_INITIAL
 import com.codingame.game.Constants.TOWER_HP_MAXIMUM
 import com.codingame.game.Constants.WOOD_FIXED_INCOME
+import com.codingame.game.Constants.WORLD_HEIGHT
+import com.codingame.game.Constants.WORLD_WIDTH
 import com.codingame.gameengine.core.AbstractPlayer
 import com.codingame.gameengine.core.AbstractReferee
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.GraphicEntityModule
-import tooltipModule.TooltipModule
 import com.google.inject.Inject
+import tooltipModule.TooltipModule
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -21,6 +22,7 @@ import kotlin.math.roundToInt
 class Referee : AbstractReferee() {
   @Inject private lateinit var gameManager: GameManager<Player>
   @Inject private lateinit var entityManager: GraphicEntityModule
+  @Inject private lateinit var animModule: AnimModule
   @Inject private lateinit var tooltipModule: TooltipModule
 
   private var obstacles: List<Obstacle> = listOf()
@@ -32,6 +34,7 @@ class Referee : AbstractReferee() {
     theEntityManager = entityManager
     theTooltipModule = tooltipModule
     theGameManager = gameManager
+    theAnimModule = animModule
     theGameManager.maxTurns = 250
 
 //    when (3) {
@@ -313,8 +316,15 @@ class Referee : AbstractReferee() {
       }
     }
 
+
     // Remove dead creeps
-    gameManager.activePlayers.forEach { it.activeCreeps.removeIf { it.health == 0 } }
+    gameManager.activePlayers.forEach { player ->
+      player.activeCreeps.filter { it.health == 0 }.forEach {
+        player.activeCreeps.remove(it)
+        animModule.createAnimationEvent("death", 1.0)
+          .location = it.location
+      }
+    }
 
     // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }
