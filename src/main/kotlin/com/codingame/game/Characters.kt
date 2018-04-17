@@ -14,6 +14,7 @@ import com.codingame.gameengine.module.entities.Curve
 import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
 import tooltipModule.TooltipModule
+import java.util.*
 
 lateinit var theEntityManager: GraphicEntityModule
 lateinit var theTooltipModule: TooltipModule
@@ -65,6 +66,20 @@ abstract class Unit(val owner: Player) : FieldObject() {
       characterSprite.location = value
     }
 
+  fun animateDeath() {
+    deathSprite.let {
+      it.location = location
+      it.alpha = 1.0
+      it.setScale(0.8)
+      theEntityManager.commitEntityState(0.0, it)
+      it.alpha = 0.0
+      it.setScale(1.5)
+      it.location = location.plus(Vector2(0,-10))
+      theEntityManager.commitEntityState(1.0, it)
+
+    }
+  }
+
   abstract val maxHealth:Int
   open var health:Int = 0
     set(value) {
@@ -73,14 +88,19 @@ abstract class Unit(val owner: Player) : FieldObject() {
 
       if (health <= 0) {
         deathSprite.let {
+          // We want the skull visible at t=1 (for step-by-step debugging),
+          // so we use a two part animation.
           it.isVisible = true
           it.location = location
-          for (i in 1..5) {
-            it.alpha = 0.5 + i*0.1
-            it.setScale(0.3 + (i*0.2))
-            theEntityManager.commitEntityState(i*0.15, it)
-          }
-          it.isVisible = false
+
+          it.setScale(0.0)
+          it.alpha = 0.0
+          theEntityManager.commitEntityState(0.0, it)
+          it.alpha = 0.1
+          it.setScale(0.1)
+          theEntityManager.commitEntityState(0.9, it)
+          it.setScale(0.8)
+          it.alpha = 1.0
           theEntityManager.commitEntityState(1.0, it)
         }
       }

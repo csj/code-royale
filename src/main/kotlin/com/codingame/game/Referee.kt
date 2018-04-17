@@ -24,6 +24,7 @@ class Referee : AbstractReferee() {
   @Inject private lateinit var tooltipModule: TooltipModule
 
   private var obstacles: List<Obstacle> = listOf()
+  private var dyingCreeps: List<Creep> = listOf()
 
   private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.allUnits() } + obstacles
 
@@ -171,7 +172,7 @@ class Referee : AbstractReferee() {
               throw PlayerInputWarning("Training from some barracks more than once")
 
             val sum = buildingBarracks.sumBy { it.creepType.cost }
-            if (sum > player.gold) throw PlayerInputWarning("Training too many creeps ($sum total gold requested)")
+            if  (sum > player.gold) throw PlayerInputWarning("Training too many creeps ($sum total gold requested)")
 
             player.gold -= sum
             buildingBarracks.forEach { barracks ->
@@ -284,7 +285,10 @@ class Referee : AbstractReferee() {
         if (struc is Mine && struc.owner != creep.owner) closestObstacle.structure = null
       }
 
-      allCreeps.forEach { it.damage(1) }
+      allCreeps.forEach {
+        it.damage(1)
+      }
+
       allCreeps.forEach { it.finalizeFrame() }
 
       // Queens tear down enemy structures (not TOWERs)
@@ -314,7 +318,9 @@ class Referee : AbstractReferee() {
     }
 
     // Remove dead creeps
-    gameManager.activePlayers.forEach { it.activeCreeps.removeIf { it.health == 0 } }
+    dyingCreeps.forEach { it.animateDeath() }
+    dyingCreeps = gameManager.activePlayers.flatMap { it.activeCreeps }.filter{ it.health == 0}.toList()
+    gameManager.activePlayers.forEach { it.activeCreeps.removeAll(dyingCreeps) }
 
     // Check end game
     gameManager.activePlayers.forEach { it.checkQueenHealth() }
