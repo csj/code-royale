@@ -2,6 +2,28 @@
 
 <div class="statement-body">
 
+    <!-- LEAGUE ALERT -->
+    <div style="color: #7cc576;
+    background-color: rgba(124, 197, 118,.1);
+    padding: 20px;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+    text-align: left;">
+        <div style="text-align: center; margin-bottom: 6px">
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png"/>
+        </div>
+
+        <!-- BEGIN bronze -->
+        <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
+            Welcome to the big leagues
+        </p>
+        <span class="statement-league-alert-content">
+            There are no new rules.
+        </span>
+        <!-- END -->
+    </div>
+
     <!-- GOAL -->
     <div class="statement-section statement-goal">
         <h1>
@@ -81,7 +103,9 @@
 
                 <p><strong>Mining</strong><br>
                     <br>
-                    Each player begins with 100 gold. A player can increase the amount of gold collected per turn by
+                    Each player begins with
+                    <const>100</const>
+                    gold. A player can increase the amount of gold collected per turn by
                     building goldmines on obstacles.<br>
                     <br>
                     Each obstacle has a different rate at which gold can be collected, ranging from
@@ -102,11 +126,12 @@
                     units from the Queen.<br>
                     <br>
                     A mine will be destroyed if:
+                </p>
                 <ul>
                     <li>It runs out of gold</li>
                     <li>An enemy creep or the enemy Queen comes in contact with it</li>
                 </ul>
-                </p>
+
 
                 <p><strong>Creeps</strong><br>
                     <br>
@@ -207,8 +232,7 @@
 
                 <p><strong>Towers</strong><br>
                     <br>
-                    With enemy creeps hunting down the Queen, a player will be well-advised to create some static
-                    defense in the form of towers. These are also built by the Queen.<br>
+                    The Queen can also build static defensive structures called Towers as defenses against enemy creeps.<br>
                     <br>
                     When a tower is first built, it has a small firing radius.<br>
                     A player can grow an existing tower by having the Queen stand next to it and issuing the same order
