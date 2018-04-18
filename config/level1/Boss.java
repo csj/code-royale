@@ -5,7 +5,7 @@ Level 1 Boss: Peon
 Expected Player Skills: Build structures and train minions in an efficient manner
 Strategy: Build a single Melee Barracks and train a wave of melee troops every 10 turns.
  */
-class Peon {
+class Player {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
