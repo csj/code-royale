@@ -22,8 +22,15 @@ fun buildMap(theRandom: Random): List<Obstacle> {
 
   fun buildObstacles(): List<Obstacle>? {
     nextObstacleId = 0
+    val n: Int
+    
+    if (theGameManager.leagueLevel >= 3) {
+      n = Constants.OBSTACLE_PAIR_MAX
+    } else {
+      n = theRandom.nextInt(Constants.OBSTACLE_PAIR_MAX - Constants.OBSTACLE_PAIR_MIN) + Constants.OBSTACLE_PAIR_MIN
+    }
 
-    val obstaclePairs = (1..Constants.OBSTACLE_PAIRS).map {
+    val obstaclePairs = (1..n).map {
       val rate = Constants.OBSTACLE_MINE_BASESIZE_RANGE.sample()
       val gold = Constants.OBSTACLE_GOLD_RANGE.sample()
       val radius = Constants.OBSTACLE_RADIUS_RANGE.sample()

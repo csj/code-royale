@@ -23,7 +23,8 @@ object Constants {
   const val OBSTACLE_GOLD_INCREASE = 50
   const val OBSTACLE_GOLD_INCREASE_DISTANCE_1 = 500
   const val OBSTACLE_GOLD_INCREASE_DISTANCE_2 = 200
-  const val OBSTACLE_PAIRS = 12
+  const val OBSTACLE_PAIR_MAX = 12
+  const val OBSTACLE_PAIR_MIN = 6
 
   const val MELEE_DAMAGE = 1
   const val RANGED_DAMAGE = 2
