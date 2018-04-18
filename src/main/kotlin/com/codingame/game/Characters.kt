@@ -3,13 +3,13 @@ package com.codingame.game
 import anims.Anim
 import anims.AnimModule
 import com.codingame.game.Constants.GIANT_BUST_RATE
-import com.codingame.game.Constants.MELEE_DAMAGE
+import com.codingame.game.Constants.KNIGHT_DAMAGE
 import com.codingame.game.Constants.QUEEN_HP
 import com.codingame.game.Constants.QUEEN_MASS
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.QUEEN_SPEED
-import com.codingame.game.Constants.RANGED_DAMAGE
-import com.codingame.game.Constants.RANGED_DAMAGE_TO_GIANTS
+import com.codingame.game.Constants.ARCHER_DAMAGE
+import com.codingame.game.Constants.ARCHER_DAMAGE_TO_GIANTS
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.gameengine.core.GameManager
 import com.codingame.gameengine.module.entities.Curve
@@ -189,7 +189,7 @@ class GiantCreep(
   }
 }
 
-class MeleeCreep(owner: Player, creepType: CreepType)
+class KnightCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType) {
 
   private var lastLocation: Vector2? = null
@@ -227,12 +227,12 @@ class MeleeCreep(owner: Player, creepType: CreepType)
       theEntityManager.commitEntityState(0.7, characterSprite)
       characterSprite.anchorX = 0.5
       theEntityManager.commitEntityState(1.0, characterSprite)
-      owner.enemyPlayer.health -= MELEE_DAMAGE
+      owner.enemyPlayer.health -= KNIGHT_DAMAGE
     }
   }
 }
 
-class RangedCreep(owner: Player, creepType: CreepType)
+class ArcherCreep(owner: Player, creepType: CreepType)
   : Creep(owner, creepType){
 
   private var lastLocation: Vector2? = null
@@ -291,7 +291,7 @@ class RangedCreep(owner: Player, creepType: CreepType)
     attackTarget = null
     val target = findTarget() ?: return
     if (location.distanceTo(target.location) < radius + target.radius + attackRange + TOUCHING_DELTA) {
-      target.damage(if (target is GiantCreep) RANGED_DAMAGE_TO_GIANTS else RANGED_DAMAGE)
+      target.damage(if (target is GiantCreep) ARCHER_DAMAGE_TO_GIANTS else ARCHER_DAMAGE)
       attackTarget = target
     }
   }

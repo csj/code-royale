@@ -5,7 +5,7 @@ import java.math.*;
 /*
 Level 2 Boss: Knight
 Expected Player Skills: Building towers for defense, building Giants to take down towers
-Boss strategy: Build a single barracks and train Melee minions whenever possible.
+Boss strategy: Build a single barracks and train Knight minions whenever possible.
     Then, find the empty obstacle closest to the barracks and build a tower on it.
  */
 class Player {
@@ -68,7 +68,7 @@ class Player {
 
             String action = "WAIT";
             if (barracks.type == -1){
-                action = String.format("BUILD %d BARRACKS-MELEE", barracks.id);
+                action = String.format("BUILD %d BARRACKS-KNIGHT", barracks.id);
             } else {
                 double minDist = Double.MAX_VALUE;
                 Obst target = null;

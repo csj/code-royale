@@ -8,7 +8,7 @@ class ThibaudPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream
   init {
     while (true) {
       readInputs()
-      stdout.println("BUILD 0 BARRACKS-MELEE")
+      stdout.println("BUILD 0 BARRACKS-KNIGHT")
       stdout.println("TRAIN 0")
     }
   }

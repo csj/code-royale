@@ -5,7 +5,7 @@ import com.codingame.game.ObstacleInput
 import java.io.InputStream
 import java.io.PrintStream
 
-class AllRangedPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
+class AllKnightPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): BasePlayer(stdin, stdout, stderr) {
 
   private fun myBarracks(): List<ObstacleInput> = obstacles.filter { it.owner == 0 && it.structureType == 2 }
 
@@ -16,8 +16,8 @@ class AllRangedPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStre
 
       // strategy:
       // build all mines
-      // build barracks, melee, anytime our income exceeds our ability to spam units
-      // spam melee units forever
+      // build barracks, knight, anytime our income exceeds our ability to spam units
+      // spam knight units forever
 
       fun getQueenAction(): String {
 
@@ -42,7 +42,7 @@ class AllRangedPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStre
         val maxUnitSpend = (myBarracks().size + 0.5) * 16 //  = 80/5
         val needsBarracks = income >= maxUnitSpend
 
-        return "BUILD ${queenTarget.obstacleId} ${if(needsBarracks) "BARRACKS-RANGED" else "MINE"}"
+        return "BUILD ${queenTarget.obstacleId} ${if(needsBarracks) "BARRACKS-KNIGHT" else "MINE"}"
       }
 
       try {
