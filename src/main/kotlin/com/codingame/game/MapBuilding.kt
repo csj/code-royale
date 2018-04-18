@@ -2,7 +2,6 @@ package com.codingame.game
 
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
-import java.util.*
 
 val background = theEntityManager.createSprite()
   .setImage("Background.jpg")
@@ -17,20 +16,14 @@ val hudBackground = theEntityManager.createSprite()
   .setAnchorY(1.0)
   .setZIndex(4000)
 
-fun buildMap(theRandom: Random): List<Obstacle> {
-  fun IntRange.sample(): Int = theRandom.nextInt(last-first+1) + first
+fun IntRange.sample(): Int = theRandom.nextInt(last-first+1) + first
+
+fun buildMap(): List<Obstacle> {
 
   fun buildObstacles(): List<Obstacle>? {
     nextObstacleId = 0
-    val n: Int
-    
-    if (theGameManager.leagueLevel >= 3) {
-      n = Constants.OBSTACLE_PAIR_MAX
-    } else {
-      n = theRandom.nextInt(Constants.OBSTACLE_PAIR_MAX - Constants.OBSTACLE_PAIR_MIN) + Constants.OBSTACLE_PAIR_MIN
-    }
 
-    val obstaclePairs = (1..n).map {
+    val obstaclePairs = (1..Leagues.obstacles).map {
       val rate = Constants.OBSTACLE_MINE_BASESIZE_RANGE.sample()
       val gold = Constants.OBSTACLE_GOLD_RANGE.sample()
       val radius = Constants.OBSTACLE_RADIUS_RANGE.sample()

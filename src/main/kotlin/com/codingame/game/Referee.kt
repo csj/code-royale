@@ -37,10 +37,18 @@ class Referee : AbstractReferee() {
     theAnimModule = animModule
     theGameManager.maxTurns = 250
 
+    theRandom = (params["seed"] as? String)?.let { Random(it.toLong()) } ?: Random()
+
 //    when (3) {
     when (gameManager.leagueLevel) {
-      1 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false }
-      2 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME }
+      1 -> {
+        Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false
+        Leagues.obstacles = Constants.OBSTACLE_PAIRS.sample()
+      }
+      2 -> {
+        Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME
+        Leagues.obstacles = Constants.OBSTACLE_PAIRS.sample()
+      }
       else -> { }
     }
 
@@ -50,8 +58,7 @@ class Referee : AbstractReferee() {
     gameManager.players[1].enemyPlayer = gameManager.players[0]
     gameManager.players[1].isSecondPlayer = true
 
-    val theRandom = (params["seed"] as? String)?.let { Random(it.toLong()) } ?: Random()
-    obstacles = buildMap(theRandom)
+    obstacles = buildMap()
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
       val spawnDistance = 200

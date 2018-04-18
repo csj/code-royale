@@ -17,11 +17,13 @@ import com.codingame.gameengine.module.entities.Entity
 import com.codingame.gameengine.module.entities.GraphicEntityModule
 import tooltipModule.TooltipModule
 import java.lang.UnsupportedOperationException
+import java.util.*
 
 lateinit var theEntityManager: GraphicEntityModule
 lateinit var theTooltipModule: TooltipModule
 lateinit var theGameManager: GameManager<Player>
 lateinit var theAnimModule: AnimModule
+lateinit var theRandom: Random
 
 val viewportX = 0..1920
 val viewportY = 0..1000

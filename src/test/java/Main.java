@@ -7,7 +7,7 @@ public class Main {
         GameRunner gameRunner = new GameRunner();
 
         // Adds as many player as you need to test your game
-        gameRunner.addAgent(WaitBot.class);
+        gameRunner.addAgent(Level1Player.class);
         gameRunner.addAgent(ThibaudPlayer.class);
 
         // gameRunner.addCommandLinePlayer("python3 /home/user/player.py");
