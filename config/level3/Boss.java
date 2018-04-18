@@ -9,7 +9,7 @@ Boss strategy: Build a single barracks and train Melee minions whenever possible
     If income is less than ten, build or upgrade a mine on the closest obstacle to the barracks.
     Otherwise, build a tower on the empty obstacle closest to the barracks.
  */
-class Duchess {
+class Player {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);

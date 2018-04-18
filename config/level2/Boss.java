@@ -8,7 +8,7 @@ Expected Player Skills: Building towers for defense, building Giants to take dow
 Boss strategy: Build a single barracks and train Melee minions whenever possible.
     Then, find the empty obstacle closest to the barracks and build a tower on it.
  */
-class Knight {
+class Player {
 
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
