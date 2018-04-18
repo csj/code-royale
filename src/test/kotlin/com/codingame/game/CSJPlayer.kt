@@ -74,15 +74,15 @@ class CSJPlayer(stdin: InputStream, stdout: PrintStream, stderr: PrintStream): B
             return if (queenTarget.gold > 0) "BUILD ${queenTarget.obstacleId} MINE" else "BUILD ${queenTarget.obstacleId} TOWER"
 
           // count enemy towers; make sure we have a giant if they have more than 3
-          val ourMelees = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }
-          val ourRanged = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 1 }
+          val ourKnights = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 0 }
+          val ourArchers = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 1 }
           val ourGiants = obstacles.count { it.owner == 0 && it.structureType == 2 && it.attackRadiusOrCreepType == 2 }
           val theirTowers = obstacles.count { it.owner == 1 && it.structureType == 1 }
 
           val barracksType = when {
             theirTowers >= 2 && ourGiants == 0 -> CreepType.GIANT
-            ourMelees > ourRanged -> CreepType.RANGED
-            else -> CreepType.RANGED
+            ourKnights > ourArchers -> CreepType.ARCHER
+            else -> CreepType.ARCHER
           }
           return "BUILD ${queenTarget.obstacleId} BARRACKS-$barracksType"
         }

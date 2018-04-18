@@ -183,10 +183,10 @@ class Referee : AbstractReferee() {
               barracks.onComplete = {
                 repeat(barracks.creepType.count) { iter ->
                   player.activeCreeps += when (barracks.creepType) {
-                    CreepType.MELEE ->
-                      MeleeCreep(barracks.owner, barracks.creepType)
-                    CreepType.RANGED ->
-                      RangedCreep(barracks.owner, barracks.creepType)
+                    CreepType.KNIGHT ->
+                      KnightCreep(barracks.owner, barracks.creepType)
+                    CreepType.ARCHER ->
+                      ArcherCreep(barracks.owner, barracks.creepType)
                     CreepType.GIANT ->
                       GiantCreep(barracks.owner, barracks.creepType, obstacles)
                   }.also {

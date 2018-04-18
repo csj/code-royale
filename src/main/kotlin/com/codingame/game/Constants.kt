@@ -17,7 +17,7 @@ object Constants {
   const val GIANT_BUST_RATE = 80
 
   const val OBSTACLE_GAP = 90
-  val OBSTACLE_RADIUS_RANGE = 60..100
+  val OBSTACLE_RADIUS_RANGE = 60..90
   val OBSTACLE_GOLD_RANGE = 200..250
   val OBSTACLE_MINE_BASESIZE_RANGE = 1..3
   const val OBSTACLE_GOLD_INCREASE = 50
@@ -25,9 +25,9 @@ object Constants {
   const val OBSTACLE_GOLD_INCREASE_DISTANCE_2 = 200
   const val OBSTACLE_PAIRS = 12
 
-  const val MELEE_DAMAGE = 1
-  const val RANGED_DAMAGE = 2
-  const val RANGED_DAMAGE_TO_GIANTS = 10
+  const val KNIGHT_DAMAGE = 1
+  const val ARCHER_DAMAGE = 2
+  const val ARCHER_DAMAGE_TO_GIANTS = 10
 
   const val QUEEN_RADIUS = 30
   const val QUEEN_MASS = 10000
@@ -50,7 +50,7 @@ object Leagues {
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,
                      val mass: Int, val hp: Int, val buildTime: Int, val assetName: String) {
-  MELEE(   4, 80,  100, 0,   20, 400,  30,  5, "Unite_Fantassin.png"),
-  RANGED(  2, 100, 75 , 200, 25, 900,  45,  8, "Unite_Archer.png"),
+  KNIGHT(   4, 80,  100, 0,   20, 400,  30,  5, "Unite_Fantassin.png"),
+  ARCHER(  2, 100, 75 , 200, 25, 900,  45,  8, "Unite_Archer.png"),
   GIANT(   1, 140, 50 , 0,   40, 2000, 200, 10, "Unite_Siege.png")
 }

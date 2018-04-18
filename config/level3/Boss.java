@@ -5,7 +5,7 @@ import java.math.*;
 /*
 Level 3 Boss: Duchess
 Expected Player Skills: Generating income via goldmines
-Boss strategy: Build a single barracks and train Melee minions whenever possible.
+Boss strategy: Build a single barracks and train Knight minions whenever possible.
     If income is less than ten, build or upgrade a mine on the closest obstacle to the barracks.
     Otherwise, build a tower on the empty obstacle closest to the barracks.
  */
@@ -77,7 +77,7 @@ class Player {
 
             String action = "WAIT";
             if (barracks.type == -1){
-                action = String.format("BUILD %d BARRACKS-MELEE", barracks.id);
+                action = String.format("BUILD %d BARRACKS-KNIGHT", barracks.id);
             } else if (income < 10){
                 double minDist = Double.MAX_VALUE;
                 Obst target = null;

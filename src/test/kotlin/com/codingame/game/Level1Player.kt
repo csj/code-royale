@@ -10,21 +10,21 @@ class Level1Player(stdin: InputStream, stdout: PrintStream, stderr: PrintStream)
   init {
 
     while (true) {
-        val (queenLoc, _, _, touch, _, _, obstacles, _, _) = readInputs()
-        //      stderr.println("Touching: $touch")
+      val (queenLoc, _, _, touch, _, _, obstacles, _, _) = readInputs()
+      //      stderr.println("Touching: $touch")
       fun getQueenAction(): String {
 
         val queenTarget = obstacles
-                .filter { it.owner == -1 }
+          .filter { it.owner == -1 }
           .minBy { it.location.distanceTo(queenLoc) } ?: return "WAIT"
 
-            val needsMelee = obstacles.count { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 0 } < 2
-        val needsRanged = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 1 }
+        val needsKnight = obstacles.count { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 0 } < 2
+        val needsArcher = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 1 }
 //        val needsGiant = !obstacles.any { it.structureType == 2 && it.owner == 0 && it.attackRadiusOrCreepType == 2 }
 
         return when {
-          needsMelee -> "BUILD ${queenTarget.obstacleId} BARRACKS-MELEE"
-          needsRanged -> "BUILD ${queenTarget.obstacleId} BARRACKS-RANGED"
+          needsKnight -> "BUILD ${queenTarget.obstacleId} BARRACKS-KNIGHT"
+          needsArcher -> "BUILD ${queenTarget.obstacleId} BARRACKS-ARCHER"
 //          needsGiant -> "BUILD ${queenTarget.obstacleId} BARRACKS-GIANT"
 //          else -> "BUILD ${queenTarget.obstacleId} TOWER"
           else -> "WAIT"
