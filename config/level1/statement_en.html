@@ -52,9 +52,13 @@
                 .
             </p>
 
-            <p><strong>Queens</strong></p>
-            <p>Each player controls a single Queen character, who can establish different structures on those obstacles.
-            The Queen is the player’s only way to directly interact with the field.
+            <p><strong>Queens</strong>
+            <p>
+                Each player controls a single Queen character, who can establish different structures on those
+                obstacles.
+                The Queen is the player’s only way to directly interact with the field.
+            </p>
+            <p>
                 The Queen is modeled as a circle with radius
                 <const>30</const>
                 units, and moves up to
@@ -68,12 +72,15 @@
 
             <p><strong>Structures</strong></p>
             <p>
-                A Queen character can build a structure on the <var>touchedObstacle</var> that she is in contact
-                with.
-                A Queen can replace an existing friendly structure by building another one in its place unless it is a
-                Barracks that is currently training.
-                Structures can be built at no cost. Barracks are available for use on the turn immediately following
-                their construction.
+                A Queen character can build a structure on the <var>touchedObstacle</var> that she is in contact with.
+                If she so chooses, a Queen can replace an existing friendly structure simply by building another one in
+                its place (unless it is a Barracks that is currently training).
+                If an enemy Tower is already in place on an obstacle, a Queen cannot replace it.
+            </p>
+            <p>
+                Structures can be built at no cost. Towers begin working the turn they are built, and can be grown over
+                time.
+                Barracks are available for use on the turn immediately following their construction.
             </p>
 
             <p><strong>Gold</strong></p>
@@ -96,14 +103,16 @@
             <p>
                 There are two different creep types that can be built.
             <ul>
-                <li>KNIGHT units are light, fast units which attack the enemy Queen.
-                They cost
-                <const>80</const>
+                <li>
+                    KNIGHT units are light, fast units which attack the enemy Queen.
+                    They cost
+                    <const>80</const>
                     gold to train a group of 4.
                 </li>
-                <li>ARCHER units are slower, ranged units which move toward and attack nearby enemy creeps from a short
+                <li>
+                    ARCHER units are slower, ranged units which move toward and attack nearby enemy creeps from a short
                     distance.
-                They cost
+                    They cost
                     <const>100</const>
                     gold to train a group of 2. Note: ARCHER units do not attack the enemy Queen!
                 </li>
@@ -123,20 +132,32 @@
                 A player trains creeps by indicating which numbered obstacles containing a barracks he wishes to train
                 creeps at.
                 Examples:
-                <ul>
-                    <li><action>TRAIN 13 6 19</action> - Three barracks begin training creeps</li>
-                    <li><action>TRAIN 14</action> - One barracks begins training creeps</li>
-                    <li><action>TRAIN</action> - No barracks begin training creeps.</li>
-                </ul>
-            Every barracks is built with the ability to train a single creep type.
-            When the train commands are sent, the player pays the total cost in gold, and indicated barracks will begin
-            training the appropriate set of units.
-            After the appointed number of turns elapses, a set of creeps emerges from the barracks and begins acting by
-            themselves on the following turn.
-
-            A barracks that is already in the middle of training cannot begin training again until the current creep set
-            is built.
-            Also, such a barracks cannot be replaced by another structure.
+            </p>
+            <ul>
+                <li>
+                    <action>TRAIN 13 6 19</action>
+                    - Three barracks begin training creeps
+                </li>
+                <li>
+                    <action>TRAIN 14</action>
+                    - One barracks begins training creeps
+                </li>
+                <li>
+                    <action>TRAIN</action>
+                    - No barracks begin training creeps.
+                </li>
+            </ul>
+            <p>
+                Every barracks is built with the ability to train a single creep type.
+                When the train commands are sent, the player pays the total cost in gold, and indicated barracks will
+                begin training the appropriate set of units.
+                After the appointed number of turns elapses, a set of creeps emerges from the barracks and begins acting
+                by themselves on the following turn.
+            </p>
+            <p>
+                A barracks that is already in the middle of training cannot begin training again until the current creep
+                set is built.
+                Also, such a barracks cannot be replaced by another structure.
             </p>
         </div>
 
