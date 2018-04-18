@@ -19,7 +19,6 @@ val hudBackground = theEntityManager.createSprite()
 fun IntRange.sample(): Int = theRandom.nextInt(last-first+1) + first
 
 fun buildMap(): List<Obstacle> {
-
   fun buildObstacles(): List<Obstacle>? {
     nextObstacleId = 0
 
@@ -41,7 +40,6 @@ fun buildMap(): List<Obstacle> {
       }
       collisionCheck(obstacles, Constants.OBSTACLE_GAP.toDouble())
     }) {
-      System.err.println("abandoning")
       return obstacles
     }
 

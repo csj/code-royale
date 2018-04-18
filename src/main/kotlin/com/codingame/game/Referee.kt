@@ -1,6 +1,7 @@
 package com.codingame.game
 
 import anims.AnimModule
+import com.codingame.game.Constants.OBSTACLE_PAIRS
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
@@ -43,11 +44,11 @@ class Referee : AbstractReferee() {
     when (gameManager.leagueLevel) {
       1 -> {
         Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false
-        Leagues.obstacles = Constants.OBSTACLE_PAIRS.sample()
+        Leagues.obstacles = OBSTACLE_PAIRS.sample()
       }
       2 -> {
         Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME
-        Leagues.obstacles = Constants.OBSTACLE_PAIRS.sample()
+        Leagues.obstacles = OBSTACLE_PAIRS.sample()
       }
       else -> { }
     }
