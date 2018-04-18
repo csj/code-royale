@@ -1,7 +1,7 @@
 
 import * as utils from '../core/utils.js';
 import {WIDTH, HEIGHT} from '../core/constants.js';
-import {ANIM_DATA, FRAMES} from './AnimData.js';
+import {FRAMES, ANCHORS} from './AnimData.js';
 import {api as entityModule} from '../entity-module/GraphicEntityModule.js';
 
 const DURATIONS = {
@@ -18,11 +18,11 @@ const REPEAT = {
 
 export class AnimModule {
   constructor(assets) {
-    this.loadState = -1;
+    this.loadState = 1;
     this.animData = [];
     this.anims = {};
     this.frames = 0;
-    for (let key in ANIM_DATA) {
+    for (let key in FRAMES) {
       this.anims[key] = [];
     }
     this.currentData = {number: 0};
@@ -74,17 +74,11 @@ export class AnimModule {
           }
 
           data.sprite.texture = PIXI.Texture.fromFrame(image);
-          var anchor = ANIM_DATA[data.id].anchor;
-          if (anchor) {
-              data.sprite.anchor.x = anchor.x;
-              data.sprite.anchor.y = anchor.y;
-          }
         }
         if (data.params.x && data.params.y) {
           data.sprite.position.x = +data.params.x
           data.sprite.position.y = +data.params.y
         }
-
       }
     }
   }
@@ -117,6 +111,9 @@ export class AnimModule {
 
   createAnim(id) {
     const sprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
+    if (ANCHORS[id]) {
+      sprite.anchor.copy(ANCHORS[id]);
+    }
     this.container.addChild(sprite);
     return sprite;
   }
@@ -129,27 +126,9 @@ export class AnimModule {
   }
 
   animateScene(delta) {
-
   }
 
   handleGlobalData(players, globalData) {
-    this.coeff = entityModule.coeff
-
-    if (this.loadState == -1) {
-      this.loadState = 0;
-      this.loader = new PIXI.loaders.Loader();
-      for (let key in ANIM_DATA) {
-        let obj = ANIM_DATA[key];
-        this.loader.add('data:text/json;charset=UTF-8,' + JSON.stringify(obj));
-      }
-
-      this.loader.on('complete', () => {
-        this.loadState = 1;
-        this.updateScene(null, this.currentData, this.progress);
-      });
-
-      this.loader.load();
-    }
   }
 
 }

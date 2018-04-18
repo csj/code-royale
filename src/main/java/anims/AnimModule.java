@@ -24,7 +24,6 @@ public class AnimModule implements Module {
 
     @Override
     public void onGameInit() {
-        gameManager.setViewGlobalData("anims", entityModule.getWorld());
         sendFrameData();
     }
 
