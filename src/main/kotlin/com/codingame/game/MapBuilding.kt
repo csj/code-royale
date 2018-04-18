@@ -11,7 +11,7 @@ val background = theEntityManager.createSprite()
   .setZIndex(0)
 
 val hudBackground = theEntityManager.createSprite()
-  .setImage("Hud.png")
+  .setImage("Hud")
   .setBaseWidth(1920)
   .setX(0).setY(1080)
   .setAnchorY(1.0)
@@ -41,9 +41,8 @@ fun buildMap(theRandom: Random): List<Obstacle> {
       }
       collisionCheck(obstacles, Constants.OBSTACLE_GAP.toDouble())
     }) {
-      obstacles.forEach { it.destroy() }
       System.err.println("abandoning")
-      return null
+      return obstacles
     }
 
     return obstacles

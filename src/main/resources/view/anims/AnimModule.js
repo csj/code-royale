@@ -22,9 +22,6 @@ export class AnimModule {
     this.animData = [];
     this.anims = {};
     this.frames = 0;
-    for (let key in FRAMES) {
-      this.anims[key] = [];
-    }
     this.currentData = {number: 0};
     this.progress = 0;
   }
@@ -122,6 +119,9 @@ export class AnimModule {
     this.container = container;
     for (let a of this.animData) {
       a.sprite = null;
+    }
+    for (let key in FRAMES) {
+      this.anims[key] = [];
     }
   }
 
