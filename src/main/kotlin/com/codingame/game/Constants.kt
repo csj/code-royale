@@ -1,5 +1,7 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.OBSTACLE_PAIRS
+
 object Constants {
   const val STARTING_GOLD = 100
 
@@ -23,7 +25,7 @@ object Constants {
   const val OBSTACLE_GOLD_INCREASE = 50
   const val OBSTACLE_GOLD_INCREASE_DISTANCE_1 = 500
   const val OBSTACLE_GOLD_INCREASE_DISTANCE_2 = 200
-  const val OBSTACLE_PAIRS = 12
+  val OBSTACLE_PAIRS = 6..12
 
   const val KNIGHT_DAMAGE = 1
   const val ARCHER_DAMAGE = 2
@@ -46,6 +48,7 @@ object Leagues {
   var giants = true
   var mines = true
   var fixedIncome:Int? = null
+  var obstacles:Int = OBSTACLE_PAIRS.last
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,

@@ -17,13 +17,13 @@ val hudBackground = theEntityManager.createSprite()
   .setAnchorY(1.0)
   .setZIndex(4000)
 
-fun buildMap(theRandom: Random): List<Obstacle> {
-  fun IntRange.sample(): Int = theRandom.nextInt(last-first+1) + first
+fun IntRange.sample(): Int = theRandom.nextInt(last-first+1) + first
 
+fun buildMap(): List<Obstacle> {
   fun buildObstacles(): List<Obstacle>? {
     nextObstacleId = 0
 
-    val obstaclePairs = (1..Constants.OBSTACLE_PAIRS).map {
+    val obstaclePairs = (1..Leagues.obstacles).map {
       val rate = Constants.OBSTACLE_MINE_BASESIZE_RANGE.sample()
       val gold = Constants.OBSTACLE_GOLD_RANGE.sample()
       val radius = Constants.OBSTACLE_RADIUS_RANGE.sample()
@@ -41,9 +41,7 @@ fun buildMap(theRandom: Random): List<Obstacle> {
       }
       collisionCheck(obstacles, Constants.OBSTACLE_GAP.toDouble())
     }) {
-      obstacles.forEach { it.destroy() }
-      System.err.println("abandoning")
-      return null
+      return obstacles
     }
 
     return obstacles

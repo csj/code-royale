@@ -1,6 +1,7 @@
 package com.codingame.game
 
 import anims.AnimModule
+import com.codingame.game.Constants.OBSTACLE_PAIRS
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
@@ -37,10 +38,18 @@ class Referee : AbstractReferee() {
     theAnimModule = animModule
     theGameManager.maxTurns = 250
 
+    theRandom = (params["seed"] as? String)?.let { Random(it.toLong()) } ?: Random()
+
 //    when (3) {
     when (gameManager.leagueLevel) {
-      1 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false }
-      2 -> { Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME }
+      1 -> {
+        Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME; Leagues.towers = false; Leagues.giants = false
+        Leagues.obstacles = OBSTACLE_PAIRS.sample()
+      }
+      2 -> {
+        Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME
+        Leagues.obstacles = OBSTACLE_PAIRS.sample()
+      }
       else -> { }
     }
 
@@ -50,8 +59,7 @@ class Referee : AbstractReferee() {
     gameManager.players[1].enemyPlayer = gameManager.players[0]
     gameManager.players[1].isSecondPlayer = true
 
-    val theRandom = (params["seed"] as? String)?.let { Random(it.toLong()) } ?: Random()
-    obstacles = buildMap(theRandom)
+    obstacles = buildMap()
 
     for ((activePlayer, invert) in gameManager.activePlayers.zip(listOf(false, true))) {
       val spawnDistance = 200
