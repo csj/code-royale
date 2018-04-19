@@ -543,13 +543,13 @@ export const demo = {
     {
       "index": 0,
       "name": "Player 0",
-      "avatar": "https://static.codingame.com/servlet/fileservlet?id=16085713250612&format=viewer_avatar",
+      "avatar": "https://static.codingame.com/servlet/fileservlet?id=3419981902861&format=viewer_avatar",
       "agentId": 0
     },
     {
       "index": 1,
       "name": "Player 1",
-      "avatar": "https://static.codingame.com/servlet/fileservlet?id=16085756802960&format=viewer_avatar",
+      "avatar": "https://static.codingame.com/servlet/fileservlet?id=17482339391413&format=viewer_avatar",
       "agentId": 1
     }
   ],
