@@ -45,79 +45,119 @@
         </h1>
         <div><div class="statement-rules-content">
             <p><strong>Field</strong></p>
-
             <p>
                 The game is played by two players on a field <const>1920</const> units wide and <const>1000</const>
-                units high, littered with circular obstacles. The top-left corner is <const>0,0</const>.<br>
+                units high, littered with circular obstacles. The top-left corner is
+                <const>0,0</const>
+                .
             </p>
 
-            <br>
-            <p><strong>Queens</strong></p>
-
-            <p>Each player controls a single Queen character, who can establish different structures on those obstacles.
-            The Queen is the player’s only way to directly interact with the field.
-
-            The Queen is modeled as a circle with radius <const>30</const> units, and moves up to <const>60</const> units every turn.<br>
-            Each Queen starts with <const>200</const> HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.<br>
-            If both Queens are destroyed on the same turn, the game will end in a draw.<br>
+            <p><strong>Queens</strong>
+            <p>
+                Each player controls a single Queen character, who can establish different structures on those
+                obstacles.
+                The Queen is the player’s only way to directly interact with the field.
+            </p>
+            <p>
+                The Queen is modeled as a circle with radius
+                <const>30</const>
+                units, and moves up to
+                <const>60</const>
+                units every turn.
+                Each Queen starts with
+                <const>200</const>
+                HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.
+                If both Queens are destroyed on the same turn, the game will end in a draw.
             </p>
 
-            <br>
             <p><strong>Structures</strong></p>
             <p>
-                A Queen character can build a structure on the <var>touchedObstacle</var> that she is in contact
-                with.<br>
-                A Queen can replace an existing friendly structure by building another one in its place unless it is a
-                Barracks that is currently training.<br>
-                Structures can be built at no cost. Barracks are available for use on the turn immediately following their construction.<br>
+                A Queen character can build a structure on the <var>touchedObstacle</var> that she is in contact with.
+                If she so chooses, a Queen can replace an existing friendly structure simply by building another one in
+                its place (unless it is a Barracks that is currently training).
+                If an enemy Tower is already in place on an obstacle, a Queen cannot replace it.
+            </p>
+            <p>
+                Structures can be built at no cost. Towers begin working the turn they are built, and can be grown over
+                time.
+                Barracks are available for use on the turn immediately following their construction.
             </p>
 
-            <br>
             <p><strong>Gold</strong></p>
             <p>
-                Each player begins with <const>100</const> gold and will gain <const>10</const> gold at the end of each turn.<br>
-
-            <br>
-            <p><strong>Creeps</strong></p>
-            <p>
-                In order to destroy the enemy Queen, a player will need to build creeps.<br>
-                Once built, creeps follow very simple behaviours (see below), and cannot be controlled by the player.<br>
-                Creeps will eventually age and die on their own, losing <const>1</const> HP every turn.<br>
-                <br>
-                There are two different creep types that can be built.<br>
-                <br>
-                MELEE units are light, fast units which attack the enemy Queen.<br>
-                They cost
-                <const>80</const>
-                gold to train a group of 4.<br>
-                <br>
-                RANGED units are slower, ranged units which move toward and attack nearby enemy creeps from a short distance.<br>
-                They cost
-                <const>120</const>
-                gold to train a group of 2. Note: RANGED units do not attack the enemy Queen!<br>
-                <br>
-                A player needs to build a BARRACKS with his Queen in order to train creeps.<br>
-                A barracks can be destroyed if it is touched by the enemy Queen.<br>
-                Training creeps is explained in a section below.<br>
+                Each player begins with
+                <const>100</const>
+                gold and will gain
+                <const>10</const>
+                gold at the end of each turn.
             </p>
 
-            <br>
+            <p><strong>Creeps</strong></p>
+            <p>
+                In order to destroy the enemy Queen, a player will need to build creeps.
+                Once built, creeps follow very simple behaviours (see below), and cannot be controlled by the player.
+                Creeps will eventually age and die on their own, losing
+                <const>1</const>
+                HP every turn.
+            </p>
+            <p>
+                There are two different creep types that can be built.
+            <ul>
+                <li>
+                    KNIGHT units are light, fast units which attack the enemy Queen.
+                    They cost
+                    <const>80</const>
+                    gold to train a group of 4.
+                </li>
+                <li>
+                    ARCHER units are slower, ranged units which move toward and attack nearby enemy creeps from a short
+                    distance.
+                    They cost
+                    <const>100</const>
+                    gold to train a group of 2. Note: ARCHER units do not attack the enemy Queen!
+                </li>
+            </ul>
+            </p>
+            <p>
+                A player needs to build a BARRACKS with his Queen in order to train creeps.
+                A barracks can be destroyed if it is touched by the enemy Queen.
+                Training creeps is explained below.
+            </p>
+
             <p><strong>Training Creeps</strong></p>
             <p>
-                Every obstacle is numbered, starting from <const>0</const>.<br>
-                A player trains creeps by indicating which numbered obstacles containing a barracks he wishes to train creeps at.<br>
-                Examples:<br>
-                <ul>
-                    <li><action>TRAIN 13 6 19</action> - Three barracks begin training creeps</li>
-                    <li><action>TRAIN 14</action> - One barracks begins training creeps</li>
-                    <li><action>TRAIN</action> - No barracks begin training creeps.</li>
-                </ul>
-                Every barracks is built with the ability to train a single creep type.<br>
-                When the train commands are sent, the player pays the total cost in gold, and indicated barracks will begin training the appropriate set of units.<br>
-                After the appointed number of turns elapses, a set of creeps emerges from the barracks and begins acting by themselves on the following turn.<br>
-                <br>
-                A barracks that is already in the middle of training cannot begin training again until the current creep set is built.<br>
-                Also, such a barracks cannot be replaced by another structure.<br>
+                Every obstacle is numbered, starting from
+                <const>0</const>
+                .
+                A player trains creeps by indicating which numbered obstacles containing a barracks he wishes to train
+                creeps at.
+                Examples:
+            </p>
+            <ul>
+                <li>
+                    <action>TRAIN 13 6 19</action>
+                    - Three barracks begin training creeps
+                </li>
+                <li>
+                    <action>TRAIN 14</action>
+                    - One barracks begins training creeps
+                </li>
+                <li>
+                    <action>TRAIN</action>
+                    - No barracks begin training creeps.
+                </li>
+            </ul>
+            <p>
+                Every barracks is built with the ability to train a single creep type.
+                When the train commands are sent, the player pays the total cost in gold, and indicated barracks will
+                begin training the appropriate set of units.
+                After the appointed number of turns elapses, a set of creeps emerges from the barracks and begins acting
+                by themselves on the following turn.
+            </p>
+            <p>
+                A barracks that is already in the middle of training cannot begin training again until the current creep
+                set is built.
+                Also, such a barracks cannot be replaced by another structure.
             </p>
         </div>
 
@@ -219,9 +259,9 @@
                                 <li>When no structure: <const>-1</const></li>
                                 <li>When barracks: the creep type:
                                     <const>0</const>
-                                    for MELEE,
+                                    for KNIGHT,
                                     <const>1</const>
-                                    for RANGED
+                                    for ARCHER
                                 </li>
                             </ul>
                         </li>
@@ -231,7 +271,14 @@
                     <ul style="padding-bottom: 0;" >
                         <li><var>x</var> <var>y</var>: Coordinates of the unit</li>
                         <li><var>owner</var>: <const>0</const> = Friendly; <const>1</const> = Enemy</li>
-                        <li><var>unitType</var>: The unit type: <const>-1</const> for Queen, <const>0</const> for MELEE, <const>1</const> for RANGED</li>
+                        <li><var>unitType</var>: The unit type:
+                            <const>-1</const>
+                            for Queen,
+                            <const>0</const>
+                            for KNIGHT,
+                            <const>1</const>
+                            for ARCHER
+                        </li>
                         <li><var>health</var>: Current HP of the unit</li>
                     </ul>
                 </div>
@@ -249,9 +296,9 @@
                         Will attempt to build a barracks at the indicated obstacle.
                         If too far away, the Queen will instead move towards the obstacle. The type must be given as
                         either
-                        <action>MELEE</action>
+                        <action>KNIGHT</action>
                         , or
-                        <action>RANGED</action>
+                        <action>ARCHER</action>
                         .
                     </li>
                 </ul>
@@ -285,18 +332,4 @@
             <li>You will need to build MINE structures in order to generate gold.</li>
         </ul>
     </div>
-
-    <!-- STORY
-    <div class="statement-story-background">
-        <div class="statement-story-cover" style="background-size: cover;">
-            <div class="statement-story" style="min-height: 300px; position: relative">
-                <h2>Code Royale</h2>
-                <div class="story-text">
-                    <p>Engaging story.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    -->
-
 </div>
