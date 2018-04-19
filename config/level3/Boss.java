@@ -46,7 +46,7 @@ class Player {
                 obstacles[obstacleId].remainingGold = goldRemaining;
                 obstacles[obstacleId].param1 = param1;
 
-                if (type == 0 && owner == 0){
+                if (structureType == 0 && owner == 0){
                     income += param1;
                 }
             }
