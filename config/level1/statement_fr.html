@@ -1,0 +1,315 @@
+<div id="statement_back" class="statement_back" style="display:none"></div>
+
+<div class="statement-body">
+
+    <!-- LEAGUE ALERT -->
+    <div style="color: #7cc576;
+    background-color: rgba(124, 197, 118,.1);
+    padding: 20px;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+    text-align: left;">
+        <div style="text-align: center; margin-bottom: 6px">
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png"/>
+        </div>
+
+        <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
+          Ce puzzle se déroule en <b>ligues</b>.
+        </p>
+        <span class="statement-league-alert-content">
+            Pour ce puzzle, plusieurs versions du même jeu seront disponibles. Quand vous aurez prouvé votre valeur dans la première version, vous accéderez à la ligue supérieure et débloquerez de nouvelles règles.
+      </span>
+    </div>
+
+
+    <!-- GOAL -->
+    <div class="statement-section statement-goal">
+        <h1>
+            <span class="icon icon-goal">&nbsp;</span>
+            <span>Objectif</span>
+        </h1>
+        <div class="statement-goal-content">
+            <!-- LEAGUES wood3 wood2 wood1 bronze -->
+            Constuire des bâtiments et créer des armées pour détruire la Reine de votre adversaire.
+        </div>
+    </div>
+
+
+    <!-- RULES -->
+    <div class="statement-section statement-rules">
+        <h1>
+            <span class="icon icon-rules">&nbsp;</span>
+            <span>Règles</span>
+        </h1>
+        <div><div class="statement-rules-content">
+            <p><strong>La carte</strong></p>
+            <p>
+                Deux joueurs s'affrontent sur une carte rectangulaire de <const>1920</const> x <const>1000</const>
+                unités, parsemée de sites de construction circulaires. Les coordonnées 
+                <const>0,0</const> correspondent au pixel stué en haut à gauche
+                .
+            </p>
+
+            <p><strong>La Reine</strong>
+            <p>
+                Chaque contrôle une Reine, qui peut constuire différent types de bâtiments sur les sites de construction.
+                La Reine est le seul moyen pour un joueur d'interagir avec la carte.
+
+            </p>
+            <p>
+                La Reine est représentée par un cercle de rayon de 
+                <const>30</const> 
+                unités, et se déplace de 
+                <const>60</const> 
+                unités chaque tour (à l'aide de la commande <action>MOVE</action>).
+                Chaque Reine démarre la partie avec 
+                <const>100</const> 
+                points de vie (PV). A 0 PV, la Reine est détruite et le joueur correspondant perd la partie. Si les deux Reines sont détruites pendant le même tour de jeu, il y a match nul.
+            </p>
+
+            <p><strong>Bâtiments</strong></p>
+            <p>
+                Les bâtiments ne coûtent rien à constuire.
+                La Reine peut constuire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
+            </p>
+            <p>
+                Il y a deux types de bâtiments: la caserne de chevaliers(<action>BARRACKS-KNIGHT</action>) et la caserne d'archers (<action>BARRACKS-ARCHER</action>). Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
+            </p>
+            <p>
+                BARRACKS-{type}: les casernes servent à entraîner des armées de différents types (voir ci-dessous).
+                Si la reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
+            </p>
+            <p>
+                La Reine peut remplacer un caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
+            </p>
+
+            <p><strong>L'Or</strong></p>
+            <p>
+                L'or sert à entraîner des armées.
+            </p>
+            <p>
+                Chaque joueur démarre la partie avec 
+                <const>100</const>
+                d'or et gagne 
+                <const>10</const>
+                10 d'or à la fin de chaque tour.
+            </p>
+
+            <p><strong>Les armées</strong></p>
+            <p>
+                Pour combattre la Reine de l'adversaire, un joueur doit entraîner des armées dans une caserne.
+                Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être controlées.
+                Chaque armée a un temps de vie limité, perdant 
+                <const>1</const> 
+                PV par tour.
+            </p>
+            <p>
+                Il y a deux types d'armées.
+            <ul>
+                <li>
+                    Les chevaliers (<action>KNIGHT</action>) sont des unités rapides qui se déplacent vers la Reine ennemie et l'attaquent au corps à corps.
+                    Il faut 
+                    <const>80</const>
+                    d'or pour entraîner un groupe de 4 chevaliers à la caserne de chevaliers (<action>BARRACKS-KNIGHT</action>).
+                </li>
+                <li>
+                    Les archers (<action>ARCHER</action>) sont des unités lentes qui se déplacent vers l'armée ennemie la plus proche et l'attaquent à courte portée. 
+                    Il faut
+                    <const>100</const>
+                    d'or pour entraîner un groupe de 2 archers à la caserne d'archers (<action>BARRACKS-ARCHER</action>). 
+                    Note: les archers n'attaquent pas la Reine ennemie; ce sont des unités purement défensives.
+                </li>
+            </ul>
+            </p>
+
+            <p><strong>L'entraînement des armées</strong></p>
+            <p>
+                Un joueur peut entraîner des armées en utilisant la commande <action>TRAIN</action> et en indiquant les identifiants de casernes alliées dans lesquelles il souhaite créer des troupes.
+                Une caserne qui entraîne des armées ne peut pas recommencer un cycle d'entraînement avant que les premières armées soient créées.
+
+                Exemples:
+            </p>
+            <ul>
+                <li>
+                    <action>TRAIN 13 6 19</action>
+                    Les 3 casernes alliées <const>13</const>, <const>6</const> et <const>19</const> commencent à entraîner des armées.
+                </li>
+                <li>
+                    <action>TRAIN 14</action>
+                    La caserne alliée <const>14</const> commence à entraîner des armées.
+                </li>
+            </ul>
+            <p>
+                Une fois que les commandes d'entraînement sont envoyées, le joueur paie le prix total en or, et chaque caserne commence à entraîner des armées. Après un nombre de tours défini, un groupe d'armée sort de la caserne et commence à se comporter d'elles même un tour après.
+            </p>
+            <p>
+                L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour. Pour n'entraîner aucune armée, il suffit d'utiliser la command <action>TRAIN</action> sans identifiant.
+            </p>
+        </div>
+
+
+            <!-- Victory conditions -->
+            <div class="statement-victory-conditions">
+                <div class="icon victory"></div>
+                <div class="blk">
+                    <div class="title">Conditions de victoire</div>
+                    <div class="text">
+                        <ul style="padding-bottom: 0;">
+                            <li>Détruire la Reine ennemie</li>
+                            <li>Après <const>200</const> tours, votre Reine a plus de PV que la Reine ennemie.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lose conditions -->
+            <div class="statement-lose-conditions">
+                <div class="icon lose"></div>
+                <div class="blk">
+                    <div class="title">Conditions de défaite</div>
+                    <div class="text">
+                        <ul style="padding-bottom: 0;">
+                            <li>Vous effectuez une action invalide ou votre programme ne répond pas dans les temps</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="statement-section statement-expertrules">
+            <h1>
+                <span class="icon icon-expertrules">&nbsp;</span>
+                <span>Règles avancées</span>
+            </h1>
+            <div class="statement-expert-rules-content">
+                Un énoncé plus complet sera disponible à partir de la ligue Bronze.
+            </div>
+        </div>
+
+
+        <!-- PROTOCOL -->
+        <div class="statement-section statement-protocol">
+            <h1>
+                <span class="icon icon-protocol">&nbsp;</span>
+                <span>Entrées du jeu</span>
+            </h1>
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Entrées d'initialisation</div>
+                <div class="text">
+                    <span class="statement-lineno">Ligne 1:</span> un entier <var>numSites</var>, indiquant le nombre de sites de construction présents sur la carte.<br>
+                    <span class="statement-lineno">Les <var>numSites</var> lignes suivantes :</span> 4 entiers représentant l'identifiant <var>siteId</var>, les coordonnées <var>x</var> et <var>y</var>, et le rayon <var>radius</var><br> d'un site de construction.
+                </div>
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Entrées pour un tour de jeu</div>
+                <div class="text">
+
+                    <span class="statement-lineno">Ligne 1:</span> Un entier <var>gold</var> représentant l'or disponible du joueur.<br>
+                    <span class="statement-lineno">Les <var>numSites</var> lignes suivantes :</span> 7 entiers <var>siteId</var> <var>ignore1</var>
+                        <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
+                    <ul style="padding-bottom: 0;">
+                        <li><var>siteId</var>: L'identifiant d'un site de construction</li>
+                        <li><var>ignore1</var>: <i>A ignorer pour cette ligue</i></li>
+                        <li><var>ignore2</var>: <i>A ignorer pour cette ligue</i></li>
+                        <li><var>structureType</var>: Le type de bâtiment construit sur le site.
+                            <ul style="padding-top: 0; padding-bottom: 0;">
+                                <li><const>-1</const>: Pas de bâtiment construit</li>
+                                <li><const>2</const>: Une caserne</li>
+                            </ul>
+                        </li>
+                        <li><var>owner</var>: Le propriétaire du bâtiment
+                          <ul style="padding-top: 0; padding-bottom: 0;">
+                                <li><const>-1</const>: Pas de bâtiment construit</li>
+                                <li><const>0</const>: Bâtiment allié</li>
+                                <li><const>1</const>: Bâtiment ennemi</li>
+                            </ul>
+                        </li>
+                        <li><var>param1</var>:
+                          <ul style="padding-top: 0; padding-bottom: 0;">
+                                <li>Quand il n'y a pas de bâtiment construit : <const>-1</const></li>
+                                <li>Si c'est une caserne, le nombre de tours restant avant que la caserne puisse à nouveau lancer un cycle d'entraînement d'armées, <const>0</const> si elle est disponible.</li>
+                            </ul>
+                        </li>
+                        <li><var>param2</var>
+                          <ul style="padding-top: 0; padding-bottom: 5px;">
+                                <li>Quand il n'y a pas de bâtiment construit : <const>-1</const></li>
+                                <li>Si c'est une caserne, le type d'armée qu'elle produit
+                                    <const>0</const>
+                                    pour une caserne de chevaliers,
+                                    <const>1</const>
+                                    pour une caserne d'archers.
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <span class="statement-lineno">Ligne suivante :</span> <var>numUnits</var> le nombre total d'unités actives, incluant les Reines<br>
+                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes : 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
+                    <ul style="padding-bottom: 0;" >
+                        <li><var>x</var> et <var>y</var>: les coordonnées de l'unité.</li>
+                        <li><var>owner</var>: <const>0</const> = alliée; <const>1</const> = ennemie.</li>
+                        <li><var>unitType</var>: le type d'unité
+                            <const>-1</const>
+                            pour une Reine,
+                            <const>0</const>
+                            pour un chevalier, et
+                            <const>1</const>
+                            pour un archer.
+                        </li>
+                        <li><var>health</var> : Le nombre de points de vie restants de l'unité</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Sortie pour un tour de jeu </div>
+                <strong>Première ligne :</strong> L'une des commandes suivantes
+                <ul style="padding-bottom: 0;">
+                    <li><action>WAIT</action> Ne rien faire</li>
+                    <li><action>MOVE x y</action> Déplacer la Reine vers les coordonnées indiquées (x et y étant des entiers)</li>
+                    <li>
+                        <action>BUILD {siteId} BARRACKS-{type}</action>
+                        Construire une caserne sur le site de construction indiqué.
+                        Si la Reine est trop éloignée de site de construction, cette commande déplacera la Reine vers le site. Le type de caserne est soit
+                        <action>KNIGHT</action> (chevalier)
+                        soit
+                        <action>ARCHER</action> (archer)
+                        .
+                    </li>
+                </ul>
+                <strong>Seconde ligne :</strong> <action>TRAIN</action> suvi de zéro, un ou plusieurs identifiants <const>siteId</const> de casernes alliées pour commencer à entraîner des armées.
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Contraintes</div>
+                <div class="text">
+                    Temps de réponse pour le premier tour ≤ 1000ms <br>
+                    Temps de réponse pour un tour ≤ 50ms</div>
+            </div>
+        </div>
+
+    <!-- NEXT LEAGUE RULES -->
+    <div style="color: #7cc576;
+      background-color: rgba(124, 197, 118,.1);
+      padding: 20px;
+      margin-top: 10px;
+      text-align: left;">
+        <div style="text-align: center; margin-bottom: 6px">
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
+        </div>
+        <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
+            Qu'est-ce qui m'attend dans les prochaines ligues ?
+        </p>
+        Les nouvelles règles débloquées dans les prochaines ligues sont : 
+        <ul style="padding-bottom: 0px;" class="statement-next-rules">
+            <li>Vous pourrez construire des tours pour vous défendre et entraîner des géants qui attaquent les tours.</li>
+            <li>Vous devrez construire des mines pour produire de l'or.</li>
+        </ul>
+    </div>
+</div>
