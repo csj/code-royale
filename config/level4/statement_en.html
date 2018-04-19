@@ -14,15 +14,14 @@
             <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png"/>
         </div>
 
-        <!-- BEGIN bronze -->
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
             Summary of new rules
         </p>
         <span class="statement-league-alert-content">
             Queens now start with less health.<br/>
+            See the updated statement for details.<br>
             This is the last rule change.
         </span>
-        <!-- END -->
     </div>
 
     <!-- GOAL -->
@@ -33,7 +32,7 @@
         </h1>
         <div class="statement-goal-content">
             <!-- LEAGUES wood3 wood2 wood1 bronze -->
-            To destroy the enemy Queen.
+            Build structures and train troops in order to destroy the enemy Queen.
         </div>
     </div>
 
@@ -54,16 +53,16 @@
                     <const>1920</const>
                     units wide and
                     <const>1000</const>
-                    units high, littered with circular obstacles of varying radius. The top-left corner is
+                    units high, littered with circular building sites of varying radius. The top-left corner is
                     <const>0,0</const>
                     .
-                    The field is generated randomly every game, with the obstacles being symmetrically laid out
+                    The field is generated randomly every game, with the sites being symmetrically laid out
                     (rotationally around the map's center).
                 </p>
 
                 <p><strong>Queens</strong>
                 <p>Each player controls a single Queen character, who can establish different structures on those
-                    obstacles.
+                    sites.
                     The Queen is the player’s only way to directly interact with the field.
                 </p>
                 <p>
@@ -84,11 +83,12 @@
                 <p><strong>Structures</strong></p>
                 <p>
 
-                    A Queen character can build a structure on an obstacle that she is in contact with.
+                    A Queen character can build a structure on the <var>touchedSite</var> that she is in contact with.
                     If she so chooses, a Queen can replace an existing friendly structure simply by building another one
                     in its place (unless it is a Barracks that is currently training).
-                    If an enemy Tower is already in place on an obstacle, a Queen cannot replace it.
-                    If both Queens try simultaneously to build a structure on the same obstacle, then only one will be
+                    If an enemy Tower is already in place on an site, a Queen cannot replace it.
+                    If both Queens try simultaneously to build a structure on the same building site, then only one will
+                    be
                     built:
                 </p>
                 <ul>
@@ -106,28 +106,29 @@
                     Each player begins with
                     <const>100</const>
                     gold. A player can increase the amount of gold collected per turn by
-                    building goldmines on obstacles.
+                    building goldmines on building sites.
                 </p>
                 <p>
-                    Each obstacle has a different rate at which gold can be collected, ranging from
+                    Each site has a different rate at which gold can be collected, ranging from
                     <const>+1</const>
                     /turn to
                     <const>+5</const>
                     /turn.
                     When a mine is first built, it has an income rate of +1. This can be increased by issuing repeated
-                    commands to build a mine on the same obstacle, up to its maximum capacity.
-                    Gold will accumulate in the player’s bank over several turns automatically. However, the obstacle
+                    commands to build a mine on the same site, up to its maximum capacity.
+                    Mines will automatically collect gold for the player each turn. However, the site
                     will be exhausted of gold over time.
                 </p>
                 <p>
-                    Obstacles begin with different, random amounts of gold every game. Obstacles near the middle of the
+                    Sites begin with different, random amounts of gold every game. Sites near the middle of the
                     field have higher gold available, and higher maximum mining rates.
-                    Gold totals and mining rates are not given for all obstacles, they must be discovered by the Queen.
+                    Gold totals and mining rates are not given for all sites, they must be discovered by the Queen.
                     These numbers will be available for any
-                    obstacle whose center is within
+                    site whose center is within
                     <const>300</const>
                     units from the Queen.
-
+                </p>
+                <p>
                     A mine will be destroyed if:
                 </p>
                 <ul>
@@ -233,7 +234,7 @@
                         If they attack a GIANT, they deal
                         <const>10</const>
                         damage instead.
-                        (Note: they can shoot past obstacles).
+                        (Note: they can shoot past building sites).
                     </li>
                     <li>
                         GIANT units do not attack the enemy Queen or enemy creeps, but instead attack nearby enemy
@@ -242,18 +243,17 @@
                     </li>
                 </ul>
                 <p>
-                    A player needs to build a BARRACKS with his Queen in order to create creeps.
+                    A player needs to build a BARRACKS with his Queen in order to train creeps.
                     A barracks can be destroyed if it is touched by the enemy Queen.
                     Training creeps is explained below.
                 </p>
 
                 <p><strong>Training Creeps</strong></p>
                 <p>
-                    Every obstacle is numbered, starting from
+                    Every building site is numbered, starting from
                     <const>0</const>
                     .
-                    A player trains creeps by indicating which numbered obstacles containing a barracks he wishes to
-                    train
+                    A player trains creeps by indicating the IDs of which sites containing a barracks he wishes to train
                     creeps at.
                     Examples:
                 </p>
@@ -327,7 +327,7 @@
                 <div class="blk">
                     <div class="title">Victory Conditions</div>
                     <div class="text">
-                        <ul>
+                        <ul style="padding-bottom: 0;">
                             <li>Destroy the enemy Queen.</li>
                             <li>After
                                 <const>200</const>
@@ -344,7 +344,7 @@
                 <div class="blk">
                     <div class="title">Lose Conditions</div>
                     <div class="text">
-                        <ul>
+                        <ul style="padding-bottom: 0;">
                             <li>Your Queen is destroyed.</li>
                             <li>Output an invalid command.</li>
                         </ul>
@@ -388,21 +388,21 @@
 
             <p><strong>Collisions</strong></p>
             <p>
-                Units cannot share space. All obstacles, Queens and creeps are modeled as circles.
+                Units cannot share space. All building sites, Queens and creeps are modeled as circles.
             </p>
             <p>
                 Unit movement is done by simply moving toward the desired target. However, at the end of every turn, a
                 series of collision
                 checks are performed. While there are any collisions, the offending units are simply translated away
                 from each other (except for
-                obstacles, they stay put.) Hence it is possible for a Queen to be "shoved" out of her way by a swarm of
+                sites, they stay put.) Hence it is possible for a Queen to be "shoved" out of her way by a swarm of
                 creeps.
             </p>
             <p>
                 For this purpose, units are assigned a weight as follows:
             </p>
             <ul>
-                <li>Obstacle: infinite (unmovable)</li>
+                <li>Site: infinite (unmovable)</li>
                 <li>Queen: 100</li>
                 <li>Giant: 20</li>
                 <li>Archer: 9</li>
@@ -421,16 +421,16 @@
             </p>
             <ul>
                 <li>KNIGHT - Queen (damage)</li>
-                <li>Queen - Obstacle (construction, and tearing down enemy structures)</li>
+                <li>Queen - Site (construction, and tearing down enemy structures)</li>
                 <li>Creep - Mine</li>
                 <li>GIANT - Tower</li>
             </ul>
 
-            <p><strong>Obstacle gold</strong></p>
+            <p><strong>Site gold</strong></p>
             <p>
-                All obstacles are randomized in pairs: attributes that apply to mirroring obstacles are always the same
+                All building sites are randomized in pairs: attributes that apply to mirroring sites are always the same
                 at the game's start.
-                Each obstacle-pair gets assigned a random gold amount between
+                Each site-pair gets assigned a random gold amount between
                 <const>200</const>
                 and
                 <const>250</const>
@@ -445,14 +445,14 @@
                 units.
             </p>
             <p>
-                Obstacles whose center is located within
+                Sites whose center is located within
                 <const>500</const>
                 units of the map's center are given a bonus of
                 <const>50</const>
                 gold, and
                 <const>+1</const>
                 to maximum mining rate.
-                Obstacles whose center is located within
+                Sites whose center is located within
                 <const>200</const>
                 units of the map's center are given a further bonus of
                 <const>50</const>
@@ -466,15 +466,15 @@
                 Each tower has a number of HP (param1) that determines its effective attack radius (param2).
                 Each HP allows the tower to cover
                 <const>1000</const>
-                square-units (a square unit is not very much!), not including the area of the obstacle on which it sits.
+                square-units (a square unit is not very much!), not including the area of the site on which it sits.
             </p>
             <p>
                 The attack radius is calculated every turn according to the tower's HP according to the formula:
-                attackRadius = sqrt((hp * 1000 + obstacleArea) / PI) -- this is measured from the obstacle's center.
-                This is so that PI * attackRadius^2 = hp * 1000 + obstacleArea.
+                attackRadius = sqrt((hp * 1000 + siteArea) / PI) -- this is measured from the site's center.
+                This is so that PI * attackRadius^2 = hp * 1000 + siteArea.
                 When a tower is first built, it receives
                 <const>200</const>
-                HP. This corresponds to a variable attack range: longer attack range for a smaller radius obstacle.
+                HP. This corresponds to a variable attack range: longer attack range for a smaller radius site.
             </p>
             <p>
                 When an existing tower is grown, it receives
@@ -494,7 +494,7 @@
             <p><strong>Draws</strong></p>
             <p>
                 The game will end in a draw if after
-                <const>250</const>
+                <const>200</const>
                 turns both Queens have the same HP.
             </p>
 
@@ -511,14 +511,14 @@
         <div class="blk">
             <div class="title">Initialization input</div>
             <div class="text">
-                <span class="statement-lineno">Line 1:</span> an integer <var>numObstacles</var>, indicating the number
-                of obstacles on the map.<br>
-                <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> 4 integers
-                <var>obstacleId</var> <var>x</var> <var>y</var> <var>radius</var><br>
-                <ul>
-                    <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
-                    <li><var>x y</var>: The numeric coordinates of the obstacle's center</li>
-                    <li><var>radius</var>: The radius of the obstacle</li>
+                <span class="statement-lineno">Line 1:</span> an integer <var>numSites</var>, indicating the number of
+                building sites on the map.<br>
+                <span class="statement-lineno">Next <var>numSites</var> lines:</span> 4 integers <var>siteId</var> <var>x</var>
+                <var>y</var> <var>radius</var><br>
+                <ul style="padding-bottom: 0;">
+                    <li><var>siteId</var>: The numeric identifier of the site</li>
+                    <li><var>x y</var>: The numeric coordinates of the site's center</li>
+                    <li><var>radius</var>: The radius of the site</li>
                 </ul>
             </div>
         </div>
@@ -527,25 +527,24 @@
         <div class="blk">
             <div class="title">Input for one game turn</div>
             <div class="text">
-                <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var>
-                <var>touchedObstacle</var><br>
+
+                <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
                 <ul>
                     <li><var>gold</var>: the current amount of gold available to be spent</li>
-                    <li><var>touchedObstacle</var>: the id of the obstacle your Queen is touching, or -1 if none</li>
+                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or -1 if none</li>
                 </ul>
-                <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers
-                <var>obstacleId</var> <var>gold</var>
+                <span class="statement-lineno">Next <var>numSites</var> lines:</span> Seven integers <var>siteId</var>
+                <var>gold</var>
                 <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                 <ul>
-                    <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
-                    <li><var>gold</var>: The total number of gold remaining to be mined from this obstacle (-1 if
-                        unknown)
+                    <li><var>siteId</var>: The numeric identifier of the site</li>
+                    <li><var>gold</var>: The total number of gold remaining to be mined from this site (-1 if unknown)
                     </li>
-                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this obstacle (-1 if
+                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this site (-1 if
                         unknown)
                     </li>
                     <li><var>structureType</var>:
-                        <ul>
+                        <ul style="padding-top: 0; padding-bottom: 0;">
                             <li>
                                 <const>-1</const>
                                 : No structure
@@ -565,7 +564,7 @@
                         </ul>
                     </li>
                     <li><var>owner</var>:
-                        <ul>
+                        <ul style="padding-top: 0; padding-bottom: 0;">
                             <li>
                                 <const>-1</const>
                                 : No structure
@@ -581,7 +580,7 @@
                         </ul>
                     </li>
                     <li><var>param1</var>:
-                        <ul>
+                        <ul style="padding-top: 0; padding-bottom: 0;">
                             <li>When no structure:
                                 <const>-1</const>
                             </li>
@@ -594,14 +593,14 @@
                                 if enemy)
                             </li>
                             <li>When tower: the remaining HP</li>
-                            <li>When barracks, the current progress of a set of creeps being trained or
+                            <li>When barracks, the number of turns before a new set of creeps can be trained (if
                                 <const>0</const>
-                                if nothing is being trained
+                                , then training may be started this turn)
                             </li>
                         </ul>
                     </li>
                     <li><var>param2</var>
-                        <ul>
+                        <ul style="padding-top: 0; padding-bottom: 5px;">
                             <li>When no structure:
                                 <const>-1</const>
                             </li>
@@ -624,9 +623,14 @@
                 <span class="statement-lineno">Next Line:</span> <var>numUnits</var>: Number of total active units,
                 including Queens<br>
                 <span class="statement-lineno">Next <var>numUnits</var> lines: 5 integers <var>x</var> <var>y</var> <var>owner</var> <var>unitType</var> <var>health</var> </span><br>
-                <ul>
+                <ul style="padding-bottom: 0;">
                     <li><var>x</var> <var>y</var>: Coordinates of the unit</li>
-                    <li><var>owner</var>: 0 = Friendly; 1 = Enemy</li>
+                    <li><var>owner</var>:
+                        <const>0</const>
+                        = Friendly;
+                        <const>1</const>
+                        = Enemy
+                    </li>
                     <li><var>unitType</var>: The unit type:
                         <const>-1</const>
                         for Queen,
@@ -644,7 +648,8 @@
 
         <!-- Protocol block -->
         <div class="blk">
-            <div class="title">Output for one game turn
+            <div class="title">Output for one game turn</div>
+            <div>
                 <strong>First line:</strong> One of the following
                 <ul>
                     <li>
@@ -656,19 +661,15 @@
                         Will attempt to move towards the provided coordinates (x,y given as integers)
                     </li>
                     <li>
-                        <action>BUILD {obstacleId} MINE</action>
-                        Will attempt to build or grow a goldmine at the indicated obstacle. If too far away, the Queen
-                        will instead move towards the obstacle.
+                        <action>BUILD {siteId} TOWER</action>
+                        Will attempt to build or repair a tower at the indicated site.
+                        If too far away, the Queen will instead move towards the site.
                     </li>
                     <li>
-                        <action>BUILD {obstacleId} TOWER</action>
-                        Will attempt to build or repair a tower at the indicated obstacle. If too far away, the Queen
-                        will instead move towards the obstacle.
-                    </li>
-                    <li>
-                        <action>BUILD {obstacleId} BARRACKS-{type}</action>
-                        Will attempt to build a barracks at the indicated obstacle. If too far away, the Queen will
-                        instead move towards the obstacle. The type must be given as either
+                        <action>BUILD {siteId} BARRACKS-{type}</action>
+                        Will attempt to build a barracks at the indicated site.
+                        If too far away, the Queen will instead move towards the site. The type must be given as
+                        either
                         <action>KNIGHT</action>
                         ,
                         <action>ARCHER</action>
@@ -680,7 +681,7 @@
                 <strong>Second line:</strong>
                 <action>TRAIN</action>
                 followed by a list of
-                <const>obstacleId</const>
+                <const>siteId</const>
                 s to start training at.
             </div>
         </div>

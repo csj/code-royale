@@ -15,7 +15,7 @@
         </div>
 
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
-          This is a league based puzzle
+            This is a league based puzzle
         </p>
         <span class="statement-league-alert-content">
             For this puzzle, multiple versions of the same game are available.<br>
@@ -47,7 +47,7 @@
             <p><strong>Field</strong></p>
             <p>
                 The game is played by two players on a field <const>1920</const> units wide and <const>1000</const>
-                units high, littered with circular obstacles. The top-left corner is
+                units high, littered with circular building sites. The top-left corner is
                 <const>0,0</const>
                 .
             </p>
@@ -55,7 +55,7 @@
             <p><strong>Queens</strong>
             <p>
                 Each player controls a single Queen character, who can establish different structures on those
-                obstacles.
+                sites.
                 The Queen is the player’s only way to directly interact with the field.
             </p>
             <p>
@@ -72,7 +72,7 @@
 
             <p><strong>Structures</strong></p>
             <p>
-                A Queen character can build a structure on the <var>touchedObstacle</var> that she is in contact with.
+                A Queen character can build a structure on the <var>touchedSite</var> that she is in contact with.
                 If she so chooses, a Queen can replace an existing friendly structure simply by building another one in
                 its place (unless it is a Barracks that is currently training).
             </p>
@@ -124,10 +124,10 @@
 
             <p><strong>Training Creeps</strong></p>
             <p>
-                Every obstacle is numbered, starting from
+                Every building site is numbered, starting from
                 <const>0</const>
                 .
-                A player trains creeps by indicating which numbered obstacles containing a barracks he wishes to train
+                A player trains creeps by indicating the IDs of which sites containing a barracks he wishes to train
                 creeps at.
                 Examples:
             </p>
@@ -190,127 +190,174 @@
         </div>
     </div>
 
-        <div class="statement-section statement-expertrules">
-            <h1>
-                <span class="icon icon-expertrules">&nbsp;</span>
-                <span>Expert Rules</span>
-            </h1>
-            <div class="statement-expert-rules-content">
-                An expanded statement with full simulation details will be available in Bronze league.
+    <div class="statement-section statement-expertrules">
+        <h1>
+            <span class="icon icon-expertrules">&nbsp;</span>
+            <span>Expert Rules</span>
+        </h1>
+        <div class="statement-expert-rules-content">
+            An expanded statement with full simulation details will be available in Bronze league.
+        </div>
+    </div>
+
+
+    <!-- PROTOCOL -->
+    <div class="statement-section statement-protocol">
+        <h1>
+            <span class="icon icon-protocol">&nbsp;</span>
+            <span>Game Input</span>
+        </h1>
+        <!-- Protocol block -->
+        <div class="blk">
+            <div class="title">Initialization input</div>
+            <div class="text">
+                <span class="statement-lineno">Line 1:</span> an integer <var>numSites</var>, indicating the number of
+                building sites on the map.<br>
+                <span class="statement-lineno">Next <var>numSites</var> lines:</span> 4 integers <var>siteId</var> <var>x</var>
+                <var>y</var> <var>radius</var><br>
+                <ul style="padding-bottom: 0;">
+                    <li><var>siteId</var>: The numeric identifier of the site</li>
+                    <li><var>x y</var>: The numeric coordinates of the site's center</li>
+                    <li><var>radius</var>: The radius of the site</li>
+                </ul>
             </div>
         </div>
 
+        <!-- Protocol block -->
+        <div class="blk">
+            <div class="title">Input for one game turn</div>
+            <div class="text">
 
-        <!-- PROTOCOL -->
-        <div class="statement-section statement-protocol">
-            <h1>
-                <span class="icon icon-protocol">&nbsp;</span>
-                <span>Game Input</span>
-            </h1>
-            <!-- Protocol block -->
-            <div class="blk">
-                <div class="title">Initialization input</div>
-                <div class="text">
-                    <span class="statement-lineno">Line 1:</span> an integer <var>numObstacles</var>, indicating the number of obstacles on the map.<br>
-                    <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> 4 integers <var>obstacleId</var> <var>x</var> <var>y</var> <var>radius</var><br>
-                    <ul style="padding-bottom: 0;">
-                        <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
-                        <li><var>x y</var>: The numeric coordinates of the obstacle's center</li>
-                        <li><var>radius</var>: The radius of the obstacle</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Protocol block -->
-            <div class="blk">
-                <div class="title">Input for one game turn</div>
-                <div class="text">
-
-                    <span class="statement-lineno">Line 1:</span> A single integer <var>gold</var>: the current amount of gold available.<br>
-                    <span class="statement-lineno">Next <var>numObstacles</var> lines:</span> Seven integers <var>obstacleId</var> <var>ignore1</var>
-                        <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
-                    <ul style="padding-bottom: 0;">
-                        <li><var>obstacleId</var>: The numeric identifier of the obstacle</li>
-                        <li><var>ignore1</var>: Reserved for future leagues.</li>
-                        <li><var>ignore2</var>: Reserved for future leagues.</li>
-                        <li><var>structureType</var>:
-                            <ul style="padding-top: 0; padding-bottom: 0;">
-                                <li><const>-1</const>: No structure</li>
-                                <li><const>2</const>: Barracks</li>
-                            </ul>
-                        </li>
-                        <li><var>owner</var>:
-                          <ul style="padding-top: 0; padding-bottom: 0;">
-                                <li><const>-1</const>: No structure</li>
-                                <li><const>0</const>: Friendly</li>
-                                <li><const>1</const>: Enemy</li>
-                            </ul>
-                        </li>
-                        <li><var>param1</var>:
-                          <ul style="padding-top: 0; padding-bottom: 0;">
-                                <li>When no structure: <const>-1</const></li>
-                                <li>When barracks, the current progress of a set of creeps being trained or <const>0</const> if nothing is being trained</li>
-                            </ul>
-                        </li>
-                        <li><var>param2</var>
-                          <ul style="padding-top: 0; padding-bottom: 5px;">
-                                <li>When no structure: <const>-1</const></li>
-                                <li>When barracks: the creep type:
-                                    <const>0</const>
-                                    for KNIGHT,
-                                    <const>1</const>
-                                    for ARCHER
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <span class="statement-lineno">Next Line:</span> <var>numUnits</var>: Number of total active units, including Queens<br>
-                    <span class="statement-lineno">Next <var>numUnits</var> lines: 5 integers <var>x</var> <var>y</var> <var>owner</var> <var>unitType</var> <var>health</var> </span><br>
-                    <ul style="padding-bottom: 0;" >
-                        <li><var>x</var> <var>y</var>: Coordinates of the unit</li>
-                        <li><var>owner</var>: <const>0</const> = Friendly; <const>1</const> = Enemy</li>
-                        <li><var>unitType</var>: The unit type:
-                            <const>-1</const>
-                            for Queen,
-                            <const>0</const>
-                            for KNIGHT,
-                            <const>1</const>
-                            for ARCHER
-                        </li>
-                        <li><var>health</var>: Current HP of the unit</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Protocol block -->
-            <div class="blk">
-                <div class="title">Output for one game turn </div>
-                <strong>First line:</strong> One of the following
+                <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
+                <ul>
+                    <li><var>gold</var>: the current amount of gold available to be spent</li>
+                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or -1 if none</li>
+                </ul>
+                <span class="statement-lineno">Next <var>numSites</var> lines:</span> Seven integers <var>siteId</var>
+                <var>ignore1</var>
+                <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                 <ul style="padding-bottom: 0;">
-                    <li><action>WAIT</action> Do nothing</li>
-                    <li><action>MOVE x y</action> Will attempt to move towards the provided coordinates (x,y given as integers)</li>
-                    <li>
-                        <action>BUILD {obstacleId} BARRACKS-{type}</action>
-                        Will attempt to build a barracks at the indicated obstacle.
-                        If too far away, the Queen will instead move towards the obstacle. The type must be given as
-                        either
-                        <action>KNIGHT</action>
-                        , or
-                        <action>ARCHER</action>
-                        .
+                    <li><var>siteId</var>: The numeric identifier of the site</li>
+                    <li><var>ignore1</var>: Reserved for future leagues.</li>
+                    <li><var>ignore2</var>: Reserved for future leagues.</li>
+                    <li><var>structureType</var>:
+                        <ul style="padding-top: 0; padding-bottom: 0;">
+                            <li>
+                                <const>-1</const>
+                                : No structure
+                            </li>
+                            <li>
+                                <const>2</const>
+                                : Barracks
+                            </li>
+                        </ul>
+                    </li>
+                    <li><var>owner</var>:
+                        <ul style="padding-top: 0; padding-bottom: 0;">
+                            <li>
+                                <const>-1</const>
+                                : No structure
+                            </li>
+                            <li>
+                                <const>0</const>
+                                : Friendly
+                            </li>
+                            <li>
+                                <const>1</const>
+                                : Enemy
+                            </li>
+                        </ul>
+                    </li>
+                    <li><var>param1</var>:
+                        <ul style="padding-top: 0; padding-bottom: 0;">
+                            <li>When no structure:
+                                <const>-1</const>
+                            </li>
+                            <li>When barracks, the number of turns before a new set of creeps can be trained (if
+                                <const>0</const>
+                                , then training may be started this turn)
+                            </li>
+                        </ul>
+                    </li>
+                    <li><var>param2</var>
+                        <ul style="padding-top: 0; padding-bottom: 5px;">
+                            <li>When no structure:
+                                <const>-1</const>
+                            </li>
+                            <li>When barracks: the creep type:
+                                <const>0</const>
+                                for KNIGHT,
+                                <const>1</const>
+                                for ARCHER
+                            </li>
+                        </ul>
                     </li>
                 </ul>
-                <strong>Second line:</strong> <action>TRAIN</action> followed by a list of <const>obstacleId</const>s to start training at.
-            </div>
-
-            <!-- Protocol block -->
-            <div class="blk">
-                <div class="title">Constraints</div>
-                <div class="text">
-                    Response time for first turn ≤ 1000ms <br>
-                    Response time for one turn ≤ 50ms</div>
+                <br>
+                <span class="statement-lineno">Next Line:</span> <var>numUnits</var>: Number of total active units,
+                including Queens<br>
+                <span class="statement-lineno">Next <var>numUnits</var> lines: 5 integers <var>x</var> <var>y</var> <var>owner</var> <var>unitType</var> <var>health</var> </span><br>
+                <ul style="padding-bottom: 0;">
+                    <li><var>x</var> <var>y</var>: Coordinates of the unit</li>
+                    <li><var>owner</var>:
+                        <const>0</const>
+                        = Friendly;
+                        <const>1</const>
+                        = Enemy
+                    </li>
+                    <li><var>unitType</var>: The unit type:
+                        <const>-1</const>
+                        for Queen,
+                        <const>0</const>
+                        for KNIGHT,
+                        <const>1</const>
+                        for ARCHER
+                    </li>
+                    <li><var>health</var>: Current HP of the unit</li>
+                </ul>
             </div>
         </div>
+
+        <!-- Protocol block -->
+        <div class="blk">
+            <div class="title">Output for one game turn</div>
+            <strong>First line:</strong> One of the following
+            <ul style="padding-bottom: 0;">
+                <li>
+                    <action>WAIT</action>
+                    Do nothing
+                </li>
+                <li>
+                    <action>MOVE x y</action>
+                    Will attempt to move towards the provided coordinates (x,y given as integers)
+                </li>
+                <li>
+                    <action>BUILD {siteId} BARRACKS-{type}</action>
+                    Will attempt to build a barracks at the indicated site.
+                    If too far away, the Queen will instead move towards the site. The type must be given as
+                    either
+                    <action>KNIGHT</action>
+                    , or
+                    <action>ARCHER</action>
+                    .
+                </li>
+            </ul>
+            <strong>Second line:</strong>
+            <action>TRAIN</action>
+            followed by a list of
+            <const>siteId</const>
+            s to start training at.
+        </div>
+
+        <!-- Protocol block -->
+        <div class="blk">
+            <div class="title">Constraints</div>
+            <div class="text">
+                Response time for first turn ≤ 1000ms <br>
+                Response time for one turn ≤ 50ms
+            </div>
+        </div>
+    </div>
 
     <!-- NEXT LEAGUE RULES -->
     <div style="color: #7cc576;
@@ -328,6 +375,7 @@
         <ul style="padding-bottom: 0px;" class="statement-next-rules">
             <li>You will be able to build TOWER structures to defend against enemy creeps, and GIANT creeps to attack enemy towers.</li>
             <li>You will need to build MINE structures in order to generate gold.</li>
+            <li>Queens will start with less health.</li>
         </ul>
     </div>
 </div>

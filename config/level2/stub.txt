@@ -1,15 +1,15 @@
-read numObstacles:int
-loop numObstacles read obstacleId:int x:int y:int radius:int
+read numSites:int
+loop numSites read siteId:int x:int y:int radius:int
 gameloop
-read gold:int touchedObstacle:int
-loop numObstacles read obstacleId:int ignore1:int ignore2:int structureType:int owner:int param1:int param2:int
+read gold:int touchedSite:int
+loop numSites read siteId:int ignore1:int ignore2:int structureType:int owner:int param1:int param2:int
 read numUnits:int
 loop numUnits read x:int y:int owner:int unitType:int health:int
 write WAIT
 TRAIN
 
 INPUT
-touchedObstacle: -1 if none
+touchedSite: -1 if none
 ignore1: used in future leagues
 ignore2: used in future leagues
 structureType: -1 = No structure, 1 = Tower, 2 = Barracks
