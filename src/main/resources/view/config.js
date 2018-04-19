@@ -31,6 +31,6 @@ import { AnimModule } from './anims/AnimModule.js';
 // List of viewer modules that you want to use in your game
 export const modules = [
     GraphicEntityModule,
-    TooltipModule,
-    AnimModule
+    AnimModule,
+    TooltipModule
 ];

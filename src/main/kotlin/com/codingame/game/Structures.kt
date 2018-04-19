@@ -9,7 +9,7 @@ import com.codingame.game.Constants.TOWER_MELT_RATE
 import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_CLIMB_DISTANCE
 import com.codingame.game.Constants.TOWER_QUEEN_DAMAGE_MIN
 import com.codingame.gameengine.module.entities.Curve
-import java.util.*
+import java.util.Random
 import kotlin.Unit
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -23,7 +23,7 @@ class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initi
   var gold by nonNegative(initialGold)
 
   private val obstacleImage = theEntityManager.createSprite()
-    .setImage("LC_${rando.nextInt(10) + 1}.png")
+    .setImage("LC_${rando.nextInt(10) + 1}")
     .setZIndex(20)
     .setAnchor(0.5)
 
@@ -62,7 +62,7 @@ class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initi
         obstacleImage.alpha = 1.0
       } else {
         obstacleImage.alpha = 0.0
-        obstacleImage.image = "LieuDetruit.png"
+        obstacleImage.image = "LieuDetruit"
       }
       obstacleImage.alpha = if (value == null) 1.0 else 0.0
       theEntityManager.commitEntityState(0.0, obstacleImage)
@@ -116,14 +116,14 @@ class Mine(override val obstacle: Obstacle, override val owner: Player, incomeRa
   )
 
   private val mineImage = theEntityManager.createSprite()
-    .setImage("Mine.png")
+    .setImage("Mine")
     .setZIndex(40)
     .setAnchor(0.5)
     .also { it.location = obstacle.location }
     .setScale(obstacle.radius * 2 / 220.0)
 
   private val pickaxeSprite = theEntityManager.createSprite()
-    .setImage(if (owner.isSecondPlayer) "Mine_Bleu.png" else "Mine_Rouge.png")
+    .setImage(if (owner.isSecondPlayer) "Mine_Bleu" else "Mine_Rouge")
     .setZIndex(41)
     .also { it.location = obstacle.location + Vector2(0, -40) }
     .setAnchor(0.5)!!
@@ -210,9 +210,9 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
 
   private val sprite = theEntityManager.createSpriteAnimation()
     .setImages(*{
-      val color = if (owner.isSecondPlayer) "Bleu" else "Rouge"
+      val color = if (owner.isSecondPlayer) "B" else "R"
       (1..15).map {
-        "Tour $color/Tour_$color${it.toString().padStart(4, '0')}.png"
+        "T$color${it.toString().padStart(2, '0')}"
       }
     }().toTypedArray())
     .setZIndex(40)
@@ -223,7 +223,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     .setScale(obstacle.radius * 2 / 220.0)
 
   private val projectile = theEntityManager.createSprite()!!
-    .setImage(if (owner.isSecondPlayer) "Eclair_Bleu.png" else "Eclair_Rouge.png")
+    .setImage(if (owner.isSecondPlayer) "Eclair_Bleu" else "Eclair_Rouge")
     .setZIndex(50)
     .setVisible(false)
     .setAnchorX(0.5)
@@ -339,22 +339,23 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
 
   private val barracksImage = theEntityManager.createSprite()
     .setAnchor(0.5)
-    .setImage(if (owner.isSecondPlayer) "Caserne_Bleu.png" else "Caserne_Rouge.png")
+    .setImage(if (owner.isSecondPlayer) "Caserne_Bleu" else "Caserne_Rouge")
     .setZIndex(40)
     .also { it.location = obstacle.location }
     .setBaseHeight(obstacle.radius * 2).setBaseWidth(obstacle.radius * 2)
 
   private val progressFill = theEntityManager.createSprite()
     .setAnchor(0.5)
-    .setImage(if (owner.isSecondPlayer) "Caserne_Bleu_Jauge.png" else "Caserne_Rouge_Jauge.png")
+    .setImage(if (owner.isSecondPlayer) "Caserne_Bleu_Jauge" else "Caserne_Rouge_Jauge")
     .setZIndex(400)
-    .also { it.location = obstacle.location }
-    .setBaseHeight(obstacle.radius * 2).setBaseWidth(obstacle.radius * 2)
+    .also { it.location = obstacle.location.plus(Vector2(0, obstacle.radius * 53/68)) }
+          .setBaseWidth(obstacle.radius * 2 * 70 / 138)
+          .setBaseHeight((obstacle.radius * 2 * 70 / 138 * 10.0/110.0).toInt())
     .setMask(progressFillMask)
 
   private val creepToken = theEntityManager.createSprite()
     .setAnchor(0.5)
-    .setImage(if (owner.isSecondPlayer) "Unite_Base_Bleu.png" else "Unite_Base_Rouge.png")
+    .setImage(if (owner.isSecondPlayer) "Unite_Base_Bleu" else "Unite_Base_Rouge")
     .setZIndex(41)
     .also { it.location = obstacle.location + Vector2(-0.1, -0.45) * obstacle.radius.toDouble() }
     .setBaseHeight((barracksImage.baseHeight * 0.32).toInt()).setBaseWidth((barracksImage.baseWidth * 0.32).toInt())

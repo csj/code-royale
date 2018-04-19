@@ -53,7 +53,7 @@ abstract class Unit(val owner: Player) : FieldObject() {
   abstract fun damage(damageAmount: Int)
 
   protected val tokenCircle = theEntityManager.createSprite()
-    .setImage(if (owner.isSecondPlayer) "Unite_Base_Bleu.png" else "Unite_Base_Rouge.png")
+    .setImage(if (owner.isSecondPlayer) "Unite_Base_Bleu" else "Unite_Base_Rouge")
     .setAnchor(0.5)
     .setZIndex(40)!!   // TODO: set to some kind of increasing ID
 
@@ -90,7 +90,7 @@ class Queen(owner: Player) : Unit(owner) {
   override val maxHealth = QUEEN_HP
 
   init {
-    characterSprite.image = "Unite_Reine.png"
+    characterSprite.image = "Unite_Reine"
     theTooltipModule.registerEntity(tokenCircle, mapOf("id" to tokenCircle.id, "type" to "Queen"))
     tokenCircle.baseWidth = radius*2
     tokenCircle.baseHeight = radius*2
@@ -241,7 +241,7 @@ class ArcherCreep(owner: Player, creepType: CreepType)
   val color = if (owner.isSecondPlayer) "Bleu" else "Rouge"
   private val projectile = theEntityManager.createSprite()!!
     .setZIndex(60)
-    .setImage("Fleche_$color.png")
+    .setImage("Fleche_$color")
     .setVisible(false)
     .setAnchorX(1.0).setAnchorY(0.5)
 
