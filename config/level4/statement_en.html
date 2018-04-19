@@ -16,10 +16,11 @@
 
         <!-- BEGIN bronze -->
         <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
-            Welcome to the big leagues
+            Summary of new rules
         </p>
         <span class="statement-league-alert-content">
-            There are no new rules.
+            Queens now start with less health.<br/>
+            This is the last rule change.
         </span>
         <!-- END -->
     </div>
@@ -71,9 +72,12 @@
                     units, and moves up to
                     <const>60</const>
                     units every turn.
-                    Each Queen starts with
-                    <const>200</const>
-                    HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.
+                    Each Queen starts with a random amount of HP between
+                    <const>25</const>
+                    and
+                    <const>100</const>
+                    (both Queens start with the same HP).
+                    A Queen will be destroyed if her HP drops to zero -- if this happens, the player will lose the game.
                     If both Queens are destroyed on the same turn, the game will end in a draw.
                 </p>
 
@@ -326,7 +330,7 @@
                         <ul>
                             <li>Destroy the enemy Queen.</li>
                             <li>After
-                                <const>250</const>
+                                <const>200</const>
                                 turns, your Queen has more HP than the enemy Queen.
                             </li>
                         </ul>
