@@ -212,7 +212,7 @@ class Tower(override val obstacle: Obstacle, override val owner: Player, var att
     .setImages(*{
       val color = if (owner.isSecondPlayer) "B" else "R"
       (1..15).map {
-        "T$color${it.toString().padStart(4, '0')}"
+        "T$color${it.toString().padStart(2, '0')}"
       }
     }().toTypedArray())
     .setZIndex(40)
