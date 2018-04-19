@@ -36,7 +36,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4002)
 
   private val healthBarFill = theEntityManager.createSprite()
-    .setImage(if (isSecondPlayer) "Life-Bleu.png" else "Life-Rouge.png")
+    .setImage(if (isSecondPlayer) "Life-Bleu" else "Life-Rouge")
     .setX(if (isSecondPlayer) 1920 - 139 - healthBarWidth else 143)
     .setY(top + 39)
     .setZIndex(4002)

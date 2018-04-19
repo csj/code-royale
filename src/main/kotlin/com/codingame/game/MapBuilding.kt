@@ -2,7 +2,6 @@ package com.codingame.game
 
 import com.codingame.game.Constants.WORLD_HEIGHT
 import com.codingame.game.Constants.WORLD_WIDTH
-import java.util.*
 
 val background = theEntityManager.createSprite()
   .setImage("Background.jpg")
@@ -11,7 +10,7 @@ val background = theEntityManager.createSprite()
   .setZIndex(0)
 
 val hudBackground = theEntityManager.createSprite()
-  .setImage("Hud.png")
+  .setImage("Hud")
   .setBaseWidth(1920)
   .setX(0).setY(1080)
   .setAnchorY(1.0)
