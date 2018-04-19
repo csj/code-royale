@@ -2,6 +2,8 @@ package com.codingame.game
 
 import anims.AnimModule
 import com.codingame.game.Constants.OBSTACLE_PAIRS
+import com.codingame.game.Constants.QUEEN_HP
+import com.codingame.game.Constants.QUEEN_HP_MULT
 import com.codingame.game.Constants.QUEEN_RADIUS
 import com.codingame.game.Constants.TOUCHING_DELTA
 import com.codingame.game.Constants.TOWER_HP_INCREMENT
@@ -36,7 +38,7 @@ class Referee : AbstractReferee() {
     theTooltipModule = tooltipModule
     theGameManager = gameManager
     theAnimModule = animModule
-    theGameManager.maxTurns = 250
+    theGameManager.maxTurns = 200
 
     theRandom = (params["seed"] as? String)?.let { Random(it.toLong()) } ?: Random()
 
@@ -50,7 +52,10 @@ class Referee : AbstractReferee() {
         Leagues.mines = false; Leagues.fixedIncome = WOOD_FIXED_INCOME
         Leagues.obstacles = OBSTACLE_PAIRS.sample()
       }
-      else -> { }
+      3 -> { }
+      else -> {
+        Leagues.queenHp = QUEEN_HP.sample() * QUEEN_HP_MULT
+      }
     }
 
     gameManager.frameDuration = 750
@@ -58,6 +63,7 @@ class Referee : AbstractReferee() {
     gameManager.players[0].enemyPlayer = gameManager.players[1]
     gameManager.players[1].enemyPlayer = gameManager.players[0]
     gameManager.players[1].isSecondPlayer = true
+    gameManager.players.forEach { it.health = Leagues.queenHp }
 
     obstacles = buildMap()
 

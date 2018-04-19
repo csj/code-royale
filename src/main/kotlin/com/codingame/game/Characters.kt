@@ -87,7 +87,7 @@ abstract class Unit(val owner: Player) : FieldObject() {
 class Queen(owner: Player) : Unit(owner) {
   override val mass = QUEEN_MASS
   override var radius = QUEEN_RADIUS
-  override val maxHealth = QUEEN_HP
+  override val maxHealth = Leagues.queenHp
 
   init {
     characterSprite.image = "Unite_Reine"

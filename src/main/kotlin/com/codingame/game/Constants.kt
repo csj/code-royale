@@ -33,7 +33,8 @@ object Constants {
 
   const val QUEEN_RADIUS = 30
   const val QUEEN_MASS = 10000
-  const val QUEEN_HP = 200
+  val QUEEN_HP = 5..20
+  const val QUEEN_HP_MULT = 5   // i.e. 25..100 by 5
   const val QUEEN_VISION = 300
 
   val WORLD_WIDTH = viewportX.last - viewportX.first
@@ -49,6 +50,7 @@ object Leagues {
   var mines = true
   var fixedIncome:Int? = null
   var obstacles:Int = OBSTACLE_PAIRS.last
+  var queenHp: Int = 100
 }
 
 enum class CreepType(val count: Int, val cost: Int, val speed: Int, val range: Int, val radius: Int,

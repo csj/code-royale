@@ -1,5 +1,8 @@
 package com.codingame.game
 
+import com.codingame.game.Constants.QUEEN_HP
+import com.codingame.game.Constants.QUEEN_HP_MULT
+
 class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
   private val left = if (isSecondPlayer) 1920/2 else 0
   private val right = if (isSecondPlayer) 1920 else 1920/2
@@ -75,7 +78,7 @@ class PlayerHUD(private val player: Player, isSecondPlayer: Boolean) {
     .setZIndex(4002)!!
 
   fun update() {
-    healthBarFillMask.width = healthBarWidth * player.health / Constants.QUEEN_HP
+    healthBarFillMask.width = healthBarWidth * player.health / (QUEEN_HP.last * QUEEN_HP_MULT)
     healthText.text = player.health.toString()
     moneyText.text = player.gold.toString()
     moneyIncText.text = when (player.goldPerTurn) {
