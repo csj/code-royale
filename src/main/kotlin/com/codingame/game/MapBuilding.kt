@@ -10,7 +10,7 @@ val background = theEntityManager.createSprite()
   .setZIndex(0)
 
 val hudBackground = theEntityManager.createSprite()
-  .setImage("Hud")
+  .setImage("Hud.png")
   .setBaseWidth(1920)
   .setX(0).setY(1080)
   .setAnchorY(1.0)
