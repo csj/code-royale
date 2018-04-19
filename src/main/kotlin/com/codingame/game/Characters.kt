@@ -62,13 +62,14 @@ abstract class Unit(val owner: Player) : FieldObject() {
     .setScale(1.2)
     .setAnchor(0.5)!!
 
+  protected val tokenGroup = theEntityManager.createGroup(tokenCircle, characterSprite)
+
   override var location: Vector2 = Vector2.Zero
     set(value) {
       if (value == Vector2.Zero) return
       field = value
 
-      tokenCircle.location = value
-      characterSprite.location = value
+      tokenGroup.location = value
     }
 
   abstract val maxHealth:Int
@@ -80,7 +81,7 @@ abstract class Unit(val owner: Player) : FieldObject() {
     }
 
   fun commitState(time: Double) {
-    theEntityManager.commitEntityState(time, tokenCircle, characterSprite)
+    theEntityManager.commitEntityState(time, tokenCircle, characterSprite, tokenGroup)
   }
 }
 
@@ -181,9 +182,9 @@ class GiantCreep(
       }?.also {
         (it.structure as Tower).health -= GIANT_BUST_RATE
         val creepToTower = it.location - location
-        characterSprite.location = tokenCircle.location + creepToTower.resizedTo(radius.toDouble())
+        characterSprite.location = creepToTower.resizedTo(radius.toDouble())
         theEntityManager.commitEntityState(0.2, characterSprite)
-        characterSprite.location = tokenCircle.location
+        characterSprite.location = Vector2(0,0)
         theEntityManager.commitEntityState(1.0, characterSprite)
       }
   }
