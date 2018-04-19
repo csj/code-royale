@@ -30,7 +30,7 @@ class Player : AbstractPlayer() {
         if (visible) obstacle.maxMineSize else -1) + when (struc) {
       is Mine -> listOf(0, fixOwner(struc.owner), if (visible) struc.incomeRate else -1, -1)
       is Tower -> listOf(1, fixOwner(struc.owner), struc.health, struc.attackRadius)
-      is Barracks -> listOf(2, fixOwner(struc.owner), struc.progress, struc.creepType.ordinal)
+      is Barracks -> listOf(2, fixOwner(struc.owner), if(!struc.isTraining) 0 else struc.progressMax - struc.progress, struc.creepType.ordinal)
       else -> listOf(-1, -1, -1, -1)
     }
     sendInputLine(toks.joinToString(" "))
