@@ -54,6 +54,7 @@
                 <const>0,0</const>
                 .
             </p>
+            <br>
 
             <p><strong>Queens</strong>
             <p>
@@ -72,6 +73,7 @@
                 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.
                 If both Queens are destroyed on the same turn, the game will end in a draw.
             </p>
+            <br>
 
             <p><strong>Structures</strong></p>
             <p>
@@ -85,6 +87,7 @@
                 time.
                 Barracks are available for use on the turn immediately following their construction.
             </p>
+            <br>
 
             <p><strong>Mining</strong></p>
             <p>
@@ -97,7 +100,9 @@
                 /turn to
                 <const>+5</const>
                 /turn.
-                When a mine is first built, it has an income rate of +1. This can be increased by issuing repeated
+                When a mine is first built, it has an income rate of
+                <const>+1</const>
+                . This can be increased by issuing repeated
                 commands to build a mine on the same site, up to its maximum capacity.
                 Mines will automatically collect gold for the player each turn. However, the site will be exhausted
                 of gold over time.
@@ -113,11 +118,12 @@
             </p>
             <p>
                 A mine will be destroyed if:
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>It runs out of gold</li>
                 <li>An enemy creep or the enemy Queen comes in contact with it</li>
             </ul>
             </p>
+            <br>
 
             <p><strong>Creeps</strong></p>
             <p>
@@ -129,7 +135,7 @@
             </p>
             <p>
                 There are three different creep types that can be built.
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     KNIGHT units are light, fast units which attack the enemy Queen.
                     They cost
@@ -157,6 +163,7 @@
                 A barracks can be destroyed if it is touched by the enemy Queen.
                 Training creeps is explained below.
             </p>
+            <br>
 
             <p><strong>Training Creeps</strong></p>
             <p>
@@ -167,7 +174,7 @@
                 creeps at.
                 Examples:
             </p>
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     <action>TRAIN 13 6 19</action>
                     - Three barracks begin training creeps
@@ -193,6 +200,7 @@
                 set is built.
                 Also, such a barracks cannot be replaced by another structure.
             </p>
+            <br>
 
             <p><strong>Towers</strong></p>
             <p>
@@ -209,6 +217,7 @@
                 If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her
                 instead.
             </p>
+            <br>
         </div>
 
 
@@ -283,16 +292,23 @@
                 <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
                 <ul>
                     <li><var>gold</var>: the current amount of gold available to be spent</li>
-                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or -1 if none</li>
+                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or
+                        <const>-1</const>
+                        if none
+                    </li>
                 </ul>
                 <span class="statement-lineno">Next <var>numSites</var> lines:</span> Seven integers <var>siteId</var>
                 <var>gold</var>
                 <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                 <ul>
                     <li><var>siteId</var>: The numeric identifier of the site</li>
-                    <li><var>gold</var>: The total number of gold remaining to be mined from this site (-1 if unknown)
+                    <li><var>gold</var>: The total number of gold remaining to be mined from this site (
+                        <const>-1</const>
+                        if unknown)
                     </li>
-                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this site (-1 if
+                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this site (
+                        <const>-1</const>
+                        if
                         unknown)
                     </li>
                     <li><var>structureType</var>:
@@ -421,7 +437,6 @@
                         <action>BUILD {siteId} BARRACKS-{type}</action>
                         Will attempt to build a barracks at the indicated site.
                         If too far away, the Queen will instead move towards the site. The type must be given as
-                        either
                         <action>KNIGHT</action>
                         ,
                         <action>ARCHER</action>
@@ -434,7 +449,7 @@
                 <action>TRAIN</action>
                 followed by a list of
                 <const>siteId</const>
-                s to start training at.
+                integers to start training at.
             </div>
         </div>
 

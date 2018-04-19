@@ -51,6 +51,7 @@
                 <const>0,0</const>
                 .
             </p>
+            <br>
 
             <p><strong>Queens</strong>
             <p>
@@ -69,6 +70,7 @@
                 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.
                 If both Queens are destroyed on the same turn, the game will end in a draw.
             </p>
+            <br>
 
             <p><strong>Structures</strong></p>
             <p>
@@ -80,6 +82,7 @@
                 Structures can be built at no cost.
                 Barracks are available for use on the turn immediately following their construction.
             </p>
+            <br>
 
             <p><strong>Gold</strong></p>
             <p>
@@ -89,6 +92,7 @@
                 <const>10</const>
                 gold at the end of each turn.
             </p>
+            <br>
 
             <p><strong>Creeps</strong></p>
             <p>
@@ -100,7 +104,8 @@
             </p>
             <p>
                 There are two different creep types that can be built.
-            <ul>
+            </p>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     KNIGHT units are light, fast units which attack the enemy Queen.
                     They cost
@@ -115,12 +120,12 @@
                     gold to train a group of 2. Note: ARCHER units do not attack the enemy Queen!
                 </li>
             </ul>
-            </p>
             <p>
                 A player needs to build a BARRACKS with his Queen in order to train creeps.
                 A barracks can be destroyed if it is touched by the enemy Queen.
                 Training creeps is explained below.
             </p>
+            <br>
 
             <p><strong>Training Creeps</strong></p>
             <p>
@@ -131,7 +136,7 @@
                 creeps at.
                 Examples:
             </p>
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     <action>TRAIN 13 6 19</action>
                     - Three barracks begin training creeps
@@ -157,6 +162,7 @@
                 set is built.
                 Also, such a barracks cannot be replaced by another structure.
             </p>
+            <br>
         </div>
 
 
@@ -231,7 +237,10 @@
                 <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
                 <ul>
                     <li><var>gold</var>: the current amount of gold available to be spent</li>
-                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or -1 if none</li>
+                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or
+                        <const>-1</const>
+                        if none
+                    </li>
                 </ul>
                 <span class="statement-lineno">Next <var>numSites</var> lines:</span> Seven integers <var>siteId</var>
                 <var>ignore1</var>
@@ -337,7 +346,7 @@
                     If too far away, the Queen will instead move towards the site. The type must be given as
                     either
                     <action>KNIGHT</action>
-                    , or
+                    or
                     <action>ARCHER</action>
                     .
                 </li>
@@ -346,7 +355,7 @@
             <action>TRAIN</action>
             followed by a list of
             <const>siteId</const>
-            s to start training at.
+            integers to start training at.
         </div>
 
         <!-- Protocol block -->
@@ -372,7 +381,8 @@
             What is in store for me in the higher leagues?
         </p>
         The extra rules available in higher leagues are:
-        <ul style="padding-bottom: 0px;" class="statement-next-rules">
+
+        <ul style="padding-bottom: 0; padding-top: 0;" class="statement-next-rules">
             <li>You will be able to build TOWER structures to defend against enemy creeps, and GIANT creeps to attack enemy towers.</li>
             <li>You will need to build MINE structures in order to generate gold.</li>
             <li>Queens will start with less health.</li>

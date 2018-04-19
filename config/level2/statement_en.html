@@ -50,10 +50,12 @@
                 <const>1920</const>
                 units wide and
                 <const>1000</const>
-                units high, littered with circular building sites. The top-left corner is
+                units high, littered with circular building sites.
+                The top-left corner is
                 <const>0,0</const>
                 .
             </p>
+            <br>
 
             <p><strong>Queens</strong>
             <p>
@@ -72,6 +74,7 @@
                 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.
                 If both Queens are destroyed on the same turn, the game will end in a draw.
             </p>
+            <br>
 
             <p><strong>Structures</strong></p>
             <p>
@@ -85,6 +88,7 @@
                 time.
                 Barracks are available for use on the turn immediately following their construction.
             </p>
+            <br>
 
             <p><strong>Gold</strong></p>
             <p>
@@ -94,6 +98,7 @@
                 <const>10</const>
                 gold at the end of each turn.
             </p>
+            <br>
 
             <p><strong>Creeps</strong></p>
             <p>
@@ -105,7 +110,7 @@
             </p>
             <p>
                 There are three different creep types that can be built.
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     KNIGHT units are light, fast units which attack the enemy Queen.
                     They cost
@@ -133,6 +138,7 @@
                 A barracks can be destroyed if it is touched by the enemy Queen.
                 Training creeps is explained below.
             </p>
+            <br>
 
             <p><strong>Training Creeps</strong></p>
             <p>
@@ -143,7 +149,7 @@
                 creeps at.
                 Examples:
             </p>
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     <action>TRAIN 13 6 19</action>
                     - Three barracks begin training creeps
@@ -169,6 +175,7 @@
                 set is built.
                 Also, such a barracks cannot be replaced by another structure.
             </p>
+            <br>
 
             <p><strong>Towers</strong></p>
             <p>
@@ -185,6 +192,7 @@
                 If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her
                 instead.
             </p>
+            <br>
         </div>
 
 
@@ -259,7 +267,10 @@
                 <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
                 <ul>
                     <li><var>gold</var>: the current amount of gold available to be spent</li>
-                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or -1 if none</li>
+                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or
+                        <const>-1</const>
+                        if none
+                    </li>
                 </ul>
                 <span class="statement-lineno">Next <var>numSites</var> lines:</span> Seven integers <var>siteId</var>
                 <var>ignore1</var>
@@ -379,7 +390,6 @@
                         <action>BUILD {siteId} BARRACKS-{type}</action>
                         Will attempt to build a barracks at the indicated site.
                         If too far away, the Queen will instead move towards the site. The type must be given as
-                        either
                         <action>KNIGHT</action>
                         ,
                         <action>ARCHER</action>
@@ -392,7 +402,7 @@
                 <action>TRAIN</action>
                 followed by a list of
                 <const>siteId</const>
-                s to start training at.
+                integers to start training at.
             </div>
         </div>
 

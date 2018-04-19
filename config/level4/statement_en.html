@@ -59,6 +59,7 @@
                     The field is generated randomly every game, with the sites being symmetrically laid out
                     (rotationally around the map's center).
                 </p>
+                <br>
 
                 <p><strong>Queens</strong>
                 <p>Each player controls a single Queen character, who can establish different structures on those
@@ -79,6 +80,7 @@
                     A Queen will be destroyed if her HP drops to zero -- if this happens, the player will lose the game.
                     If both Queens are destroyed on the same turn, the game will end in a draw.
                 </p>
+                <br>
 
                 <p><strong>Structures</strong></p>
                 <p>
@@ -91,7 +93,7 @@
                     be
                     built:
                 </p>
-                <ul>
+                <ul style="padding-top: 0; padding-bottom: 0;">
                     <li>On even-numbered turns (this includes the first turn: turn 0), player 2 gets to build</li>
                     <li>On odd-numbered turns, player 1 gets to build</li>
                 </ul>
@@ -100,6 +102,7 @@
                     be grown over time. Barracks are available for use on the turn immediately following their
                     construction.
                 </p>
+                <br>
 
                 <p><strong>Mining</strong></p>
                 <p>
@@ -114,7 +117,9 @@
                     /turn to
                     <const>+5</const>
                     /turn.
-                    When a mine is first built, it has an income rate of +1. This can be increased by issuing repeated
+                    When a mine is first built, it has an income rate of
+                    <const>+1</const>
+                    . This can be increased by issuing repeated
                     commands to build a mine on the same site, up to its maximum capacity.
                     Mines will automatically collect gold for the player each turn. However, the site
                     will be exhausted of gold over time.
@@ -131,10 +136,11 @@
                 <p>
                     A mine will be destroyed if:
                 </p>
-                <ul>
+                <ul style="padding-top: 0; padding-bottom: 0;">
                     <li>It runs out of gold</li>
                     <li>An enemy creep or the enemy Queen comes in contact with it</li>
                 </ul>
+                <br>
 
                 <p><strong>Creeps</strong></p>
                 <p>
@@ -218,7 +224,7 @@
                         <td>30</td>
                     </tr>
                 </table>
-                <ul>
+                <ul style="padding-top: 0; padding-bottom: 0;">
                     <li>
                         KNIGHT units are light, fast units which attack the enemy Queen, dealing
                         <const>1</const>
@@ -247,6 +253,7 @@
                     A barracks can be destroyed if it is touched by the enemy Queen.
                     Training creeps is explained below.
                 </p>
+                <br>
 
                 <p><strong>Training Creeps</strong></p>
                 <p>
@@ -257,7 +264,7 @@
                     creeps at.
                     Examples:
                 </p>
-                <ul>
+                <ul style="padding-top: 0; padding-bottom: 0;">
                     <li>
                         <action>TRAIN 13 6 19</action>
                         - Three barracks begin training creeps
@@ -286,6 +293,7 @@
                     set is built.
                     Also, such a barracks cannot be replaced by another structure.
                 </p>
+                <br>
 
                 <p><strong>Towers</strong></p>
                 <p>
@@ -318,6 +326,7 @@
                     <const>200</const>
                     units of distance closer.
                 </p>
+                <br>
             </div>
 
 
@@ -366,7 +375,7 @@
             <ol>
                 <li>Game state sent to players</li>
                 <li>Player inputs received and processed:
-                    <ul>
+                    <ul style="padding-top: 0; padding-bottom: 0;">
                         <li>New trainees started</li>
                         <li>Queens move</li>
                         <li>New structures built</li>
@@ -376,7 +385,7 @@
                 <li>Creeps attack and destroy enemy mines</li>
                 <li>Queens destroy enemy mines and barracks</li>
                 <li>Remaining structures act (including ones built this turn):
-                    <ul>
+                    <ul style="padding-top: 0; padding-bottom: 0;">
                         <li>Towers shoot, dead creeps removed</li>
                         <li>Barracks that are in progress advance; new creeps spawned</li>
                         <li>Mines collect gold for Queens</li>
@@ -385,6 +394,7 @@
                 <li>Creeps age, dead creeps removed</li>
                 <li>End game condition checked</li>
             </ol>
+            <br>
 
             <p><strong>Collisions</strong></p>
             <p>
@@ -401,7 +411,7 @@
             <p>
                 For this purpose, units are assigned a weight as follows:
             </p>
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>Site: infinite (unmovable)</li>
                 <li>Queen: 100</li>
                 <li>Giant: 20</li>
@@ -411,6 +421,7 @@
             <p>
                 In case of collisions, a lower-weight unit will be displaced more than a higher-weight unit.
             </p>
+            <br>
 
             <p><strong>Unit Contact</strong></p>
             <p>
@@ -419,12 +430,13 @@
                 <const>5</const>
                 . This applies to:
             </p>
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>KNIGHT - Queen (damage)</li>
                 <li>Queen - Site (construction, and tearing down enemy structures)</li>
                 <li>Creep - Mine</li>
                 <li>GIANT - Tower</li>
             </ul>
+            <br>
 
             <p><strong>Site gold</strong></p>
             <p>
@@ -449,21 +461,22 @@
                 <const>500</const>
                 units of the map's center are given a bonus of
                 <const>50</const>
-                gold, and
+                gold and
                 <const>+1</const>
                 to maximum mining rate.
                 Sites whose center is located within
                 <const>200</const>
                 units of the map's center are given a further bonus of
                 <const>50</const>
-                gold, and
+                gold and
                 <const>+1</const>
                 to maximum mining rate.
             </p>
+            <br>
 
             <p><strong>Tower HP</strong></p>
             <p>
-                Each tower has a number of HP (param1) that determines its effective attack radius (param2).
+                Each tower has a number of HP (<var>param1</var>) that determines its effective attack radius (<var>param2</var>).
                 Each HP allows the tower to cover
                 <const>1000</const>
                 square-units (a square unit is not very much!), not including the area of the site on which it sits.
@@ -497,7 +510,6 @@
                 <const>200</const>
                 turns both Queens have the same HP, or both Queens are destroyed on the same turn.
             </p>
-
         </div>
     </div>
 
@@ -531,16 +543,23 @@
                 <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
                 <ul>
                     <li><var>gold</var>: the current amount of gold available to be spent</li>
-                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or -1 if none</li>
+                    <li><var>touchedSite</var>: the id of the site your Queen is touching, or
+                        <const>-1</const>
+                        if none
+                    </li>
                 </ul>
                 <span class="statement-lineno">Next <var>numSites</var> lines:</span> Seven integers <var>siteId</var>
                 <var>gold</var>
                 <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                 <ul>
                     <li><var>siteId</var>: The numeric identifier of the site</li>
-                    <li><var>gold</var>: The total number of gold remaining to be mined from this site (-1 if unknown)
+                    <li><var>gold</var>: The total number of gold remaining to be mined from this site (
+                        <const>-1</const>
+                        if unknown)
                     </li>
-                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this site (-1 if
+                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this site (
+                        <const>-1</const>
+                        if
                         unknown)
                     </li>
                     <li><var>structureType</var>:
@@ -669,7 +688,6 @@
                         <action>BUILD {siteId} BARRACKS-{type}</action>
                         Will attempt to build a barracks at the indicated site.
                         If too far away, the Queen will instead move towards the site. The type must be given as
-                        either
                         <action>KNIGHT</action>
                         ,
                         <action>ARCHER</action>
@@ -682,7 +700,7 @@
                 <action>TRAIN</action>
                 followed by a list of
                 <const>siteId</const>
-                s to start training at.
+                integers to start training at.
             </div>
         </div>
 
