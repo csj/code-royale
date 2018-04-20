@@ -58,7 +58,8 @@ function getMouseMoveFunc(tooltip, container, module) {
         const params = module.registered[showing];
 
         tooltip.label.text =
-          'type: ' + params.type
+            (params.hasOwnProperty('id') ? 'id: ' + params.id + '\n' : '')
+          + 'type: ' + params.type
           + '\nx: ' + state.x
           + '\ny: ' + (state.y - hudHeight)
           ;
