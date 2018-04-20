@@ -18,7 +18,7 @@
           Résumé des nouvelles règles
         </p>
         <span class="statement-league-alert-content">
-            Vous pouvez maintenant constuire des tours pour vous défendre contre les armées adverses, et entraîner des géants pour détruire les tours adverses.
+            Vous pouvez maintenant construire des tours pour vous défendre contre les armées adverses, et entraîner des géants pour détruire les tours adverses.
             Voir les détails ci-dessous.
       </span>
     </div>
@@ -32,7 +32,7 @@
         </h1>
         <div class="statement-goal-content">
             <!-- LEAGUES wood3 wood2 wood1 bronze -->
-            Constuire des bâtiments et créer des armées pour détruire la Reine de votre adversaire.
+            Construire des bâtiments et créer des armées pour détruire la Reine de votre adversaire.
         </div>
     </div>
 
@@ -48,22 +48,21 @@
             <p>
                 Deux joueurs s'affrontent sur une carte rectangulaire de <const>1920</const> x <const>1000</const>
                 unités, parsemée de sites de construction circulaires. Les coordonnées 
-                <const>0,0</const> correspondent au pixel stué en haut à gauche
-                .
+                <const>0,0</const> correspondent au pixel stué en haut à gauche.
             </p>
 
             <p><strong>La Reine</strong>
             <p>
-                Chaque contrôle une Reine, qui peut constuire différent types de bâtiments sur les sites de construction.
+                Chaque joueur contrôle une Reine qui peut construire différents types de bâtiments sur des sites de construction.
                 La Reine est le seul moyen pour un joueur d'interagir avec la carte.
 
             </p>
             <p>
                 La Reine est représentée par un cercle de rayon de 
                 <const>30</const> 
-                unités, et se déplace de 
-                <const>60</const> 
-                unités chaque tour (à l'aide de la commande <action>MOVE</action>).
+                unités. Elle se déplace à l'aide de la commande <action>MOVE</action> de <const>60</const> unités au plus par tour.
+            </p>
+            <p>
                 Chaque Reine démarre la partie avec 
                 <const>200</const> 
                 points de vie (PV). A 0 PV, la Reine est détruite et le joueur correspondant perd la partie. Si les deux Reines sont détruites pendant le même tour de jeu, il y a match nul.
@@ -71,8 +70,8 @@
 
             <p><strong>Bâtiments</strong></p>
             <p>
-                Les bâtiments ne coûtent rien à constuire.
-                La Reine peut constuire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
+                Les bâtiments ne coûtent rien à construire.
+                La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
             </p>
             <p>
                 Il y a quatre types de bâtiments: la caserne de chevaliers (<action>BARRACKS-KNIGHT</action>), la caserne d'archers (<action>BARRACKS-ARCHER</action>), la caserne de géants (<action>BARRACKS-GIANT</action>), et la tour (<action>TOWER</action>). Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
@@ -85,10 +84,10 @@
                 TOWER: les tours sont des structures de défense statique avec un certain rayon de tir. Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire <action>BUILD {id} TOWER</BUILD>.
             </p>
             <p>
-                La Reine peut remplacer un caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
+                La Reine peut remplacer une caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
             </p>
 
-            <p><strong>L'Or</strong></p>
+            <p><strong>L'or</strong></p>
             <p>
                 L'or sert à entraîner des armées.
             </p>
@@ -97,13 +96,13 @@
                 <const>100</const>
                 d'or et gagne 
                 <const>10</const>
-                10 d'or à la fin de chaque tour.
+                d'or à la fin de chaque tour.
             </p>
 
             <p><strong>Les armées</strong></p>
             <p>
                 Pour combattre la Reine de l'adversaire, un joueur doit entraîner des armées dans une caserne.
-                Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être controlées.
+                Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être contrôlées.
                 Chaque armée a un temps de vie limité, perdant 
                 <const>1</const> 
                 PV par tour.
@@ -122,7 +121,7 @@
                     Il faut
                     <const>100</const>
                     d'or pour entraîner un groupe de 2 archers à la caserne d'archers (<action>BARRACKS-ARCHER</action>). 
-                    Note: les archers n'attaquent pas la Reine ennemie; ce sont des unités purement défensives.
+                    Note: les archers n'attaquent pas la Reine ennemie ; ce sont des unités purement défensives.
                 </li>
                 <li>
                     Les géants (<action>GIANT</action>) n'attaquent pas les armées ni la Reine. Ils n'attaquent que les tours, les détruisant petit à petit.
@@ -150,10 +149,12 @@
                 </li>
             </ul>
             <p>
-                Une fois que les commandes d'entraînement sont envoyées, le joueur paie le prix total en or, et chaque caserne commence à entraîner des armées. Après un nombre de tours défini, un groupe d'armée sort de la caserne et commence à se comporter d'elles même un tour après.
+                Une fois que les commandes d'entraînement sont envoyées, le joueur paie le prix total en or, et chaque caserne commence à entraîner le nombre correspondant d'unités.
+                Au dernier tour d'entraînement, les unités apparaissent autour de la caserne. Elles commencent à agir au tour suivant.
             </p>
             <p>
-                L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour. Pour n'entraîner aucune armée, il suffit d'utiliser la command <action>TRAIN</action> sans identifiant.
+                L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour.
+                Pour n'entraîner aucune armée, il suffit d'utiliser la command <action>TRAIN</action> sans identifiant.
             </p>
         </div>
 
@@ -209,6 +210,7 @@
                 <div class="title">Entrées d'initialisation</div>
                 <div class="text">
                     <span class="statement-lineno">Ligne 1:</span> un entier <var>numSites</var>, indiquant le nombre de sites de construction présents sur la carte.<br>
+                    <span class="statement-lineno">Ligne 2:</span> Un entier <var>touchedSite</var> représentant l'identifiant du site de construction en contact avec la Reine s'il existe, -1 sinon.<br>
                     <span class="statement-lineno">Les <var>numSites</var> lignes suivantes :</span> 4 entiers représentant l'identifiant <var>obstacleId</var>, les coordonnées <var>x</var> et <var>y</var>, et le rayon <var>radius</var><br> d'un site de construction.
                 </div>
             </div>
@@ -291,7 +293,7 @@
                     <li>
                         <action>BUILD {siteId} TOWER</action>
                         Construire une caserne sur le site de construction indiqué.
-                        Si la Reine est trop éloignée de site de construction, cette commande déplacera la Reine vers le site.
+                        Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site.
                     </li>
                     <li>
                         <action>BUILD {siteId} BARRACKS-{type}</action>
@@ -301,8 +303,7 @@
                         soit
                         <action>ARCHER</action> (archer)
                         soit
-                        <action>GIANT</action> (géant)
-                        .
+                        <action>GIANT</action> (géant).
                     </li>
                 </ul>
                 <strong>Seconde ligne :</strong> <action>TRAIN</action> suvi de zéro, un ou plusieurs identifiants <const>siteId</const> de casernes alliées pour commencer à entraîner des armées.
