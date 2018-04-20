@@ -47,7 +47,7 @@
             <p>
                 Deux joueurs s'affrontent sur une carte rectangulaire de <const>1920</const> x <const>1000</const>
                 unités, parsemée de sites de construction circulaires. Les coordonnées 
-                <const>0,0</const> correspondent au pixel stué en haut à gauche.
+                <const>0,0</const> correspondent au pixel situé en haut à gauche.
             </p>
 
             <p><strong>La Reine</strong>
@@ -70,14 +70,15 @@
             <p><strong>Bâtiments</strong></p>
             <p>
                 Les bâtiments ne coûtent rien à construire.
+            </br>
                 La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
             </p>
             <p>
                 Il y a un seul type de bâtiment :
             <ul>
                 <li>
-                    <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types ({type} peut valoir <action>KNIGHT</action> ou <action>ARCHER</action>).
-
+                    <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types (<action>{type}</action> peut valoir <action>KNIGHT</action> ou <action>ARCHER</action>).
+</br>
                     Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
                     Si la Reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
                 </li>
@@ -102,6 +103,7 @@
             <p><strong>Les armées</strong></p>
             <p>
                 Pour combattre la Reine de l'adversaire, un joueur doit entraîner des armées dans une caserne.
+                </br>
                 Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être contrôlées.
                 Chaque armée a un temps de vie limité, perdant 
                 <const>1</const> 
@@ -129,8 +131,9 @@
             <p><strong>L'entraînement des armées</strong></p>
             <p>
                 Un joueur peut entraîner des armées en utilisant la commande <action>TRAIN</action> et en indiquant les identifiants de casernes alliées dans lesquelles il souhaite créer des troupes.
+                </br>
                 Une caserne qui entraîne des armées ne peut pas recommencer un cycle d'entraînement avant que les premières armées soient créées.
-
+</br>
                 Exemples:
             </p>
             <ul>
@@ -254,7 +257,7 @@
                         </li>
                     </ul>
                     <span class="statement-lineno">Ligne suivante :</span> <var>numUnits</var> le nombre total d'unités actives, incluant les Reines<br>
-                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes : 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
+                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes :</span> 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
                     <ul style="padding-bottom: 0;" >
                         <li><var>x</var> et <var>y</var>: les coordonnées de l'unité.</li>
                         <li><var>owner</var>: <const>0</const> = alliée; <const>1</const> = ennemie.</li>
