@@ -86,7 +86,9 @@ class Player {
 
             String train = "TRAIN";
             if (gold >= 80){
-                train = train + " " + barracks.id;
+                if (barracks.type == 2){
+                    train = train + " " + barracks.id;
+                }
             }
 
             // First line: A valid queen action
