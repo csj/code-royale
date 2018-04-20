@@ -238,7 +238,7 @@ class Referee : AbstractReferee() {
                 }
               }
               "BUILD" -> {
-                val obsId = try { toks.next().toInt() } catch (e:Exception) { throw PlayerInputException("Could not parse obstacleId")}
+                val obsId = try { toks.next().toInt() } catch (e:Exception) { throw PlayerInputException("Could not parse siteId")}
                 val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("Site id $obsId does not exist")
                 val strucType = toks.next()
 
