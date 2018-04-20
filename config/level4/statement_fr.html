@@ -76,29 +76,36 @@
             </p>
             <p>
                 Il y a trois types de bâtiments:
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
-                    <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types ({type} peut valoir <action>KNIGHT</action>, <action>ARCHER</action>, ou <action>GIANT</action>).
-
+                    <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types (<action>{type}</action> peut valoir <action>KNIGHT</action>, <action>ARCHER</action>, ou <action>GIANT</action>).
+                    </br>
                     Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
                     Si la Reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
                 </li>
                 <li>
                     <action>TOWER</action>: les tours sont des structures de défense statique avec un certain rayon de tir. 
-
-                    Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. 
-
-                    La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire: <action>BUILD {id} TOWER</BUILD>.
+                    </br>
+                    A chaque tour de jeu, une tour cible l'armée ennemie la plus proche à portée et lui inflige <const>3</const> dégâts de base à la limite de la portée de la tour.
+                    Plus l'armée est proche de la tour, plus les dégâts infligés sont importants (<const>+1</const>
+                        toutes les
+                        <const>200</const> unités).
+                    S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place et lui inflige <const>1</const> dégâts de base
+        (<const>+1</const> toutes les <const>200</const> unités).
+                    
+                    Les tours se détériorent à chaque tour jusqu'à être complètement détruites. 
+                    </br>
+                    La Reine peut améliorer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire: <action>BUILD {id} TOWER</BUILD>.
                 </li>
                 <li>
                     <action>MINE</action>: les mines permettent de produire de l'or. Chaque joueur commence la partie avec 100 d'or.
-
-                    Une fois qu'une mine est construite, elle produit automatiquement 1 d'or par tour. Le taux de production d'une mine peut être augmenté de 1 en utilisant la même commande que pour la construire: <action>BUILD {id} MINE</BUILD>. Cependant, chaque mine a un taux maximum de production.
-
-
+                    </br>
+                    Une fois qu'une mine est construite, elle produit automatiquement <const>1</const> d'or par tour. Le taux de production d'une mine peut être augmenté de <const>1</const> en utilisant la même commande que pour la construire: <action>BUILD {id} MINE</action>.
+                    Cependant, chaque mine a un taux maximum de production (compris entre <const>+1</const> et <const>+5</const>).
+                    </br>
                     Chaque site de construction a une quantité limitée d'or disponible. La mine s'épuise donc jusqu'à être détruite.
                     Si la Reine ou une armée rentre en contact avec une mine ennemie, cette dernière est détruite.
-
+                    </br>
                     Le taux maximum de production ainsi que la quantité d'or totale d'un site de production ne sont disponibles que si la Reine se trouve à moins de <const>300</const> unités du site.
                 </li>
             </ul>
@@ -110,6 +117,7 @@
             <p><strong>Les armées</strong></p>
             <p>
                 Pour combattre la Reine de l'adversaire, un joueur doit entraîner des armées dans une caserne.
+                </br>
                 Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être contrôlées.
                 Chaque armée a un temps de vie limité, perdant 
                 <const>1</const> 
@@ -117,7 +125,7 @@
             </p>
             <p>
                 Il y a trois types d'armées.
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     Les chevaliers (<action>KNIGHT</action>) sont des unités rapides qui se déplacent vers la Reine ennemie et l'attaquent au corps à corps.
                     Il faut 
@@ -211,12 +219,13 @@
 
             <p><strong>L'entraînement des armées</strong></p>
             <p>
-                Un joueur peut entraîner des armées en utilisant la commande <action>TRAIN</action> et en indiquant les identifiants de casernes alliées dans lesquelles il souhaite créer des troupes.
+                Un joueur peut entraîner des armées en utilisant la commande <action>TRAIN</action> et en indiquant les identifiants de casernes alliées dans lesquelles ce joueur souhaite créer des troupes.
+</br>
                 Une caserne qui entraîne des armées ne peut pas recommencer un cycle d'entraînement avant que les premières armées soient créées.
-
+</br>
                 Exemples:
             </p>
-            <ul>
+            <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
                     <action>TRAIN 13 6 19</action>
                     Les 3 casernes alliées <const>13</const>, <const>6</const> et <const>19</const> commencent à entraîner des armées.
@@ -373,7 +382,7 @@
                 <const>200</const>
                 unités autour du centre de la carte) ont un bonus additionel de
                 <const>50</const>
-                'or supplémentaire ainsi qu'un bonus additionel de
+                d'or supplémentaire ainsi qu'un bonus additionel de
                 <const>+1</const>
                 au taux de production maximal.
             </p>
@@ -388,8 +397,11 @@
             </p>
             <p>
                 Le rayon d'attaque est calculé chaque tour grâce à la formule suivante :
+</br>
                 rayonAttaque = sqrt((pv * 1000 + aireSite) / PI) -- (mesuré depuis le centre du site)
+</br>
                 De sorte que PI * rayonAttaque^2 = pv * 1000 + aireSite.
+</br>
                 Une tour qui vient d'être construite commence avec
                 <const>200</const>
                 PV. Les sites qui ont un rayon plus faible auront donc une portée d'attaque plus élevée.
@@ -412,7 +424,7 @@
             <p>
                 La partie finit en match nul si après
                 <const>200</const>
-                tours, les deux Reines ont la même quanité de PV ou qu'elle sont détruites au même tour.
+                tours, les deux Reines ont la même quantité de PV ou qu'elles sont détruites au même tour.
             </p>
             </div>
         </div>
@@ -485,7 +497,7 @@
                         </li>
                     </ul>
                     <span class="statement-lineno">Ligne suivante :</span> <var>numUnits</var> le nombre total d'unités actives, incluant les Reines<br>
-                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes : 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
+                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes :</span> 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
                     <ul style="padding-bottom: 0;" >
                         <li><var>x</var> et <var>y</var>: les coordonnées de l'unité.</li>
                         <li><var>owner</var>: <const>0</const> = alliée; <const>1</const> = ennemie.</li>
