@@ -216,7 +216,7 @@ class Referee : AbstractReferee() {
             }
           }
           catch (e: PlayerInputWarning) {
-            gameManager.addToGameSummary("WARNING: ${e.message}")
+            gameManager.addToGameSummary("${player.nicknameToken}: [WARNING] ${e.message}")
           }
 
           // Process queen command
@@ -254,7 +254,7 @@ class Referee : AbstractReferee() {
             if (toks.hasNext()) throw PlayerInputException("Too many tokens after $command command")
 
           } catch (e: PlayerInputWarning) {
-            gameManager.addToGameSummary("WARNING: ${e.message}")
+            gameManager.addToGameSummary("${player.nicknameToken}: [WARNING] ${e.message}")
           }
         } catch (e: AbstractPlayer.TimeoutException) {
           e.printStackTrace()
