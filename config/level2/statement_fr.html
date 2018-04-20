@@ -74,14 +74,22 @@
                 La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
             </p>
             <p>
-                Il y a quatre types de bâtiments: la caserne de chevaliers (<action>BARRACKS-KNIGHT</action>), la caserne d'archers (<action>BARRACKS-ARCHER</action>), la caserne de géants (<action>BARRACKS-GIANT</action>), et la tour (<action>TOWER</action>). Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
-            </p>
-            <p>
-                <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types (voir ci-dessous).
-                Si la reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
-            </p>
-            <p>
-                <action>TOWER</action>: les tours sont des structures de défense statique avec un certain rayon de tir. Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire <action>BUILD {id} TOWER</BUILD>.
+                Il y a deux types de bâtiments :
+            <ul>
+                <li>
+                    <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types ({type} peut valoir <action>KNIGHT</action>, <action>ARCHER</action>, ou <action>GIANT</action>).
+
+                    Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
+                    Si la Reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
+                </li>
+                <li>
+                    <action>TOWER</action>: les tours sont des structures de défense statique avec un certain rayon de tir. 
+
+                    Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. 
+
+                    La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire: <action>BUILD {id} TOWER</BUILD>.
+                </li>
+            </ul>
             </p>
             <p>
                 La Reine peut remplacer une caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
@@ -154,7 +162,7 @@
             </p>
             <p>
                 L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour.
-                Pour n'entraîner aucune armée, il suffit d'utiliser la command <action>TRAIN</action> sans identifiant.
+                Pour n'entraîner aucune armée, il suffit d'utiliser la commande <action>TRAIN</action> sans identifiant.
             </p>
         </div>
 
@@ -292,7 +300,7 @@
                     <li><action>MOVE x y</action> Déplacer la Reine vers les coordonnées indiquées (x et y étant des entiers)</li>
                     <li>
                         <action>BUILD {siteId} TOWER</action>
-                        Construire une caserne sur le site de construction indiqué.
+                        Construire une tour sur le site de construction indiqué.
                         Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site.
                     </li>
                     <li>
