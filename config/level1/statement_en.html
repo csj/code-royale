@@ -78,13 +78,16 @@
                 The variable <var>touchedSite</var> indicates the identifier of the building site that she is in contact with, -1 if not.
             </p>
             <p>
-                There are two types of structures: the barracks of knights (<action>BARRACKS-KNIGHT</action>) and the barracks of archers (<action>BARRACKS-ARCHER</action>).
-                Barracks are available for use on the turn immediately following their construction.
-            </p>
-            <p>
-                <action>BARRACKS-{type}</action>: a player needs to build a BARRACKS with their Queen in order to train creeps.
-                Every barracks is built with the ability to train a single creep type.
-                A barracks is destroyed if it is touched by the enemy Queen.
+                There is one type of structure:
+                <ul style="padding-top: 0; padding-bottom: 0;">
+                    <li>
+                        <action>BARRACKS-{type}</action>: A player needs to build a BARRACKS with their Queen in order to train creeps
+                        ({type} can be <action>KNIGHT</action>, <action>ARCHER</action> or <action>GIANT</action>).
+                        Every barracks is built with the ability to train a single creep type.
+                        Barracks are available for use on the turn immediately following their construction.
+                        A barracks is destroyed if it is touched by the enemy Queen.
+                    </li>
+                </ul>
             </p>
             <p>
                 If she so chooses, a Queen can replace an existing friendly structure simply by building another one in
