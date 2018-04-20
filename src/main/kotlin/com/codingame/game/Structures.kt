@@ -71,10 +71,17 @@ class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initi
   fun updateEntities() {
     structure?.updateEntities()
     val struc = structure
-    val lines = listOf(
-      "Radius: $radius",
-      "Remaining gold: $gold"
-    ) + (struc?.extraTooltipLines() ?: listOf())
+    val lines:List<String>
+    if (Leagues.mines) {
+      lines = listOf(
+              "Radius: $radius",
+              "Remaining gold: $gold"
+      ) + (struc?.extraTooltipLines() ?: listOf())
+    } else {
+      lines = listOf(
+              "Radius: $radius"
+      ) + (struc?.extraTooltipLines() ?: listOf())
+    }
     theTooltipModule.updateExtraTooltipText(obstacleImage, *lines.toTypedArray())
   }
 
