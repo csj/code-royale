@@ -320,7 +320,6 @@ class Barracks(override val obstacle: Obstacle, override val owner: Player, var 
     val retVal = mutableListOf(
       "BARRACKS ($creepType)"
     )
-    if (this.isTraining) retVal += "Progress: $progress/$progressMax"
     return retVal
   }
 
