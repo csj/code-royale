@@ -1,44 +1,17 @@
-This project is the skeleton for the creation of a game using the Game Engine Toolkit of [CodinGame](https://codingame.com). Check the documentation on the [Game Engine repository](https://github.com/CodinGame/codingame-game-engine) github page.
+Just run `Main.java` and then send your browser to localhost:8888. You will be playing in level 1 (i.e. Wood3).
 
-## Note about the game turn implementation
-There are 2 ways to implement your game turn according to the game you want to create. **The simultaneous mode** or the **Turn by Turn mode**.
+To play in a different league, look for reads of `gameManager.leagueLevel`.
+Hardcode it to a different value instead (there is an example commented out in the code):
+- 1 = Wood3
+- 2 = Wood2
+- 3 = Wood1
+- 4 = Bronze
+- 5 = Silver
+- 6 = Gold
+- 7 = Legend
 
-### The simultaneous mode
-It's a game mode where all players receive the game data and execute their actions in the same turn. (eg: Race, Pong, ...)
+You can load any bots you want. See the example WaitBot.java (for a java version)
+or CSJPlayer (or any other) for Kotlin examples.
 
-```java
-for (SkeletonPlayer player : gameManager.getActivePlayers()) {
-    player.sendInputLine(input);
-    player.execute();
-}
-
-for (SkeletonPlayer player : gameManager.getActivePlayers()) {
-    try {
-        List<String> outputs = player.getOutputs();
-        // Check validity of the player output and compute the new game state
-    } catch (TimeoutException e) {
-        player.deactivate(String.format("$%d timeout!", player.getIndex()));
-    }
-}
-
-// Check if there is a win / lose situation and call gameManager.endGame(); when game is finished
-```
-
-### The Turn by Turn mode:
-It's a game mode where only one player execute an action during a turn. (eg: TicTacToe, Chess)
-
-```java
-SkeletonPlayer player = gameManager.getPlayer(turn % playerCount);
-player.sendInputLine(input);
-player.execute();
-try {
-    List<String> outputs = player.getOutputs();
-    // Check validity of the player output and compute the new game state
-} catch (TimeoutException e) {
-    player.deactivate(String.format("$%d timeout!", player.getIndex()));
-    player.setScore(-1);
-    gameManager.endGame();
-}
-
-// Check if there is a win / lose situation and call gameManager.endGame(); when game is finished
-```
+No, I don't apologize for using Kotlin to build this game. My productivity has
+soared because of it! Feel free to ask me about anything that doesn't make sense.
