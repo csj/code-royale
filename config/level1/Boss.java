@@ -3,7 +3,7 @@ import java.util.*;
 /*
 Level 1 Boss: Peon
 Expected Player Skills: Build structures and train minions in an efficient manner
-Strategy: Build a single Knight Barracks and train a wave of knight troops every 10 turns.
+Strategy: Build a single Knight Barracks and train a wave of knight troops every 12 turns.
  */
 class Player {
 
@@ -72,9 +72,11 @@ class Player {
 
             count++;
             String train = "TRAIN";
-            if (count == 10){
+            if (count == 12){
                 count = 0;
-                train = train + " " + barracks.id;
+                if (barracks.type == 2){
+                    train = train + " " + barracks.id;
+                }
             }
 
             // First line: A valid queen action
