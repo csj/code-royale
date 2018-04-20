@@ -1,0 +1,564 @@
+<div id="statement_back" class="statement_back" style="display:none"></div>
+
+<div class="statement-body">
+
+    <!-- LEAGUE ALERT -->
+    <div style="color: #7cc576;
+    background-color: rgba(124, 197, 118,.1);
+    padding: 20px;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 10px;
+    text-align: left;">
+        <div style="text-align: center; margin-bottom: 6px">
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png"/>
+        </div>
+
+        <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
+          Résumé des nouvelles règles
+        </p>
+        <span class="statement-league-alert-content">
+            Les Reines débutent la partie avec moins de points de vie.
+            C'est le dernier changement de règles.
+            Voir les détails ci-dessous.
+      </span>
+    </div>
+
+
+    <!-- GOAL -->
+    <div class="statement-section statement-goal">
+        <h1>
+            <span class="icon icon-goal">&nbsp;</span>
+            <span>Objectif</span>
+        </h1>
+        <div class="statement-goal-content">
+            <!-- LEAGUES wood3 wood2 wood1 bronze -->
+            Construire des bâtiments et créer des armées pour détruire la Reine de votre adversaire.
+        </div>
+    </div>
+
+
+    <!-- RULES -->
+    <div class="statement-section statement-rules">
+        <h1>
+            <span class="icon icon-rules">&nbsp;</span>
+            <span>Règles</span>
+        </h1>
+        <div><div class="statement-rules-content">
+            <p><strong>La carte</strong></p>
+            <p>
+                Deux joueurs s'affrontent sur une carte rectangulaire de <const>1920</const> x <const>1000</const>
+                unités, parsemée de sites de construction circulaires. Les coordonnées 
+                <const>0,0</const> correspondent au pixel stué en haut à gauche.
+            </p>
+
+            <p><strong>La Reine</strong>
+            <p>
+                Chaque joueur contrôle une Reine qui peut construire différents types de bâtiments sur des sites de construction.
+                La Reine est le seul moyen pour un joueur d'interagir avec la carte.
+
+            </p>
+            <p>
+                La Reine est représentée par un cercle de rayon de 
+                <const>30</const> 
+                unités. Elle se déplace à l'aide de la commande <action>MOVE</action> de <const>60</const> unités au plus par tour.
+            </p>
+            <p>
+                Les deux Reines démarrent la partie avec la même quantité de points de vie (PV) aléatoire (entre <const>25</const> et <const>100</const>).
+                A 0 PV, la Reine est détruite et le joueur correspondant perd la partie. 
+                Si les deux Reines sont détruites pendant le même tour de jeu, il y a match nul.
+            </p>
+
+            <p><strong>Bâtiments</strong></p>
+            <p>
+                Les bâtiments ne coûtent rien à construire.
+                La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
+            </p>
+            <p>
+                Il y a trois types de bâtiments:
+            <ul>
+                <li>
+                    <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types ({type} peut valoir <action>KNIGHT</action>, <action>ARCHER</action>, ou <action>GIANT</action>).
+
+                    Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
+                    Si la Reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
+                </li>
+                <li>
+                    <action>TOWER</action>: les tours sont des structures de défense statique avec un certain rayon de tir. 
+
+                    Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. 
+
+                    La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire: <action>BUILD {id} TOWER</BUILD>.
+                </li>
+                <li>
+                    <action>MINE</action>: les mines permettent de produire de l'or. Chaque joueur commence la partie avec 100 d'or.
+
+                    Une fois qu'une mine est construite, elle produit automatiquement 1 d'or par tour. Le taux de production d'une mine peut être augmenté de 1 en utilisant la même commande que pour la construire: <action>BUILD {id} MINE</BUILD>. Cependant, chaque mine a un taux maximum de production.
+
+
+                    Chaque site de construction a une quantité limitée d'or disponible. La mine s'épuise donc jusqu'à être détruite.
+                    Si la Reine ou une armée rentre en contact avec une mine ennemie, cette dernière est détruite.
+
+                    Le taux maximum de production ainsi que la quantité d'or totale d'un site de production ne sont disponibles que si la Reine se trouve à moins de <const>300</const> unités du site.
+                </li>
+            </ul>
+            </p>
+            <p>
+                La Reine peut remplacer un bâtiment allié en construisant un autre bâtiment par dessus (sauf si c'est une caserne qui entraîne des armées à ce moment).
+            </p>
+
+            <p><strong>Les armées</strong></p>
+            <p>
+                Pour combattre la Reine de l'adversaire, un joueur doit entraîner des armées dans une caserne.
+                Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être contrôlées.
+                Chaque armée a un temps de vie limité, perdant 
+                <const>1</const> 
+                PV par tour.
+            </p>
+            <p>
+                Il y a trois types d'armées.
+            <ul>
+                <li>
+                    Les chevaliers (<action>KNIGHT</action>) sont des unités rapides qui se déplacent vers la Reine ennemie et l'attaquent au corps à corps.
+                    Il faut 
+                    <const>80</const>
+                    d'or pour entraîner un groupe de 4 chevaliers à la caserne de chevaliers (<action>BARRACKS-KNIGHT</action>).
+                </li>
+                <li>
+                    Les archers (<action>ARCHER</action>) sont des unités lentes qui se déplacent vers l'armée ennemie la plus proche et l'attaquent à courte portée. 
+                    Il faut
+                    <const>100</const>
+                    d'or pour entraîner un groupe de 2 archers à la caserne d'archers (<action>BARRACKS-ARCHER</action>). 
+                    Note: les archers n'attaquent pas la Reine ennemie ; ce sont des unités purement défensives.
+                </li>
+                <li>
+                    Les géants (<action>GIANT</action>) n'attaquent pas les armées ni la Reine. Ils n'attaquent que les tours, les détruisant petit à petit.
+                    Il faut
+                    <const>140</const>
+                    d'or pour entraîner un seul géant à la caserne de géants (<action>BARRACKS-GIANT</action>). 
+            </ul>
+            La Reine est listée ici par souci de comparaison.
+            <table style="width: 100%; border-spacing: 10px; border-collapse: separate;">
+                    <tr>
+                        <th>Type</th>
+                        <td>Chevalier</td>
+                        <td>Archer</td>
+                        <td>Géant</td>
+                        <td>Reine</td>
+
+                    </tr>
+                    <tr>
+                        <th>Coût</th>
+                        <td>80</td>
+                        <td>100</td>
+                        <td>140</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre par groupe d'entraînement</th>
+                        <td>4</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <th>Vitesse</th>
+                        <td>100</td>
+                        <td>75</td>
+                        <td>50</td>
+                        <td>60</td>
+                    </tr>
+                    <tr>
+                        <th>Dégâts par tour</th>
+                        <td>1 à la Reine</td>
+                        <td>
+                            10 aux Géants<br>
+                            2 aux autre armées
+                        </td>
+                        <td>80 aux tours</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <th>Portée</th>
+                        <td>0</td>
+                        <td>200</td>
+                        <td>0</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <th>PV</th>
+                        <td>30</td>
+                        <td>45</td>
+                        <td>200</td>
+                        <td>200</td>
+                    </tr>
+                    <tr>
+                        <th>Temps d'entraînement (tours)</th>
+                        <td>5</td>
+                        <td>8</td>
+                        <td>10</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <th>Rayon</th>
+                        <td>20</td>
+                        <td>25</td>
+                        <td>40</td>
+                        <td>30</td>
+                    </tr>
+                </table>
+            </p>
+
+            <p><strong>L'entraînement des armées</strong></p>
+            <p>
+                Un joueur peut entraîner des armées en utilisant la commande <action>TRAIN</action> et en indiquant les identifiants de casernes alliées dans lesquelles il souhaite créer des troupes.
+                Une caserne qui entraîne des armées ne peut pas recommencer un cycle d'entraînement avant que les premières armées soient créées.
+
+                Exemples:
+            </p>
+            <ul>
+                <li>
+                    <action>TRAIN 13 6 19</action>
+                    Les 3 casernes alliées <const>13</const>, <const>6</const> et <const>19</const> commencent à entraîner des armées.
+                </li>
+                <li>
+                    <action>TRAIN 14</action>
+                    La caserne alliée <const>14</const> commence à entraîner des armées.
+                </li>
+            </ul>
+            <p>
+                Une fois que les commandes d'entraînement sont envoyées, le joueur paie le prix total en or, et chaque caserne commence à entraîner le nombre correspondant d'unités.
+                Au dernier tour d'entraînement, les unités apparaissent autour de la caserne. Elles commencent à agir au tour suivant.
+            </p>
+            <p>
+                L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour.
+                Pour n'entraîner aucune armée, il suffit d'utiliser la commande <action>TRAIN</action> sans identifiant.
+            </p>
+        </div>
+
+
+            <!-- Victory conditions -->
+            <div class="statement-victory-conditions">
+                <div class="icon victory"></div>
+                <div class="blk">
+                    <div class="title">Conditions de victoire</div>
+                    <div class="text">
+                        <ul style="padding-bottom: 0;">
+                            <li>Détruire la Reine ennemie</li>
+                            <li>Après <const>200</const> tours, votre Reine a plus de PV que la Reine ennemie.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lose conditions -->
+            <div class="statement-lose-conditions">
+                <div class="icon lose"></div>
+                <div class="blk">
+                    <div class="title">Conditions de défaite</div>
+                    <div class="text">
+                        <ul style="padding-bottom: 0;">
+                            <li>Vous effectuez une action invalide ou votre programme ne répond pas dans les temps</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="statement-section statement-expertrules">
+            <h1>
+                <span class="icon icon-expertrules">&nbsp;</span>
+                <span>Règles avancées</span>
+            </h1>
+            <div class="statement-expert-rules-content">
+                <p><strong>Ordre des actions d'un tour de jeu</strong></p>
+            <ol>
+                <li>Etat du jeu envoyé aux joueurs</li>
+                <li>Entrées des joueurs reçues et traitées :
+                    <ul style="padding-top: 0; padding-bottom: 0;">
+                        <li>Début des nouveaux entraînements d'armée</li>
+                        <li>Déplacement des Reines</li>
+                        <li>Construction des nouveaux bâtiments</li>
+                    </ul>
+                </li>
+                <li>Déplacement des armées, résolution des collisions</li>
+                <li>Attaque des armées et destruction des mines par les armées</li>
+                <li>Destruction des mines et casernes par les Reines</li>
+                <li>Action des structures restantes (incluant celles construites ce tour-ci) :
+                    <ul style="padding-top: 0; padding-bottom: 0;">
+                        <li>Tir des tours ; les armées mortes sont retirées du jeu</li>
+                        <li>Le cycle d'entraînement des casernes progresse ; création des nouvelles unités</li>
+                        <li>Production d'or par les mines</li>
+                    </ul>
+                </li>
+                <li>Vieillissement des armées ; les armées mortes sont retirées du jeu</li>
+                <li>Vérification des conditions de victoire et de défaite</li>
+            </ol>
+            <br>
+
+            <p><strong>Collisions</strong></p>
+            <p>
+                Les unités du jeu ne peuvent pas partager un espace en commun. Tous les bâtiments, Reines et armées sont modélisés par des cercles.
+            </p>
+            <p>
+                Les mouvements d'unités sont simplement effectués en déplaçant chaque unités vers sa destinations. Cependant, à la fin de chaque tour, tant qu'il existe des collisions, les unités incriminées sont déplacées dans des directions opposées. (sauf pour les sites de constructions qui sont immobiles) 
+                Il est donc possible pour une Reine d'être poussée par une vague d'armées.
+            </p>
+            <p>
+                Chaque unité a un poids:
+            </p>
+            <ul style="padding-top: 0; padding-bottom: 0;">
+                <li>Site de construction: infini (immobile)</li>
+                <li>Reine: 100</li>
+                <li>Géant: 20</li>
+                <li>Archer: 9</li>
+                <li>Chevalier: 4</li>
+            </ul>
+            <p>
+                Une unité avec moins de poids qu'une l'unité avec laquelle elle rentre en collision sera plus déplacée que cette dernière.
+            </p>
+            <br>
+
+            <p><strong>Contact entre les unités</strong></p>
+            <p>
+                Pour savoir si deux unités sont considérées en contact, on compare la distance entre leur deux centres :
+                estEnContact = distance - rayon1 - rayon2 <
+                <const>5</const>
+                . Cela s'applique pour les cas suivants :
+            <ul style="padding-top: 0; padding-bottom: 0;">
+                <li>Chevalier - Reine (dégats)</li>
+                <li>Reine - Site (construction et destruction)</li>
+                <li>Armée - Mine (destruction)</li>
+                <li>Géant - Tour (dégâts)</li>
+            </ul>
+            </p>
+            <br>
+            <p><strong>Contact entre les unités</strong></p>
+            <p>
+                Si les deux Reines essayent de constuire un bâtiment sur le même site de construction au même moment, un seul bâtiment sera construit:
+                <ul>
+                    <li>
+                        Pendant les tours pairs (incluant le tour 0), le joueur 2 peut constuire.
+                    </li>
+                    <li>
+                        Pendant les tours impairs, le joueur 1 peut construire.
+                    </li>
+                </ul>
+            </p>
+            <p><strong>Site de construction</strong></p>
+            <p>
+                Tous les sites de construction sont créés aléatoirement par paires: les attributs d'un site sont les mêmes que son site-mirroir.
+                La quantité d'or d'un site est une valeur aléatoire entre
+                <const>200</const>
+                et
+                <const>250</const>, son taux maximum de production est compris entre
+                <const>+1</const>
+                et
+                <const>+3</const>, et son rayon entre
+                <const>60</const>
+                et
+                <const>110</const>
+                unités.
+            </p>
+            <p>
+                Les sites qui sont situés au centre de la carte (dans un rayon de
+                <const>500</const>
+                unités autour du centre de la carte) ont un bonus de
+                <const>50</const>
+                d'or supplémentaire ainsi qu'un bonus de
+                <const>+1</const>
+                au taux de production maximal.
+                Les sites situés encore plus proches du centre de la carte (dans un rayon de
+                <const>200</const>
+                unités autour du centre de la carte) ont un bonus additionel de
+                <const>50</const>
+                'or supplémentaire ainsi qu'un bonus additionel de
+                <const>+1</const>
+                au taux de production maximal.
+            </p>
+            <br>
+
+            <p><strong>PV d'une tour</strong></p>
+            <p>
+                La quantité de PV (<var>param1</var>) d'une tour détermine sa portée d'attaque (<var>param2</var>).
+                Chaque PV permet à la tour de couvrir
+                <const>1000</const>
+                unités carrées (cela ne représente pas grand chose !), excluant l'espace correspondant au site de construction sur lequelle la tour est construite.
+            </p>
+            <p>
+                Le rayon d'attaque est calculé chaque tour grâce à la formule suivante :
+                rayonAttaque = sqrt((pv * 1000 + aireSite) / PI) -- (mesuré depuis le centre du site)
+                De sorte que PI * rayonAttaque^2 = pv * 1000 + aireSite.
+                Une tour qui vient d'être construite commence avec
+                <const>200</const>
+                PV. Les sites qui ont un rayon plus faible auront donc une portée d'attaque plus élevée.
+            </p>
+            <p>
+                Quand une tour est réparée/améliorée, elle reçoit
+                <const>100</const>
+                PV supplémentaires.
+                La quantité de PV maximum d'une tour est de
+                <const>800</const>.
+                Chaque tour perd
+                <const>4</const>
+                PV par tour.
+                Chaque géant qui finit son tour en contact avec une tour inflige
+                <const>80</const> dégâts à la tour. Ainsi, la Reine peut réparer une tour plus vite qu'un géant la détruit.
+            </p>
+            <br>
+
+            <p><strong>Match nul</strong></p>
+            <p>
+                La partie finit en match nul si après
+                <const>200</const>
+                tours, les deux Reines ont la même quanité de PV ou qu'elle sont détruites au même tour.
+            </p>
+            </div>
+        </div>
+
+
+        <!-- PROTOCOL -->
+        <div class="statement-section statement-protocol">
+            <h1>
+                <span class="icon icon-protocol">&nbsp;</span>
+                <span>Entrées du jeu</span>
+            </h1>
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Entrées d'initialisation</div>
+                <div class="text">
+                    <span class="statement-lineno">Ligne 1:</span> un entier <var>numSites</var>, indiquant le nombre de sites de construction présents sur la carte.<br>
+                    <span class="statement-lineno">Ligne 2:</span> Un entier <var>touchedSite</var> représentant l'identifiant du site de construction en contact avec la Reine s'il existe, -1 sinon.<br>
+                    <span class="statement-lineno">Les <var>numSites</var> lignes suivantes :</span> 4 entiers représentant l'identifiant <var>obstacleId</var>, les coordonnées <var>x</var> et <var>y</var>, et le rayon <var>radius</var><br> d'un site de construction.
+                </div>
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Entrées pour un tour de jeu</div>
+                <div class="text">
+
+                    <span class="statement-lineno">Ligne 1:</span> Un entier <var>gold</var> représentant l'or disponible du joueur.<br>
+                    <span class="statement-lineno">Les <var>numSites</var> lignes suivantes :</span> 7 entiers <var>siteId</var> <var>ignore1</var>
+                        <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
+                    <ul style="padding-bottom: 0;">
+                        <li><var>siteId</var>: L'identifiant d'un site de construction</li>
+                        <li><var>gold</var>: La quantité d'or restante à miner du site de construction (<const>-1</const> si inconnue)</li>
+                        <li><var>maxMineSize</var>: le taux de production maximum d'une mine sur ce site de construction (<const>-1</const> si inconnu)</li>
+                        <li><var>structureType</var>: Le type de bâtiment construit sur le site.
+                            <ul style="padding-top: 0; padding-bottom: 0;">
+                                <li><const>-1</const>: Pas de bâtiment construit</li>
+                                li><const>1</const>: Une mine</li>
+                                <li><const>1</const>: Une tour</li>
+                                <li><const>2</const>: Une caserne</li>
+                            </ul>
+                        </li>
+                        <li><var>owner</var>: Le propriétaire du bâtiment
+                          <ul style="padding-top: 0; padding-bottom: 0;">
+                                <li><const>-1</const>: Pas de bâtiment construit</li>
+                                <li><const>0</const>: Bâtiment allié</li>
+                                <li><const>1</const>: Bâtiment ennemi</li>
+                            </ul>
+                        </li>
+                        <li><var>param1</var>:
+                          <ul style="padding-top: 0; padding-bottom: 0;">
+                                <li>Quand il n'y a pas de bâtiment construit : <const>-1</const></li>
+                                <li>Si c'est une mine, son taux de production (entre 1 et 5), -1 si c'est une mine ennemie.</li>
+                                <li>Si c'est une tour, son nombre de points de vie restants.</li>
+                                <li>Si c'est une caserne, le nombre de tours restant avant que la caserne puisse à nouveau lancer un cycle d'entraînement d'armées, <const>0</const> si elle est disponible.</li>
+                            </ul>
+                        </li>
+                        <li><var>param2</var>
+                          <ul style="padding-top: 0; padding-bottom: 5px;">
+                                <li>Quand il n'y a pas de bâtiment construit ou si c'est une mine: <const>-1</const></li>
+                                <li>Si c'est une tour, son rayon de portée</li>
+                                <li>Si c'est une caserne, le type d'armée qu'elle produit
+                                    <const>0</const>
+                                    pour une caserne de chevaliers,
+                                    <const>1</const>
+                                    pour une caserne d'archers,
+                                    <const>2</const>
+                                    pour une caserne de géants.
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <span class="statement-lineno">Ligne suivante :</span> <var>numUnits</var> le nombre total d'unités actives, incluant les Reines<br>
+                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes : 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
+                    <ul style="padding-bottom: 0;" >
+                        <li><var>x</var> et <var>y</var>: les coordonnées de l'unité.</li>
+                        <li><var>owner</var>: <const>0</const> = alliée; <const>1</const> = ennemie.</li>
+                        <li><var>unitType</var>: le type d'unité
+                            <const>-1</const>
+                            pour une Reine,
+                            <const>0</const>
+                            pour un chevalier,
+                            <const>1</const>
+                            pour un archer, et
+                            <const>2</const>
+                            pour un géant.
+                        </li>
+                        <li><var>health</var> : Le nombre de points de vie restants de l'unité</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Sortie pour un tour de jeu </div>
+                <strong>Première ligne :</strong> L'une des commandes suivantes
+                <ul style="padding-bottom: 0;">
+                    <li><action>WAIT</action> Ne rien faire</li>
+                    <li><action>MOVE x y</action> Déplacer la Reine vers les coordonnées indiquées (x et y étant des entiers)</li>
+                    <li>
+                        <action>BUILD {siteId} TOWER</action>
+                        Construire une tour sur le site de construction indiqué.
+                        Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site.
+                    </li>
+                    <li>
+                        <action>BUILD {siteId} MINE</action>
+                        Construire une mine sur le site de construction indiqué.
+                        Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site.
+                    </li>
+                    <li>
+                        <action>BUILD {siteId} BARRACKS-{type}</action>
+                        Construire une caserne sur le site de construction indiqué.
+                        Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site. Le type de caserne est soit
+                        <action>KNIGHT</action> (chevalier)
+                        soit
+                        <action>ARCHER</action> (archer)
+                        soit
+                        <action>GIANT</action> (géant).
+                    </li>
+                </ul>
+                <strong>Seconde ligne :</strong> <action>TRAIN</action> suvi de zéro, un ou plusieurs identifiants <const>siteId</const> de casernes alliées pour commencer à entraîner des armées.
+            </div>
+
+            <!-- Protocol block -->
+            <div class="blk">
+                <div class="title">Contraintes</div>
+                <div class="text">
+                    Temps de réponse pour le premier tour ≤ 1000ms <br>
+                    Temps de réponse pour un tour ≤ 50ms</div>
+            </div>
+        </div>
+
+    <!-- NEXT LEAGUE RULES -->
+    <div style="color: #7cc576;
+      background-color: rgba(124, 197, 118,.1);
+      padding: 20px;
+      margin-top: 10px;
+      text-align: left;">
+        <div style="text-align: center; margin-bottom: 6px">
+            <img src="//cdn.codingame.com/smash-the-code/statement/league_wood_04.png" />
+        </div>
+        <p style="text-align: center; font-weight: 700; margin-bottom: 6px;">
+            Qu'est-ce qui m'attend dans les prochaines ligues ?
+        </p>
+        Les nouvelles règles débloquées dans les prochaines ligues sont : 
+        <ul style="padding-bottom: 0px;" class="statement-next-rules">
+            <li>Les Reines débutent la partie avec moins de points de vie.</li>
+        </ul>
+    </div>
+</div>
