@@ -73,11 +73,15 @@
                 La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
             </p>
             <p>
-                Il y a deux types de bâtiments: la caserne de chevaliers (<action>BARRACKS-KNIGHT</action>) et la caserne d'archers (<action>BARRACKS-ARCHER</action>). Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
-            </p>
-            <p>
-                <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types (voir ci-dessous).
-                Si la reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
+                Il y a un seul type de bâtiment :
+            <ul>
+                <li>
+                    <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types ({type} peut valoir <action>KNIGHT</action> ou <action>ARCHER</action>).
+
+                    Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
+                    Si la Reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
+                </li>
+            </ul>
             </p>
             <p>
                 La Reine peut remplacer une caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
@@ -145,7 +149,7 @@
             </p>
             <p>
                 L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour.
-                Pour n'entraîner aucune armée, il suffit d'utiliser la command <action>TRAIN</action> sans identifiant.
+                Pour n'entraîner aucune armée, il suffit d'utiliser la commande <action>TRAIN</action> sans identifiant.
             </p>
         </div>
 

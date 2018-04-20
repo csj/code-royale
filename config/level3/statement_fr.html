@@ -18,7 +18,7 @@
           Résumé des nouvelles règles
         </p>
         <span class="statement-league-alert-content">
-            Vous pouvez maintenant construire des tours pour vous défendre contre les armées adverses, et entraîner des géants pour détruire les tours adverses.
+            Vous pouvez maintenant construire des mines pour produire de l'or.
             Voir les détails ci-dessous.
       </span>
     </div>
@@ -74,7 +74,7 @@
                 La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
             </p>
             <p>
-                Il y a deux types de bâtiments :
+                Il y a trois types de bâtiments:
             <ul>
                 <li>
                     <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types ({type} peut valoir <action>KNIGHT</action>, <action>ARCHER</action>, ou <action>GIANT</action>).
@@ -89,22 +89,21 @@
 
                     La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire: <action>BUILD {id} TOWER</BUILD>.
                 </li>
+                <li>
+                    <action>MINE</action>: les mines permettent de produire de l'or. Chaque joueur commence la partie avec 100 d'or.
+
+                    Une fois qu'une mine est construite, elle produit automatiquement 1 d'or par tour. Le taux de production d'une mine peut être augmenté de 1 en utilisant la même commande que pour la construire: <action>BUILD {id} MINE</BUILD>. Cependant, chaque mine a un taux maximum de production.
+
+
+                    Chaque site de construction a une quantité limitée d'or disponible. La mine s'épuise donc jusqu'à être détruite.
+                    Si la Reine ou une armée rentre en contact avec une mine ennemie, cette dernière est détruite.
+
+                    Le taux maximum de production ainsi que la quantité d'or totale d'un site de production ne sont disponibles que si la Reine se trouve à moins de <const>300</const> unités du site.
+                </li>
             </ul>
             </p>
             <p>
-                La Reine peut remplacer une caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
-            </p>
-
-            <p><strong>L'or</strong></p>
-            <p>
-                L'or sert à entraîner des armées.
-            </p>
-            <p>
-                Chaque joueur démarre la partie avec 
-                <const>100</const>
-                d'or et gagne 
-                <const>10</const>
-                d'or à la fin de chaque tour.
+                La Reine peut remplacer un bâtiment allié en construisant un autre bâtiment par dessus (sauf si c'est une caserne qui entraîne des armées à ce moment).
             </p>
 
             <p><strong>Les armées</strong></p>
@@ -233,11 +232,12 @@
                         <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                     <ul style="padding-bottom: 0;">
                         <li><var>siteId</var>: L'identifiant d'un site de construction</li>
-                        <li><var>ignore1</var>: <i>A ignorer pour cette ligue</i></li>
-                        <li><var>ignore2</var>: <i>A ignorer pour cette ligue</i></li>
+                        <li><var>gold</var>: La quantité d'or restante à miner du site de construction (<const>-1</const> si inconnue)</li>
+                        <li><var>maxMineSize</var>: le taux de production maximum d'une mine sur ce site de construction (<const>-1</const> si inconnu)</li>
                         <li><var>structureType</var>: Le type de bâtiment construit sur le site.
                             <ul style="padding-top: 0; padding-bottom: 0;">
                                 <li><const>-1</const>: Pas de bâtiment construit</li>
+                                li><const>1</const>: Une mine</li>
                                 <li><const>1</const>: Une tour</li>
                                 <li><const>2</const>: Une caserne</li>
                             </ul>
@@ -252,13 +252,14 @@
                         <li><var>param1</var>:
                           <ul style="padding-top: 0; padding-bottom: 0;">
                                 <li>Quand il n'y a pas de bâtiment construit : <const>-1</const></li>
-                                <li>Si c'est une tour, son nombre de points de vie restants.
+                                <li>Si c'est une mine, son taux de production (entre 1 et 5), -1 si c'est une mine ennemie.</li>
+                                <li>Si c'est une tour, son nombre de points de vie restants.</li>
                                 <li>Si c'est une caserne, le nombre de tours restant avant que la caserne puisse à nouveau lancer un cycle d'entraînement d'armées, <const>0</const> si elle est disponible.</li>
                             </ul>
                         </li>
                         <li><var>param2</var>
                           <ul style="padding-top: 0; padding-bottom: 5px;">
-                                <li>Quand il n'y a pas de bâtiment construit : <const>-1</const></li>
+                                <li>Quand il n'y a pas de bâtiment construit ou si c'est une mine: <const>-1</const></li>
                                 <li>Si c'est une tour, son rayon de portée</li>
                                 <li>Si c'est une caserne, le type d'armée qu'elle produit
                                     <const>0</const>
@@ -304,6 +305,11 @@
                         Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site.
                     </li>
                     <li>
+                        <action>BUILD {siteId} MINE</action>
+                        Construire une mine sur le site de construction indiqué.
+                        Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site.
+                    </li>
+                    <li>
                         <action>BUILD {siteId} BARRACKS-{type}</action>
                         Construire une caserne sur le site de construction indiqué.
                         Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site. Le type de caserne est soit
@@ -340,7 +346,7 @@
         </p>
         Les nouvelles règles débloquées dans les prochaines ligues sont : 
         <ul style="padding-bottom: 0px;" class="statement-next-rules">
-            <li>Vous devrez construire des mines pour produire de l'or.</li>
+            <li>Les Reines débutent la partie avec moins de points de vie.</li>
         </ul>
     </div>
 </div>
