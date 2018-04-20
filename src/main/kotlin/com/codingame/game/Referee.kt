@@ -175,8 +175,8 @@ class Referee : AbstractReferee() {
 
             // Process building creeps
             val buildingBarracks = toks.drop(1)
-              .map { obsIdStr -> obsIdStr.toIntOrNull() ?: throw PlayerInputException("Couldn't process obstacleId: $obsIdStr") }
-              .map { obsId -> obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("No obstacle with id = $obsId") }
+              .map { obsIdStr -> obsIdStr.toIntOrNull() ?: throw PlayerInputException("Couldn't process siteId: $obsIdStr") }
+              .map { obsId -> obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("No site with id = $obsId") }
               .map { obs ->
                 val struc = obs.structure as? Barracks ?: throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not a barracks")
                 if (struc.owner != player) throw PlayerInputWarning("Cannot spawn from ${obs.obstacleId}: not owned")
@@ -239,7 +239,7 @@ class Referee : AbstractReferee() {
               }
               "BUILD" -> {
                 val obsId = try { toks.next().toInt() } catch (e:Exception) { throw PlayerInputException("Could not parse obstacleId")}
-                val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("ObstacleId $obsId does not exist")
+                val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("Site id $obsId does not exist")
                 val strucType = toks.next()
 
                 val dist = obs.location.distanceTo(queen.location)

@@ -42,7 +42,7 @@ class Obstacle(var maxMineSize: Int, initialGold: Int, initialRadius: Int, initi
   init {
     radius = initialRadius
     location = initialLocation
-    val params = hashMapOf("id" to obstacleId, "type" to "Obstacle")
+    val params = hashMapOf("id" to obstacleId, "type" to "Site")
     theTooltipModule.registerEntity(obstacleImage, params as Map<String, Any>?)
   }
 
