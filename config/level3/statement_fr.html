@@ -71,6 +71,7 @@
             <p><strong>Bâtiments</strong></p>
             <p>
                 Les bâtiments ne coûtent rien à construire.
+                </br>
                 La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
             </p>
             <p>
@@ -78,26 +79,26 @@
             <ul>
                 <li>
                     <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types ({type} peut valoir <action>KNIGHT</action>, <action>ARCHER</action>, ou <action>GIANT</action>).
-
+</br>
                     Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
                     Si la Reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
                 </li>
                 <li>
                     <action>TOWER</action>: les tours sont des structures de défense statique avec un certain rayon de tir. 
-
+</br>
                     Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. 
-
-                    La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire: <action>BUILD {id} TOWER</BUILD>.
+</br>
+                    La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire: <action>BUILD {id} TOWER</action>.
                 </li>
                 <li>
                     <action>MINE</action>: les mines permettent de produire de l'or. Chaque joueur commence la partie avec 100 d'or.
-
-                    Une fois qu'une mine est construite, elle produit automatiquement 1 d'or par tour. Le taux de production d'une mine peut être augmenté de 1 en utilisant la même commande que pour la construire: <action>BUILD {id} MINE</BUILD>. Cependant, chaque mine a un taux maximum de production.
-
+                </br>
+                    Une fois qu'une mine est construite, elle produit automatiquement <const>1</const> d'or par tour. Le taux de production d'une mine peut être augmenté de <const>1</const> en utilisant la même commande que pour la construire: <action>BUILD {id} MINE</action>. Cependant, chaque mine a un taux maximum de production.
+</br>
 
                     Chaque site de construction a une quantité limitée d'or disponible. La mine s'épuise donc jusqu'à être détruite.
                     Si la Reine ou une armée rentre en contact avec une mine ennemie, cette dernière est détruite.
-
+</br>
                     Le taux maximum de production ainsi que la quantité d'or totale d'un site de production ne sont disponibles que si la Reine se trouve à moins de <const>300</const> unités du site.
                 </li>
             </ul>
@@ -109,6 +110,7 @@
             <p><strong>Les armées</strong></p>
             <p>
                 Pour combattre la Reine de l'adversaire, un joueur doit entraîner des armées dans une caserne.
+                </br>
                 Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être contrôlées.
                 Chaque armée a un temps de vie limité, perdant 
                 <const>1</const> 
@@ -140,9 +142,9 @@
 
             <p><strong>L'entraînement des armées</strong></p>
             <p>
-                Un joueur peut entraîner des armées en utilisant la commande <action>TRAIN</action> et en indiquant les identifiants de casernes alliées dans lesquelles il souhaite créer des troupes.
+                Un joueur peut entraîner des armées en utilisant la commande <action>TRAIN</action> et en indiquant les identifiants de casernes alliées dans lesquelles ce joueur souhaite créer des troupes.</br>
                 Une caserne qui entraîne des armées ne peut pas recommencer un cycle d'entraînement avant que les premières armées soient créées.
-
+</br>
                 Exemples:
             </p>
             <ul>
@@ -237,7 +239,7 @@
                         <li><var>structureType</var>: Le type de bâtiment construit sur le site.
                             <ul style="padding-top: 0; padding-bottom: 0;">
                                 <li><const>-1</const>: Pas de bâtiment construit</li>
-                                li><const>1</const>: Une mine</li>
+                                <li><const>1</const>: Une mine</li>
                                 <li><const>1</const>: Une tour</li>
                                 <li><const>2</const>: Une caserne</li>
                             </ul>
@@ -273,7 +275,7 @@
                         </li>
                     </ul>
                     <span class="statement-lineno">Ligne suivante :</span> <var>numUnits</var> le nombre total d'unités actives, incluant les Reines<br>
-                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes : 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
+                    <span class="statement-lineno">Les <var>numUnits</var> lignes suivantes :</span> 5 entiers <var>x</var>, <var>y</var>, <var>owner</var>, <var>unitType</var>, et <var>health</var> </span><br>
                     <ul style="padding-bottom: 0;" >
                         <li><var>x</var> et <var>y</var>: les coordonnées de l'unité.</li>
                         <li><var>owner</var>: <const>0</const> = alliée; <const>1</const> = ennemie.</li>
