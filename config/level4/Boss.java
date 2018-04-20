@@ -3,9 +3,8 @@ import java.io.*;
 import java.math.*;
 
 /*
-Level 3 Boss: Duchess
-Expected Player Skills: Generating income via goldmines
-Boss strategy: Build a single barracks and train Knight minions whenever possible.
+Default AI
+Strategy: Build a single barracks and train Knight minions whenever possible.
     If income is less than ten, build or upgrade a mine on the closest obstacle to the barracks.
     Otherwise, build a tower on the empty obstacle closest to the barracks.
  */
@@ -45,6 +44,7 @@ class Player {
                 obstacles[obstacleId].maxSize = maxMineSize;
                 obstacles[obstacleId].remainingGold = goldRemaining;
                 obstacles[obstacleId].param1 = param1;
+                obstacles[obstacleId].owner == owner;
 
                 if (structureType == 0 && owner == 0){
                     income += param1;
@@ -108,7 +108,9 @@ class Player {
 
             String train = "TRAIN";
             if (gold >= 80){
-                train = train + " " + barracks.id;
+                if (barracks.type == 2 && barracks.owner == 0){
+                    train = train + " " + barracks.id;
+                }
             }
 
             // First line: A valid queen action
@@ -126,6 +128,7 @@ class Player {
 class Obst{
     int id, x, y;
     int type = -1;
+    int owner;
     int maxSize;
     int remainingGold;
     int param1;
