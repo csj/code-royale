@@ -92,7 +92,7 @@ class Queen(owner: Player) : Unit(owner) {
 
   init {
     characterSprite.image = "Unite_Reine"
-    theTooltipModule.registerEntity(tokenCircle, mapOf("id" to tokenCircle.id, "type" to "Queen"))
+    theTooltipModule.registerEntity(tokenGroup, mapOf("id" to tokenCircle.id, "type" to "Queen"))
     tokenCircle.baseWidth = radius*2
     tokenCircle.baseHeight = radius*2
     characterSprite.baseWidth = radius*2
@@ -154,7 +154,7 @@ abstract class Creep(
     characterSprite.baseWidth = radius*2
     characterSprite.baseHeight = radius*2
 
-    theTooltipModule.registerEntity(tokenCircle, mapOf("id" to tokenCircle.id, "type" to creepType.toString()))
+    theTooltipModule.registerEntity(tokenGroup,mapOf("id" to tokenCircle.id, "type" to creepType.toString()))
   }
 }
 
