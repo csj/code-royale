@@ -77,11 +77,11 @@
                 Il y a quatre types de bâtiments: la caserne de chevaliers (<action>BARRACKS-KNIGHT</action>), la caserne d'archers (<action>BARRACKS-ARCHER</action>), la caserne de géants (<action>BARRACKS-GIANT</action>), et la tour (<action>TOWER</action>). Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
             </p>
             <p>
-                BARRACKS-{type}: les casernes servent à entraîner des armées de différents types (voir ci-dessous).
+                <action>BARRACKS-{type}</action>: les casernes servent à entraîner des armées de différents types (voir ci-dessous).
                 Si la reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
             </p>
             <p>
-                TOWER: les tours sont des structures de défense statique avec un certain rayon de tir. Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire <action>BUILD {id} TOWER</BUILD>.
+                <action>TOWER</action>: les tours sont des structures de défense statique avec un certain rayon de tir. Chaque tour, elles ciblent l'armée ennemie la plus proche à portée. S'il n'y a pas d'armée ennemie à portée et que la Reine est à portée, une tour ciblera la Reine à la place. Les tours se détériorent à chaque tour jusqu'à être détruites. La Reine peut réparer une tour et augmenter son rayon d'action en utilisant la même commande que pour la construire <action>BUILD {id} TOWER</BUILD>.
             </p>
             <p>
                 La Reine peut remplacer une caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
@@ -298,7 +298,7 @@
                     <li>
                         <action>BUILD {siteId} BARRACKS-{type}</action>
                         Construire une caserne sur le site de construction indiqué.
-                        Si la Reine est trop éloignée de site de construction, cette commande déplacera la Reine vers le site. Le type de caserne est soit
+                        Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site. Le type de caserne est soit
                         <action>KNIGHT</action> (chevalier)
                         soit
                         <action>ARCHER</action> (archer)
