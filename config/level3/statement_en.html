@@ -66,7 +66,7 @@
                 <const>30</const>
                 units, and moves up to
                 <const>60</const>
-                units every turn.
+                units every turn (using the <action>MOVE</action> command).
                 Each Queen starts with
                 <const>100</const>
                 HP, and will be destroyed if this drops to zero -- if this happens, the player will lose the game.
@@ -76,48 +76,47 @@
 
             <p><strong>Structures</strong></p>
             <p>
-                A Queen character can build a structure on the <var>touchedSite</var> that she is in contact with.
-                If she so chooses, a Queen can replace an existing friendly structure simply by building another one in
-                its place (unless it is a Barracks that is currently training).
-                If an enemy Tower is already in place on a site, a Queen cannot replace it.
+                Structures can be built at no cost.
+                A Queen character can build a structure (using the <action>BUILD</action> command) on a building site that she is in contact with.
+                The variable <var>touchedSite</var> indicates the identifier of the building site that she is in contact with, -1 if not.
             </p>
             <p>
-                Structures can be built at no cost. Towers begin working the turn they are built, and can be grown over
-                time.
-                Barracks are available for use on the turn immediately following their construction.
-            </p>
-            <br>
-
-            <p><strong>Mining</strong></p>
-            <p>
-                Each player begins with 100 gold. A player can increase the amount of gold collected per turn by
+                There are three types of structures:
+                <ul>
+                    <li>
+                        <action>BARRACKS-{type}</action>: A player needs to build a BARRACKS with their Queen in order to train creeps
+                        ({type} can be <action>KNIGHT</action>, <action>ARCHER</action> or <action>GIANT</action>).
+                        Every barracks is built with the ability to train a single creep type.
+                        Barracks are available for use on the turn immediately following their construction.
+                        A barracks is destroyed if it is touched by the enemy Queen.
+                    </li>
+                    <li>
+                        <action>TOWER</action>: The Queen can also build static defensive structures called Towers as defenses against enemy creeps.
+                        Towers begin working the turn they are built, and can be grown over time.
+                        
+                        A tower fire upon the closest enemy creep in range.
+                        If there are no enemy creeps in range, but the enemy Queen is in range, a tower will fire upon her
+                        instead.
+                        
+                        Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.
+                        The Queen can grow a tower and increase its range by issuing the same command as to built it (<action>BUILD {siteId} TOWER</action>).
+                    </li>
+                    <li>
+                        <action>MINE</action>: Each player begins with 100 gold. A player can increase the amount of gold collected per turn by
                 building goldmines on building sites.
+                        
+                        Once a mine is built, it produces <const>1</const> gold per turn.
+                        The mining rate of a mine can be increased by <const>1</const> by issuing the same command as to build it (<action>BUILD {siteId} MINE</action>).
+                        However, each mine has a maximum mining rate (between <const>+1</const> and <const>+5</const>).
+                        
+                        Each building site has a limited amount of gold. A mine then slowly runs out of gold until it's completely destroyed. 
+                        A mine is also destroyed if it is touched by an enemy creep or the enemy Queen.
+                    </li>
+                </ul>
             </p>
             <p>
-                Each site has a different rate at which gold can be collected, ranging from
-                <const>+1</const>/turn to
-                <const>+5</const>/turn.
-                When a mine is first built, it has an income rate of
-                <const>+1</const>. This can be increased by issuing repeated
-                commands to build a mine on the same site, up to its maximum capacity.
-                Mines will automatically collect gold for the player each turn. However, the site will be exhausted
-                of gold over time.
-            </p>
-            <p>
-                Sites begin with different, random amounts of gold every game. Sites near the middle of the
-                field have higher gold available, and higher maximum mining rates.
-                Gold totals and mining rates are not given for all sites, they must be discovered by the Queen. These
-                numbers will be available for any
-                site whose center is within
-                <const>300</const>
-                units from the Queen.
-            </p>
-            <p>
-                A mine will be destroyed if:
-            <ul style="padding-top: 0; padding-bottom: 0;">
-                <li>It runs out of gold</li>
-                <li>An enemy creep or the enemy Queen comes in contact with it</li>
-            </ul>
+                If she so chooses, a Queen can replace an existing friendly building simply by building another structure in
+                its place (unless it's a barracks which is currently training).
             </p>
             <br>
 
@@ -133,20 +132,20 @@
                 There are three different creep types that can be built.
             <ul style="padding-top: 0; padding-bottom: 0;">
                 <li>
-                    KNIGHT units are light, fast units which attack the enemy Queen.
+                    <action>KNIGHT</action> units are light, fast units which attack the enemy Queen.
                     They cost
                     <const>80</const>
                     gold to train a group of 4.
                 </li>
                 <li>
-                    ARCHER units are slower, ranged units which move toward and attack nearby enemy creeps from a short
+                    <action>ARCHER</action> units are slower, ranged units which move toward and attack nearby enemy creeps from a short
                     distance.
                     They cost
                     <const>100</const>
                     gold to train a group of 2. Note: ARCHER units do not attack the enemy Queen!
                 </li>
                 <li>
-                    GIANT units do not attack the enemy Queen or enemy creeps, but instead attack nearby enemy towers
+                    <action>GIANT</action> units do not attack the enemy Queen or enemy creeps, but instead attack nearby enemy towers
                     and break them down over time.
                     They cost
                     <const>140</const>
@@ -154,19 +153,17 @@
                 </li>
             </ul>
             </p>
-            <p>
-                A player needs to build a BARRACKS with their Queen in order to train creeps.
-                A barracks can be destroyed if it is touched by the enemy Queen.
-                Training creeps is explained below.
-            </p>
             <br>
 
             <p><strong>Training Creeps</strong></p>
             <p>
                 Every building site is numbered, starting from
                 <const>0</const>.
-                A player trains creeps by indicating the IDs of which sites containing a barracks that player wishes to train
+                A player trains creeps (using the <action>TRAIN</action> command) by indicating the IDs of which sites containing a barracks that player wishes to train
                 creeps at.
+                A barracks that is already in the middle of training cannot begin training again until the current creep set is built.
+                Also, such a barracks cannot be replaced by another structure.
+                
                 Examples:
             </p>
             <ul style="padding-top: 0; padding-bottom: 0;">
@@ -178,39 +175,16 @@
                     <action>TRAIN 14</action>
                     - One barracks begins training creeps
                 </li>
-                <li>
-                    <action>TRAIN</action>
-                    - No barracks begin training creeps.
-                </li>
             </ul>
             <p>
-                Every barracks is built with the ability to train a single creep type.
                 When the train commands are sent, the player pays the total cost in gold, and indicated barracks will
                 begin training the appropriate set of units.
                 After the appointed number of turns elapses, a set of creeps emerges from the barracks and begins acting
                 by themselves on the following turn.
             </p>
             <p>
-                A barracks that is already in the middle of training cannot begin training again until the current creep
-                set is built.
-                Also, such a barracks cannot be replaced by another structure.
-            </p>
-            <br>
-
-            <p><strong>Towers</strong></p>
-            <p>
-                The Queen can also build static defensive structures called Towers as defenses against enemy creeps.
-            </p>
-            <p>
-                When a tower is first built, it has a small firing radius.
-                A player can grow an existing tower by having the Queen stand next to it and issuing the same <action>BUILD</action> order
-                again; this will increase the tower’s firing radius over several turns.
-                Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.
-                This can be delayed by regular visits by the Queen, and issuing the BUILD TOWER command again.
-            </p>
-            <p>
-                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her
-                instead.
+                The training of creeps represents an extra mandatory command every turn.
+                For barracks not to begin training new units, a player has to use the <action>TRAIN</action> command with no identifier.
             </p>
             <br>
         </div>
@@ -237,7 +211,6 @@
                     <div class="title">Lose Conditions</div>
                     <div class="text">
                         <ul style="padding-bottom: 0;">
-                            <li>Your Queen is destroyed.</li>
                             <li>Output an invalid command.</li>
                         </ul>
                     </div>
@@ -284,7 +257,7 @@
             <div class="title">Input for one game turn</div>
             <div class="text">
 
-                <span class="statement-lineno">Line 1:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
+                <span class="statement-lineno">Line 1 and 2:</span> Two integers <var>gold</var> <var>touchedSite</var><br>
                 <ul>
                     <li><var>gold</var>: the current amount of gold available to be spent</li>
                     <li><var>touchedSite</var>: the id of the site your Queen is touching, or
@@ -415,6 +388,11 @@
                     <li>
                         <action>BUILD {siteId} TOWER</action>
                         Will attempt to build or repair a tower at the indicated site.
+                        If too far away, the Queen will instead move towards the site.
+                    </li>
+                    <li>
+                        <action>BUILD {siteId} MINE</action>
+                        Will attempt to build or repair a mine at the indicated site.
                         If too far away, the Queen will instead move towards the site.
                     </li>
                     <li>
