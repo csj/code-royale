@@ -1,3 +1,5 @@
+Referee for Code Royale: https://www.codingame.com/contests/code-royale
+
 Just run `Main.java` and then send your browser to localhost:8888. You will be playing in level 1 (i.e. Wood3).
 
 To play in a different league, look for reads of `gameManager.leagueLevel`.
