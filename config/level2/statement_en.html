@@ -84,28 +84,27 @@
                 The variable <var>touchedSite</var> indicates the identifier of the building site that she is in contact with, -1 if not.
             </p>
             <p>
-                Towers begin working the turn they are built, and can be grown over
-                time.
-                There are four types of structures: the barracks of knights (<action>BARRACKS-KNIGHT</action>), the barracks of archers (<action>BARRACKS-ARCHER</action>),
-                the barracks of giants (<action>BARRACKS-GIANT</action>), and the tower (<action>TOWER</action>).
-                Barracks are available for use on the turn immediately following their construction.
-            </p>
-            <p>
-                <action>BARRACKS-{type}</action>: a player needs to build a BARRACKS with their Queen in order to train creeps.
-                Every barracks is built with the ability to train a single creep type.
-                A barracks is destroyed if it is touched by the enemy Queen.
-            </p>
-            <p>
-                <action>TOWER</action>: the Queen can also build static defensive structures called Towers as defenses against enemy creeps.
-                
-                When a tower is first built, it has a small firing radius.
-                A player can grow an existing tower by having the Queen stand next to it and issuing the same <action>BUILD</action> order
-                again; this will increase the tower’s firing radius over several turns.
-                Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.
-                This can be delayed by regular visits by the Queen, and issuing the BUILD TOWER command again.
-                
-                If there are no creeps in range, but the enemy Queen is in range, a tower will fire upon her
-                instead.
+                There are three types of structures:
+                <ul style="padding-top: 0; padding-bottom: 0;">
+                    <li>
+                        <action>BARRACKS-{type}</action>: A player needs to build a BARRACKS with their Queen in order to train creeps
+                        ({type} can be <action>KNIGHT</action>, <action>ARCHER</action> or <action>GIANT</action>).
+                        Every barracks is built with the ability to train a single creep type.
+                        Barracks are available for use on the turn immediately following their construction.
+                        A barracks is destroyed if it is touched by the enemy Queen.
+                    </li>
+                    <li>
+                        <action>TOWER</action>: The Queen can also build static defensive structures called Towers as defenses against enemy creeps.
+                        Towers begin working the turn they are built, and can be grown over time.
+                        
+                        A tower fire upon the closest enemy creep in range.
+                        If there are no enemy creeps in range, but the enemy Queen is in range, a tower will fire upon her
+                        instead.
+                        
+                        Once built, towers start to degrade slowly. A tower will eventually degrade completely and be destroyed.
+                        The Queen can grow a tower and increase its range by issuing the same command as to built it (<action>BUILD {siteId} TOWER</action>).
+                    </li>
+                </ul>
             </p>
             <p>
                 If she so chooses, a Queen can replace an existing friendly barracks simply by building another structure in
