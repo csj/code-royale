@@ -54,8 +54,7 @@
                     units wide and
                     <const>1000</const>
                     units high, littered with circular building sites of varying radius. The top-left corner is
-                    <const>0,0</const>
-                    .
+                    <const>0,0</const>.
                     The field is generated randomly every game, with the sites being symmetrically laid out
                     (rotationally around the map's center).
                 </p>
@@ -113,13 +112,10 @@
                 </p>
                 <p>
                     Each site has a different rate at which gold can be collected, ranging from
-                    <const>+1</const>
-                    /turn to
-                    <const>+5</const>
-                    /turn.
+                    <const>+1</const>/turn to
+                    <const>+5</const>/turn.
                     When a mine is first built, it has an income rate of
-                    <const>+1</const>
-                    . This can be increased by issuing repeated
+                    <const>+1</const>. This can be increased by issuing repeated
                     commands to build a mine on the same site, up to its maximum capacity.
                     Mines will automatically collect gold for the player each turn. However, the site
                     will be exhausted of gold over time.
@@ -258,8 +254,7 @@
                 <p><strong>Training Creeps</strong></p>
                 <p>
                     Every building site is numbered, starting from
-                    <const>0</const>
-                    .
+                    <const>0</const>.
                     A player trains creeps by indicating the IDs of which sites containing a barracks he wishes to train
                     creeps at.
                     Examples:
@@ -312,8 +307,7 @@
                     deal
                     <const>3</const>
                     base damage at the edge of their firing range.
-                    The closer the creep is to the tower, the more damage will be dealt (
-                    <const>+1</const>
+                    The closer the creep is to the tower, the more damage will be dealt (<const>+1</const>
                     for every
                     <const>200</const>
                     units closer)
@@ -445,12 +439,10 @@
                 Each site-pair gets assigned a random gold amount between
                 <const>200</const>
                 and
-                <const>250</const>
-                , a maximum mining rate between
+                <const>250</const>, a maximum mining rate between
                 <const>+1</const>
                 and
-                <const>+3</const>
-                , and a radius between
+                <const>+3</const>, and a radius between
                 <const>60</const>
                 and
                 <const>110</const>
@@ -494,15 +486,14 @@
                 <const>100</const>
                 additional HP.
                 The maximum amount of HP for towers is
-                <const>800</const>
-                .
+                <const>800</const>.
                 Every tower loses
                 <const>4</const>
                 HP per turn due to exposure to the elements.
                 Each GIANT that ends its turn next to a tower reduces its HP by
-                <const>80</const>
-                . Hence a Queen can slightly outpace a single GIANT by building at the same time.
+                <const>80</const>. Hence a Queen can slightly outpace a single GIANT by building at the same time.
             </p>
+            <br>
 
             <p><strong>Draws</strong></p>
             <p>
@@ -553,48 +544,38 @@
                 <var>maxMineSize</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                 <ul>
                     <li><var>siteId</var>: The numeric identifier of the site</li>
-                    <li><var>gold</var>: The total number of gold remaining to be mined from this site (
-                        <const>-1</const>
-                        if unknown)
+                    <li><var>gold</var>: The total number of gold remaining to be mined from this site
+                        (<const>-1</const> if unknown)
                     </li>
-                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this site (
-                        <const>-1</const>
-                        if
-                        unknown)
+                    <li><var>maxMineSize</var>: The maximum rate that a mine can extract gold from this site
+                        (<const>-1</const> if unknown)
                     </li>
                     <li><var>structureType</var>:
                         <ul style="padding-top: 0; padding-bottom: 0;">
                             <li>
-                                <const>-1</const>
-                                : No structure
+                                <const>-1</const>: No structure
                             </li>
                             <li>
-                                <const>0</const>
-                                : Goldmine
+                                <const>0</const>: Goldmine
                             </li>
                             <li>
-                                <const>1</const>
-                                : Tower
+                                <const>1</const>: Tower
                             </li>
                             <li>
-                                <const>2</const>
-                                : Barracks
+                                <const>2</const>: Barracks
                             </li>
                         </ul>
                     </li>
                     <li><var>owner</var>:
                         <ul style="padding-top: 0; padding-bottom: 0;">
                             <li>
-                                <const>-1</const>
-                                : No structure
+                                <const>-1</const>: No structure
                             </li>
                             <li>
-                                <const>0</const>
-                                : Friendly
+                                <const>0</const>: Friendly
                             </li>
                             <li>
-                                <const>1</const>
-                                : Enemy
+                                <const>1</const>: Enemy
                             </li>
                         </ul>
                     </li>
@@ -613,8 +594,7 @@
                             </li>
                             <li>When tower: the remaining HP</li>
                             <li>When barracks, the number of turns before a new set of creeps can be trained (if
-                                <const>0</const>
-                                , then training may be started this turn)
+                                <const>0</const>, then training may be started this turn)
                             </li>
                         </ul>
                     </li>
@@ -688,12 +668,9 @@
                         <action>BUILD {siteId} BARRACKS-{type}</action>
                         Will attempt to build a barracks at the indicated site.
                         If too far away, the Queen will instead move towards the site. The type must be given as
-                        <action>KNIGHT</action>
-                        ,
-                        <action>ARCHER</action>
-                        , or
-                        <action>GIANT</action>
-                        .
+                        <action>KNIGHT</action>,
+                        <action>ARCHER</action>, or
+                        <action>GIANT</action>.
                     </li>
                 </ul>
                 <strong>Second line:</strong>
