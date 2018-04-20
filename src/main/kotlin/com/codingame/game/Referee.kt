@@ -221,7 +221,7 @@ class Referee : AbstractReferee() {
 
           // Process queen command
           try {
-            val line = player.outputs[0]
+            val line = player.outputs[0].trim()
             val toks = line.split(" ").iterator()
             val command = toks.next()
 
