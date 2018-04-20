@@ -31,7 +31,7 @@
         </h1>
         <div class="statement-goal-content">
             <!-- LEAGUES wood3 wood2 wood1 bronze -->
-            Constuire des bâtiments et créer des armées pour détruire la Reine de votre adversaire.
+            Construire des bâtiments et créer des armées pour détruire la Reine de votre adversaire.
         </div>
     </div>
 
@@ -47,13 +47,12 @@
             <p>
                 Deux joueurs s'affrontent sur une carte rectangulaire de <const>1920</const> x <const>1000</const>
                 unités, parsemée de sites de construction circulaires. Les coordonnées 
-                <const>0,0</const> correspondent au pixel stué en haut à gauche
-                .
+                <const>0,0</const> correspondent au pixel stué en haut à gauche.
             </p>
 
             <p><strong>La Reine</strong>
             <p>
-                Chaque contrôle une Reine, qui peut constuire différent types de bâtiments sur les sites de construction.
+                Chaque joueur contrôle une Reine, qui peut construire différents types de bâtiments sur les sites de construction.
                 La Reine est le seul moyen pour un joueur d'interagir avec la carte.
 
             </p>
@@ -70,18 +69,18 @@
 
             <p><strong>Bâtiments</strong></p>
             <p>
-                Les bâtiments ne coûtent rien à constuire.
-                La Reine peut constuire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
+                Les bâtiments ne coûtent rien à construire.
+                La Reine peut construire un bâtiment sur un site de construction (à l'aide de la commande <action>BUILD</action>), si elle est en contact avec ce site. La variable <var>touchedSite</var> indique l'identifiant du site avec lequel la Reine est en contact (<const>-1</const> sinon).
             </p>
             <p>
-                Il y a deux types de bâtiments: la caserne de chevaliers(<action>BARRACKS-KNIGHT</action>) et la caserne d'archers (<action>BARRACKS-ARCHER</action>). Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
+                Il y a deux types de bâtiments: la caserne de chevaliers (<action>BARRACKS-KNIGHT</action>) et la caserne d'archers (<action>BARRACKS-ARCHER</action>). Une caserne peut commencer à entraîner des armées un tour seulement après sa construction.
             </p>
             <p>
                 BARRACKS-{type}: les casernes servent à entraîner des armées de différents types (voir ci-dessous).
                 Si la reine rentre en contact avec une caserne ennemie, cette dernière est détruite.
             </p>
             <p>
-                La Reine peut remplacer un caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
+                La Reine peut remplacer une caserne alliée en construisant un autre bâtiment par dessus (sauf si la caserne entraîne des armées à ce moment).
             </p>
 
             <p><strong>L'Or</strong></p>
@@ -93,13 +92,13 @@
                 <const>100</const>
                 d'or et gagne 
                 <const>10</const>
-                10 d'or à la fin de chaque tour.
+                d'or à la fin de chaque tour.
             </p>
 
             <p><strong>Les armées</strong></p>
             <p>
                 Pour combattre la Reine de l'adversaire, un joueur doit entraîner des armées dans une caserne.
-                Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être controlées.
+                Une fois entraînées (ce qui prend plusieurs tours), les armées ont un comportement très simple et ne peuvent pas être contrôlées.
                 Chaque armée a un temps de vie limité, perdant 
                 <const>1</const> 
                 PV par tour.
@@ -118,7 +117,7 @@
                     Il faut
                     <const>100</const>
                     d'or pour entraîner un groupe de 2 archers à la caserne d'archers (<action>BARRACKS-ARCHER</action>). 
-                    Note: les archers n'attaquent pas la Reine ennemie; ce sont des unités purement défensives.
+                    Note: les archers n'attaquent pas la Reine ennemie ; ce sont des unités purement défensives.
                 </li>
             </ul>
             </p>
@@ -141,10 +140,12 @@
                 </li>
             </ul>
             <p>
-                Une fois que les commandes d'entraînement sont envoyées, le joueur paie le prix total en or, et chaque caserne commence à entraîner des armées. Après un nombre de tours défini, un groupe d'armée sort de la caserne et commence à se comporter d'elles même un tour après.
+                Une fois que les commandes d'entraînement sont envoyées, le joueur paie le prix total en or, et chaque caserne commence à entraîner le nombre correspondant d'unités.
+                Au dernier tour d'entraînement, les unités apparaissent autour de la caserne. Elles ne commencent à agir qu'au tour suivant.
             </p>
             <p>
-                L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour. Pour n'entraîner aucune armée, il suffit d'utiliser la command <action>TRAIN</action> sans identifiant.
+                L'entraînement des armées constitue une commande supplémentaire obligatoire chaque tour.
+                Pour n'entraîner aucune armée, il suffit d'utiliser la command <action>TRAIN</action> sans identifiant.
             </p>
         </div>
 
@@ -210,6 +211,7 @@
                 <div class="text">
 
                     <span class="statement-lineno">Ligne 1:</span> Un entier <var>gold</var> représentant l'or disponible du joueur.<br>
+                    <span class="statement-lineno">Ligne 2:</span> Un entier <var>touchedSite</var> représentant l'identifiant du site de construction en contact avec la Reine s'il existe, -1 sinon.<br>
                     <span class="statement-lineno">Les <var>numSites</var> lignes suivantes :</span> 7 entiers <var>siteId</var> <var>ignore1</var>
                         <var>ignore2</var> <var>structureType</var> <var>owner</var> <var>param1</var> <var>param2</var><br>
                     <ul style="padding-bottom: 0;">
@@ -275,11 +277,10 @@
                     <li>
                         <action>BUILD {siteId} BARRACKS-{type}</action>
                         Construire une caserne sur le site de construction indiqué.
-                        Si la Reine est trop éloignée de site de construction, cette commande déplacera la Reine vers le site. Le type de caserne est soit
+                        Si la Reine est trop éloignée du site de construction, cette commande déplacera la Reine vers le site. Le type de caserne est soit
                         <action>KNIGHT</action> (chevalier)
                         soit
-                        <action>ARCHER</action> (archer)
-                        .
+                        <action>ARCHER</action> (archer).
                     </li>
                 </ul>
                 <strong>Seconde ligne :</strong> <action>TRAIN</action> suvi de zéro, un ou plusieurs identifiants <const>siteId</const> de casernes alliées pour commencer à entraîner des armées.
