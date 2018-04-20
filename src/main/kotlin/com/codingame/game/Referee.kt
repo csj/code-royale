@@ -240,6 +240,9 @@ class Referee : AbstractReferee() {
               "BUILD" -> {
                 val obsId = try { toks.next().toInt() } catch (e:Exception) { throw PlayerInputException("Could not parse siteId")}
                 val obs = obstacles.find { it.obstacleId == obsId } ?: throw PlayerInputException("Site id $obsId does not exist")
+                if (!toks.hasNext()) {
+                  throw PlayerInputException("Missing structure type in $command command")
+                }
                 val strucType = toks.next()
 
                 val dist = obs.location.distanceTo(queen.location)
@@ -262,6 +265,10 @@ class Referee : AbstractReferee() {
           gameManager.addToGameSummary("${player.nicknameToken} failed to provide ${player.expectedOutputLines} lines of output in time.")
         } catch (e: PlayerInputException) {
           System.err.println("WARNING: Terminating ${player.nicknameToken}, because of:")
+          e.printStackTrace()
+          player.kill("${e.message}")
+          gameManager.addToGameSummary("${player.nicknameToken}: ${e.message}")
+        } catch (e: Exception) {
           e.printStackTrace()
           player.kill("${e.message}")
           gameManager.addToGameSummary("${player.nicknameToken}: ${e.message}")
