@@ -30,7 +30,8 @@ class Referee : AbstractReferee() {
 
   private var obstacles: List<Obstacle> = listOf()
 
-  private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.allUnits() } + obstacles
+  //private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.allUnits() } + obstacles // Bug in collisions in favor to red queen against blue queen
+  private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.activeCreeps } + gameManager.players.map { it.queenUnit } + obstacles
 
   override fun init(params: Properties): Properties {
 
