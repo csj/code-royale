@@ -30,7 +30,8 @@ class Referee : AbstractReferee() {
 
   private var obstacles: List<Obstacle> = listOf()
 
-  private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.allUnits() } + obstacles
+  //private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.allUnits() } + obstacles // Bug in collisions in favor to red queen against blue queen
+  private fun allEntities(): List<FieldObject> = gameManager.players.flatMap { it.activeCreeps } + gameManager.players.map { it.queenUnit } + obstacles
 
   override fun init(params: Properties): Properties {
 
@@ -204,7 +205,9 @@ class Referee : AbstractReferee() {
                     CreepType.GIANT ->
                       GiantCreep(barracks.owner, barracks.creepType, obstacles)
                   }.also {
-                    it.location = barracks.obstacle.location + Vector2(iter, iter)
+                    val c = if (barracks.owner.isSecondPlayer) -1 else 1
+                    it.location = barracks.obstacle.location + Vector2(c * iter, c * iter)
+                    //it.location = barracks.obstacle.location + Vector2(iter, iter) // Fix units start point outside barracks
                     it.finalizeFrame()
                     it.location = it.location.towards(barracks.owner.enemyPlayer.queenUnit.location, 30.0)
                     it.finalizeFrame()
